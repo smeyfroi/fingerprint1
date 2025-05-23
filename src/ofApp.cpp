@@ -4,31 +4,39 @@
 ofxMarkSynth::ModPtrs ofApp::createMods() {
   auto mods = ofxMarkSynth::ModPtrs {};
 
-  addMod<ofxMarkSynth::RandomFloatSourceMod>(mods, "Random Radii", {
+  auto audioDataSourceModPtr = addMod<ofxMarkSynth::AudioDataSourceMod>(mods, "Audio Points", {
+    {"MinPitch", "50.0"},
+    {"MaxPitch", "2500.0"}
+  }, audioDataProcessorPtr);
+  
+  auto audioPaletteModPtr = addMod<ofxMarkSynth::SomPaletteMod>(mods, "Palette Creator", {});
+  audioDataSourceModPtr->addSink(ofxMarkSynth::AudioDataSourceMod::SOURCE_SPECTRAL_POINTS,
+                                 audioPaletteModPtr,
+                                 ofxMarkSynth::SomPaletteMod::SINK_VEC3);
+  
+  auto clusterModPtr = addMod<ofxMarkSynth::ClusterMod>(mods, "Clusters", {});
+  audioDataSourceModPtr->addSink(ofxMarkSynth::AudioDataSourceMod::SOURCE_PITCH_RMS_POINTS,
+                                 clusterModPtr,
+                                 ofxMarkSynth::ClusterMod::SINK_VEC2);
+  
+  auto radiiModPtr = addMod<ofxMarkSynth::RandomFloatSourceMod>(mods, "Random Radii", {
     {"CreatedPerUpdate", "0.05"},
     {"Min", "0.001"},
     {"Max", "0.05"}
   }, std::pair<float, float>{0.0, 0.1}, std::pair<float, float>{0.0, 0.1});
 
-  addMod<ofxMarkSynth::RandomVecSourceMod>(mods, "Random Points", {
-    {"CreatedPerUpdate", "0.4"}
-  }, 2);
-  addMod<ofxMarkSynth::RandomVecSourceMod>(mods, "Random Colours", {
-    {"CreatedPerUpdate", "0.1"}
-  }, 4);
-  
-  addMod<ofxMarkSynth::DrawPointsMod>(mods, "Draw Points", {});
-  connectMods(mods, "Random Colours", ofxMarkSynth::RandomVecSourceMod::SOURCE_VEC4, "Draw Points", ofxMarkSynth::DrawPointsMod::SINK_POINT_COLOR);
-  connectMods(mods, "Random Radii", ofxMarkSynth::RandomFloatSourceMod::SOURCE_FLOAT, "Draw Points", ofxMarkSynth::DrawPointsMod::SINK_POINT_RADIUS);
-  connectMods(mods, "Random Points", ofxMarkSynth::RandomVecSourceMod::SOURCE_VEC2, "Draw Points", ofxMarkSynth::DrawPointsMod::SINK_POINTS);
+  auto drawPointsModPtr = addMod<ofxMarkSynth::DrawPointsMod>(mods, "Draw Points", {});
+  radiiModPtr->addSink(ofxMarkSynth::RandomFloatSourceMod::SOURCE_FLOAT, drawPointsModPtr, ofxMarkSynth::DrawPointsMod::SINK_POINT_RADIUS);
+  audioPaletteModPtr->addSink(ofxMarkSynth::SomPaletteMod::SOURCE_RANDOM_VEC4, drawPointsModPtr, ofxMarkSynth::DrawPointsMod::SINK_POINT_COLOR);
+  clusterModPtr->addSink(ofxMarkSynth::ClusterMod::SOURCE_VEC2, drawPointsModPtr, ofxMarkSynth::DrawPointsMod::SINK_POINTS);
 
-  addMod<ofxMarkSynth::FluidMod>(mods, "Fluid", {
+  auto fluidModPtr = addMod<ofxMarkSynth::FluidMod>(mods, "Fluid", {
     {"dt", "0.01"}
   });
 
-  modByName(mods, "Draw Points")->receive(ofxMarkSynth::DrawPointsMod::SINK_FBO, fboPtr);
-  modByName(mods, "Fluid")->receive(ofxMarkSynth::FluidMod::SINK_VALUES_FBO, fboPtr);
-  modByName(mods, "Fluid")->receive(ofxMarkSynth::FluidMod::SINK_VELOCITIES_FBO, fluidVelocitiesFboPtr);
+  drawPointsModPtr->receive(ofxMarkSynth::DrawPointsMod::SINK_FBO, fboPtr);
+  fluidModPtr->receive(ofxMarkSynth::FluidMod::SINK_VALUES_FBO, fboPtr);
+  fluidModPtr->receive(ofxMarkSynth::FluidMod::SINK_VELOCITIES_FBO, fluidVelocitiesFboPtr);
   
   return mods;
 }
@@ -44,6 +52,11 @@ void ofApp::setup(){
   ofSetBackgroundColor(0);
   ofDisableArbTex();
   ofSetFrameRate(60);
+  
+  const std::filesystem::path rootSourceMaterialPath { "/Users/steve/Documents/music-source-material" };
+  //  audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>(rootSourceMaterialPath/"20250208-trombone-melody.wav");
+  audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>();
+  audioDataProcessorPtr = std::make_shared<ofxAudioData::Processor>(audioAnalysisClientPtr);
 
   fboPtr->allocate(ofGetWindowWidth(), ofGetWindowHeight(), GL_RGBA32F);
   fboPtr->getSource().clearColorBuffer(ofFloatColor(0.0, 0.0, 0.0, 0.0));
@@ -57,6 +70,7 @@ void ofApp::setup(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
+  audioDataProcessorPtr->update();
   synth.update();
 }
 
@@ -68,12 +82,13 @@ void ofApp::draw(){
 
 //--------------------------------------------------------------
 void ofApp::exit(){
-
+  audioAnalysisClientPtr->closeStream();
 }
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
   if (key == OF_KEY_TAB) { guiVisible = not guiVisible; return; }
+  if (audioAnalysisClientPtr->keyPressed(key)) return;
   if (synth.keyPressed(key)) return;
 }
 

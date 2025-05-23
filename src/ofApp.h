@@ -26,39 +26,32 @@ public:
   void gotMessage(ofMessage msg) override;
   
 private:
+  std::shared_ptr<ofxAudioAnalysisClient::LocalGistClient> audioAnalysisClientPtr;
+  std::shared_ptr<ofxAudioData::Processor> audioDataProcessorPtr;
+
   ofxMarkSynth::Synth synth;
   ofxMarkSynth::ModPtrs createMods();
   ofxMarkSynth::FboConfigPtrs createFboConfigs();
   ofxMarkSynth::FboPtr fboPtr = std::make_shared<PingPongFbo>();
   ofxMarkSynth::FboPtr fluidVelocitiesFboPtr = std::make_shared<PingPongFbo>();
-  
+
   bool guiVisible { true };
   ofxPanel gui;
   ofParameterGroup parameters; // I think we rely on this declaration coming after the synth to ensure that destructors are done in the right order
   
-  // >>> TODO: EXTRACT THESE HELPERS
-  ofxMarkSynth::ModPtr modByName(ofxMarkSynth::ModPtrs& modPtrs, std::string name) {
-    const auto it = std::find_if(modPtrs.begin(), modPtrs.end(), [&](const auto& modPtr){
-      return modPtr->name == name;
-    });
-    if (it == modPtrs.end()) ofLogNotice() << "Can't find Mod '" << name << "'";
-    return *it;
-  }
-  
+  // >>> TODO: EXTRACT THESE HELPERS INTO MOD
   template <typename ModT>
-  void addMod(ofxMarkSynth::ModPtrs& modPtrs, const std::string& name, ofxMarkSynth::ModConfig&& modConfig) {
-    modPtrs.push_back(std::make_shared<ModT>(name, std::forward<ofxMarkSynth::ModConfig>(modConfig)));
+  ofxMarkSynth::ModPtr addMod(ofxMarkSynth::ModPtrs& modPtrs, const std::string& name, ofxMarkSynth::ModConfig&& modConfig) {
+    auto modPtr = std::make_shared<ModT>(name, std::forward<ofxMarkSynth::ModConfig>(modConfig));
+    modPtrs.push_back(modPtr);
+    return modPtr;
   }
   
   template <typename ModT, typename... Args>
-  void addMod(ofxMarkSynth::ModPtrs& modPtrs, const std::string& name, ofxMarkSynth::ModConfig&& modConfig, Args&&... args) {
-    modPtrs.push_back(std::make_shared<ModT>(name, std::forward<ofxMarkSynth::ModConfig>(modConfig), std::forward<Args>(args)...));
-  }
-
-  void connectMods(ofxMarkSynth::ModPtrs& modPtrs, std::string sourceName, int sourceId, std::string sinkName, int sinkId) {
-    ofxMarkSynth::ModPtr sourceModPtr = modByName(modPtrs, sourceName);
-    ofxMarkSynth::ModPtr sinkModPtr = modByName(modPtrs, sinkName);
-    sourceModPtr->addSink(sourceId, sinkModPtr, sinkId);
+  ofxMarkSynth::ModPtr addMod(ofxMarkSynth::ModPtrs& modPtrs, const std::string& name, ofxMarkSynth::ModConfig&& modConfig, Args&&... args) {
+    auto modPtr = std::make_shared<ModT>(name, std::forward<ofxMarkSynth::ModConfig>(modConfig), std::forward<Args>(args)...);
+    modPtrs.push_back(modPtr);
+    return modPtr;
   }
   // <<<
   
