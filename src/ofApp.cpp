@@ -4,6 +4,7 @@
 ofxMarkSynth::ModPtrs ofApp::createMods() {
   auto mods = ofxMarkSynth::ModPtrs {};
 
+  // Audio and palette
   auto audioDataSourceModPtr = addMod<ofxMarkSynth::AudioDataSourceMod>(mods, "Audio Points", {
     {"MinPitch", "50.0"},
     {"MaxPitch", "2500.0"}
@@ -19,32 +20,52 @@ ofxMarkSynth::ModPtrs ofApp::createMods() {
                                  clusterModPtr,
                                  ofxMarkSynth::ClusterMod::SINK_VEC2);
   
-  auto radiiModPtr = addMod<ofxMarkSynth::RandomFloatSourceMod>(mods, "Random Radii", {
-    {"CreatedPerUpdate", "0.05"},
-    {"Min", "0.001"},
-    {"Max", "0.05"}
-  }, std::pair<float, float>{0.0, 0.1}, std::pair<float, float>{0.0, 0.1});
-
-  auto drawPointsModPtr = addMod<ofxMarkSynth::DrawPointsMod>(mods, "Draw Fluid Points", {});
-  radiiModPtr->addSink(ofxMarkSynth::RandomFloatSourceMod::SOURCE_FLOAT, drawPointsModPtr, ofxMarkSynth::DrawPointsMod::SINK_POINT_RADIUS);
-  audioPaletteModPtr->addSink(ofxMarkSynth::SomPaletteMod::SOURCE_RANDOM_VEC4, drawPointsModPtr, ofxMarkSynth::DrawPointsMod::SINK_POINT_COLOR);
-  clusterModPtr->addSink(ofxMarkSynth::ClusterMod::SOURCE_VEC2, drawPointsModPtr, ofxMarkSynth::DrawPointsMod::SINK_POINTS);
-
-  auto fluidModPtr = addMod<ofxMarkSynth::FluidMod>(mods, "Fluid", {
-    {"dt", "0.01"}
-  });
-
-  drawPointsModPtr->receive(ofxMarkSynth::DrawPointsMod::SINK_FBO, fboPtr);
-  fluidModPtr->receive(ofxMarkSynth::FluidMod::SINK_VALUES_FBO, fboPtr);
-  fluidModPtr->receive(ofxMarkSynth::FluidMod::SINK_VELOCITIES_FBO, fluidVelocitiesFboPtr);
+  { // Fluid
+    auto radiiModPtr = addMod<ofxMarkSynth::RandomFloatSourceMod>(mods, "Fluid Points Radii", {
+      {"CreatedPerUpdate", "0.05"},
+      {"Min", "0.005"},
+      {"Max", "0.05"}
+    }, std::pair<float, float>{0.0, 0.1}, std::pair<float, float>{0.0, 0.1});
+    
+    auto drawPointsModPtr = addMod<ofxMarkSynth::DrawPointsMod>(mods, "Draw Fluid Points", {});
+    radiiModPtr->addSink(ofxMarkSynth::RandomFloatSourceMod::SOURCE_FLOAT, drawPointsModPtr, ofxMarkSynth::DrawPointsMod::SINK_POINT_RADIUS);
+    audioPaletteModPtr->addSink(ofxMarkSynth::SomPaletteMod::SOURCE_RANDOM_VEC4, drawPointsModPtr, ofxMarkSynth::DrawPointsMod::SINK_POINT_COLOR);
+    clusterModPtr->addSink(ofxMarkSynth::ClusterMod::SOURCE_VEC2, drawPointsModPtr, ofxMarkSynth::DrawPointsMod::SINK_POINTS);
+    
+    auto fluidModPtr = addMod<ofxMarkSynth::FluidMod>(mods, "Fluid", {
+      {"dt", "0.01"}
+    });
+    
+    drawPointsModPtr->receive(ofxMarkSynth::DrawPointsMod::SINK_FBO, fluidFboPtr);
+    fluidModPtr->receive(ofxMarkSynth::FluidMod::SINK_VALUES_FBO, fluidFboPtr);
+    fluidModPtr->receive(ofxMarkSynth::FluidMod::SINK_VELOCITIES_FBO, fluidVelocitiesFboPtr);
+  }
+  
+  { // Raw data points
+    auto drawPointsModPtr = addMod<ofxMarkSynth::DrawPointsMod>(mods, "Draw Raw Points", {
+      {"PointRadius", "0.005"}
+    });
+    audioPaletteModPtr->addSink(ofxMarkSynth::SomPaletteMod::SOURCE_RANDOM_VEC4, drawPointsModPtr, ofxMarkSynth::DrawPointsMod::SINK_POINT_COLOR);
+    audioDataSourceModPtr->addSink(ofxMarkSynth::AudioDataSourceMod::SOURCE_PITCH_RMS_POINTS, drawPointsModPtr, ofxMarkSynth::DrawPointsMod::SINK_POINTS);
+    auto translateModPtr = addMod<ofxMarkSynth::TranslateMod>(mods, "Translate Raw Points", {});
+    drawPointsModPtr->addSink(ofxMarkSynth::DrawPointsMod::SOURCE_FBO, translateModPtr, ofxMarkSynth::TranslateMod::SINK_FBO);
+    auto multiplyModPtr = addMod<ofxMarkSynth::MultiplyMod>(mods, "Fade Raw Points", {});
+    translateModPtr->addSink(ofxMarkSynth::TranslateMod::SOURCE_FBO, multiplyModPtr, ofxMarkSynth::MultiplyMod::SINK_FBO);
+    drawPointsModPtr->receive(ofxMarkSynth::DrawPointsMod::SINK_FBO, rawPointsFboPtr);
+  }
   
   return mods;
 }
 
 ofxMarkSynth::FboConfigPtrs ofApp::createFboConfigs() {
   ofxMarkSynth::FboConfigPtrs fbos;
-  auto fboConfigPtrFluidValues = std::make_shared<ofxMarkSynth::FboConfig>(fboPtr, nullptr);
+
+  auto fboConfigPtrFluidValues = std::make_shared<ofxMarkSynth::FboConfig>(fluidFboPtr);
   fbos.emplace_back(fboConfigPtrFluidValues);
+
+  auto fboConfigPtrRawPoints = std::make_shared<ofxMarkSynth::FboConfig>(rawPointsFboPtr);
+  fbos.emplace_back(fboConfigPtrRawPoints);
+
   return fbos;
 }
 
@@ -61,10 +82,13 @@ void ofApp::setup(){
   audioDataProcessorPtr = std::make_shared<ofxAudioData::Processor>(audioAnalysisClientPtr);
   audioDataPlotsPtr = std::make_shared<ofxAudioData::Plots>(audioDataProcessorPtr);
   
-  fboPtr->allocate(ofGetWindowWidth(), ofGetWindowHeight(), GL_RGBA32F);
-  fboPtr->getSource().clearColorBuffer(ofFloatColor(0.0, 0.0, 0.0, 0.0));
-  fluidVelocitiesFboPtr->allocate(ofGetWindowWidth(), ofGetWindowHeight(), GL_RGB32F);
+  ofxMarkSynth::allocateFbo(fluidFboPtr, ofGetWindowSize(), GL_RGBA32F, GL_REPEAT);
+  fluidFboPtr->getSource().clearColorBuffer(ofFloatColor(0.0, 0.0, 0.0, 0.0));
+  ofxMarkSynth::allocateFbo(fluidVelocitiesFboPtr, ofGetWindowSize(), GL_RGB32F, GL_REPEAT);
   fluidVelocitiesFboPtr->getSource().clearColorBuffer(ofFloatColor(0.0, 0.0, 0.0));
+  ofxMarkSynth::allocateFbo(rawPointsFboPtr, ofGetWindowSize(), GL_RGBA32F, GL_REPEAT);
+  rawPointsFboPtr->getSource().clearColorBuffer(ofFloatColor(0.0, 0.0, 0.0, 0.0));
+
   synth.configure(createMods(), createFboConfigs(), ofGetWindowSize());
   
   parameters.add(synth.getParameterGroup("Synth"));

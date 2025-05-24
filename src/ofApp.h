@@ -33,8 +33,9 @@ private:
   ofxMarkSynth::Synth synth;
   ofxMarkSynth::ModPtrs createMods();
   ofxMarkSynth::FboConfigPtrs createFboConfigs();
-  ofxMarkSynth::FboPtr fboPtr = std::make_shared<PingPongFbo>();
+  ofxMarkSynth::FboPtr fluidFboPtr = std::make_shared<PingPongFbo>();
   ofxMarkSynth::FboPtr fluidVelocitiesFboPtr = std::make_shared<PingPongFbo>();
+  ofxMarkSynth::FboPtr rawPointsFboPtr = std::make_shared<PingPongFbo>();
 
   bool guiVisible { true };
   ofxPanel gui;
