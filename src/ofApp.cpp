@@ -59,7 +59,8 @@ void ofApp::setup(){
 //    audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>(rootSourceMaterialPath/"20250208-trombone-melody.wav");
   audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>();
   audioDataProcessorPtr = std::make_shared<ofxAudioData::Processor>(audioAnalysisClientPtr);
-
+  audioDataPlotsPtr = std::make_shared<ofxAudioData::Plots>(audioDataProcessorPtr);
+  
   fboPtr->allocate(ofGetWindowWidth(), ofGetWindowHeight(), GL_RGBA32F);
   fboPtr->getSource().clearColorBuffer(ofFloatColor(0.0, 0.0, 0.0, 0.0));
   fluidVelocitiesFboPtr->allocate(ofGetWindowWidth(), ofGetWindowHeight(), GL_RGB32F);
@@ -79,6 +80,7 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
   synth.draw();
+  audioDataPlotsPtr->drawPlots();
   if (guiVisible) gui.draw();
 }
 
@@ -91,6 +93,7 @@ void ofApp::exit(){
 void ofApp::keyPressed(int key){
   if (key == OF_KEY_TAB) { guiVisible = not guiVisible; return; }
   if (audioAnalysisClientPtr->keyPressed(key)) return;
+  if (audioDataPlotsPtr->keyPressed(key)) return;
   if (synth.keyPressed(key)) return;
 }
 

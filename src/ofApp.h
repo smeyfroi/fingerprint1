@@ -28,7 +28,8 @@ public:
 private:
   std::shared_ptr<ofxAudioAnalysisClient::LocalGistClient> audioAnalysisClientPtr;
   std::shared_ptr<ofxAudioData::Processor> audioDataProcessorPtr;
-
+  std::shared_ptr<ofxAudioData::Plots> audioDataPlotsPtr;
+  
   ofxMarkSynth::Synth synth;
   ofxMarkSynth::ModPtrs createMods();
   ofxMarkSynth::FboConfigPtrs createFboConfigs();
