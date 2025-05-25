@@ -16,7 +16,7 @@ ofxMarkSynth::ModPtrs ofApp::createMods() {
                                  ofxMarkSynth::SomPaletteMod::SINK_VEC3);
   
   auto clusterModPtr = addMod<ofxMarkSynth::ClusterMod>(mods, "Clusters", {});
-  audioDataSourceModPtr->addSink(ofxMarkSynth::AudioDataSourceMod::SOURCE_PITCH_RMS_POINTS,
+  audioDataSourceModPtr->addSink(ofxMarkSynth::AudioDataSourceMod::SOURCE_POLAR_PITCH_RMS_POINTS,
                                  clusterModPtr,
                                  ofxMarkSynth::ClusterMod::SINK_VEC2);
   
@@ -33,7 +33,7 @@ ofxMarkSynth::ModPtrs ofApp::createMods() {
     clusterModPtr->addSink(ofxMarkSynth::ClusterMod::SOURCE_VEC2, drawPointsModPtr, ofxMarkSynth::DrawPointsMod::SINK_POINTS);
     
     auto fluidModPtr = addMod<ofxMarkSynth::FluidMod>(mods, "Fluid", {
-      {"dt", "0.01"}
+      {"dt", "0.005"}
     });
     
     drawPointsModPtr->receive(ofxMarkSynth::DrawPointsMod::SINK_FBO, fluidFboPtr);
@@ -41,15 +41,37 @@ ofxMarkSynth::ModPtrs ofApp::createMods() {
     fluidModPtr->receive(ofxMarkSynth::FluidMod::SINK_VELOCITIES_FBO, fluidVelocitiesFboPtr);
   }
   
+  { // Cluster radial impulses
+    auto fluidRadialImpulseModPtr = addMod<ofxMarkSynth::FluidRadialImpulseMod>(mods, "Cluster Impulses", {
+      {"ImpulseRadius", "0.04"},
+      {"ImpulseStrength", "0.03"}
+    });
+    clusterModPtr->addSink(ofxMarkSynth::ClusterMod::SOURCE_VEC2, fluidRadialImpulseModPtr, ofxMarkSynth::FluidRadialImpulseMod::SINK_POINTS);
+    fluidRadialImpulseModPtr->receive(ofxMarkSynth::FluidRadialImpulseMod::SINK_FBO, fluidVelocitiesFboPtr);
+  }
+  
+  { // Raw data points into fluid
+    auto drawPointsModPtr = addMod<ofxMarkSynth::DrawPointsMod>(mods, "Fluid Raw Points", {
+      {"PointRadius", "0.005"}
+    });
+    audioPaletteModPtr->addSink(ofxMarkSynth::SomPaletteMod::SOURCE_RANDOM_VEC4, drawPointsModPtr, ofxMarkSynth::DrawPointsMod::SINK_POINT_COLOR);
+    audioDataSourceModPtr->addSink(ofxMarkSynth::AudioDataSourceMod::SOURCE_POLAR_PITCH_RMS_POINTS, drawPointsModPtr, ofxMarkSynth::DrawPointsMod::SINK_POINTS);
+    drawPointsModPtr->receive(ofxMarkSynth::DrawPointsMod::SINK_FBO, fluidFboPtr);
+  }
+  
   { // Raw data points
     auto drawPointsModPtr = addMod<ofxMarkSynth::DrawPointsMod>(mods, "Draw Raw Points", {
       {"PointRadius", "0.005"}
     });
     audioPaletteModPtr->addSink(ofxMarkSynth::SomPaletteMod::SOURCE_RANDOM_VEC4, drawPointsModPtr, ofxMarkSynth::DrawPointsMod::SINK_POINT_COLOR);
-    audioDataSourceModPtr->addSink(ofxMarkSynth::AudioDataSourceMod::SOURCE_PITCH_RMS_POINTS, drawPointsModPtr, ofxMarkSynth::DrawPointsMod::SINK_POINTS);
+    audioDataSourceModPtr->addSink(ofxMarkSynth::AudioDataSourceMod::SOURCE_POLAR_PITCH_RMS_POINTS, drawPointsModPtr, ofxMarkSynth::DrawPointsMod::SINK_POINTS);
+    
     auto translateModPtr = addMod<ofxMarkSynth::TranslateMod>(mods, "Translate Raw Points", {});
     drawPointsModPtr->addSink(ofxMarkSynth::DrawPointsMod::SOURCE_FBO, translateModPtr, ofxMarkSynth::TranslateMod::SINK_FBO);
-    auto multiplyModPtr = addMod<ofxMarkSynth::MultiplyMod>(mods, "Fade Raw Points", {});
+    
+    auto multiplyModPtr = addMod<ofxMarkSynth::MultiplyMod>(mods, "Fade Raw Points", {
+      {"Multiply By", "1.0,1.0,1.0,0.9"}
+    });
     translateModPtr->addSink(ofxMarkSynth::TranslateMod::SOURCE_FBO, multiplyModPtr, ofxMarkSynth::MultiplyMod::SINK_FBO);
     drawPointsModPtr->receive(ofxMarkSynth::DrawPointsMod::SINK_FBO, rawPointsFboPtr);
   }
@@ -80,6 +102,7 @@ void ofApp::setup(){
 //    audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>(rootSourceMaterialPath/"20250208-trombone-melody.wav");
   audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>();
   audioDataProcessorPtr = std::make_shared<ofxAudioData::Processor>(audioAnalysisClientPtr);
+  audioDataProcessorPtr->setDefaultValiditySpecs();
   audioDataPlotsPtr = std::make_shared<ofxAudioData::Plots>(audioDataProcessorPtr);
   
   ofxMarkSynth::allocateFbo(fluidFboPtr, ofGetWindowSize(), GL_RGBA32F, GL_REPEAT);
