@@ -1,172 +1,173 @@
 #include "ofApp.h"
 
-//--------------------------------------------------------------
-ofxMarkSynth::ModPtrs ofApp::createMods() {
-  auto mods = ofxMarkSynth::ModPtrs {};
+using namespace ofxMarkSynth;
 
+//--------------------------------------------------------------
+ModPtrs ofApp::createMods() {
+  auto mods = ModPtrs {};
+  
   // Audio and palette
-  auto audioDataSourceModPtr = addMod<ofxMarkSynth::AudioDataSourceMod>(mods, "Audio Points", {
+  auto audioDataSourceModPtr = addMod<AudioDataSourceMod>(mods, "Audio Points", {
     {"MinPitch", "50.0"},
     {"MaxPitch", "2500.0"}
   }, audioDataProcessorPtr);
   
-  auto audioPaletteModPtr = addMod<ofxMarkSynth::SomPaletteMod>(mods, "Palette Creator", {});
-  audioDataSourceModPtr->addSink(ofxMarkSynth::AudioDataSourceMod::SOURCE_SPECTRAL_POINTS,
+  auto audioPaletteModPtr = addMod<SomPaletteMod>(mods, "Palette Creator", {});
+  audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_SPECTRAL_POINTS,
                                  audioPaletteModPtr,
-                                 ofxMarkSynth::SomPaletteMod::SINK_VEC3);
+                                 SomPaletteMod::SINK_VEC3);
   
-  auto clusterModPtr = addMod<ofxMarkSynth::ClusterMod>(mods, "Clusters", {});
-  audioDataSourceModPtr->addSink(ofxMarkSynth::AudioDataSourceMod::SOURCE_POLAR_PITCH_RMS_POINTS,
+  auto clusterModPtr = addMod<ClusterMod>(mods, "Clusters", {});
+  audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_POLAR_PITCH_RMS_POINTS,
                                  clusterModPtr,
-                                 ofxMarkSynth::ClusterMod::SINK_VEC2);
+                                 ClusterMod::SINK_VEC2);
   
   // Fluid
-  auto radiiModPtr = addMod<ofxMarkSynth::RandomFloatSourceMod>(mods, "Fluid Points Radii", {
+  auto radiiModPtr = addMod<RandomFloatSourceMod>(mods, "Fluid Points Radii", {
     {"CreatedPerUpdate", "0.05"},
     {"Min", "0.005"},
     {"Max", "0.05"}
   }, std::pair<float, float>{0.0, 0.1}, std::pair<float, float>{0.0, 0.1});
   
-//  auto drawPointsModPtr = addMod<ofxMarkSynth::DrawPointsMod>(mods, "Draw Fluid Points", {});
-  auto drawPointsModPtr = addMod<ofxMarkSynth::SoftCircleMod>(mods, "Draw Fluid Points", {});
-  radiiModPtr->addSink(ofxMarkSynth::RandomFloatSourceMod::SOURCE_FLOAT, drawPointsModPtr, ofxMarkSynth::DrawPointsMod::SINK_POINT_RADIUS);
-  audioPaletteModPtr->addSink(ofxMarkSynth::SomPaletteMod::SOURCE_RANDOM_VEC4, drawPointsModPtr, ofxMarkSynth::DrawPointsMod::SINK_POINT_COLOR);
-  clusterModPtr->addSink(ofxMarkSynth::ClusterMod::SOURCE_VEC2, drawPointsModPtr, ofxMarkSynth::DrawPointsMod::SINK_POINTS);
+  auto drawPointsModPtr = addMod<SoftCircleMod>(mods, "Draw Fluid Points", {});
+  radiiModPtr->addSink(RandomFloatSourceMod::SOURCE_FLOAT, drawPointsModPtr, DrawPointsMod::SINK_POINT_RADIUS);
+  audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_RANDOM_VEC4, drawPointsModPtr, DrawPointsMod::SINK_POINT_COLOR);
+  clusterModPtr->addSink(ClusterMod::SOURCE_VEC2, drawPointsModPtr, DrawPointsMod::SINK_POINTS);
   
-  auto fluidModPtr = addMod<ofxMarkSynth::FluidMod>(mods, "Fluid", {
+  auto fluidModPtr = addMod<FluidMod>(mods, "Fluid", {
     {"dt", "0.002"},
     {"vorticity", "20.0"}
   });
   
-  drawPointsModPtr->receive(ofxMarkSynth::DrawPointsMod::SINK_FBO, fluidFboPtr);
-  fluidModPtr->receive(ofxMarkSynth::FluidMod::SINK_VALUES_FBO, fluidFboPtr);
-  fluidModPtr->receive(ofxMarkSynth::FluidMod::SINK_VELOCITIES_FBO, fluidVelocitiesFboPtr);
+  drawPointsModPtr->receive(DrawPointsMod::SINK_FBO, fluidFboPtr);
+  fluidModPtr->receive(FluidMod::SINK_VALUES_FBO, fluidFboPtr);
+  fluidModPtr->receive(FluidMod::SINK_VELOCITIES_FBO, fluidVelocitiesFboPtr);
   
   { // Cluster radial impulses
-    auto fluidRadialImpulseModPtr = addMod<ofxMarkSynth::FluidRadialImpulseMod>(mods, "Cluster Impulses", {
+    auto fluidRadialImpulseModPtr = addMod<FluidRadialImpulseMod>(mods, "Cluster Impulses", {
       {"ImpulseRadius", "0.04"},
       {"ImpulseStrength", "0.01"}
     });
-    clusterModPtr->addSink(ofxMarkSynth::ClusterMod::SOURCE_VEC2, fluidRadialImpulseModPtr, ofxMarkSynth::FluidRadialImpulseMod::SINK_POINTS);
-    fluidRadialImpulseModPtr->receive(ofxMarkSynth::FluidRadialImpulseMod::SINK_FBO, fluidVelocitiesFboPtr);
+    clusterModPtr->addSink(ClusterMod::SOURCE_VEC2, fluidRadialImpulseModPtr, FluidRadialImpulseMod::SINK_POINTS);
+    fluidRadialImpulseModPtr->receive(FluidRadialImpulseMod::SINK_FBO, fluidVelocitiesFboPtr);
   }
   
   { // Raw data points into fluid
-    auto drawPointsModPtr = addMod<ofxMarkSynth::SoftCircleMod>(mods, "Fluid Raw Points", {
+    auto drawPointsModPtr = addMod<SoftCircleMod>(mods, "Fluid Raw Points", {
       {"Radius", "0.01"},
       {"ColorMultiplier", "0.01"}
     });
-    audioPaletteModPtr->addSink(ofxMarkSynth::SomPaletteMod::SOURCE_RANDOM_VEC4, drawPointsModPtr, ofxMarkSynth::DrawPointsMod::SINK_POINT_COLOR);
-    audioDataSourceModPtr->addSink(ofxMarkSynth::AudioDataSourceMod::SOURCE_POLAR_PITCH_RMS_POINTS, drawPointsModPtr, ofxMarkSynth::DrawPointsMod::SINK_POINTS);
-    drawPointsModPtr->receive(ofxMarkSynth::DrawPointsMod::SINK_FBO, fluidFboPtr);
+    audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_RANDOM_VEC4, drawPointsModPtr, DrawPointsMod::SINK_POINT_COLOR);
+    audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_POLAR_PITCH_RMS_POINTS, drawPointsModPtr, DrawPointsMod::SINK_POINTS);
+    drawPointsModPtr->receive(DrawPointsMod::SINK_FBO, fluidFboPtr);
   }
   
   { // Raw data points
-    auto drawPointsModPtr = addMod<ofxMarkSynth::DrawPointsMod>(mods, "Draw Raw Points", {
+    auto drawPointsModPtr = addMod<DrawPointsMod>(mods, "Draw Raw Points", {
       {"PointRadius", "0.004"}
     });
-    audioPaletteModPtr->addSink(ofxMarkSynth::SomPaletteMod::SOURCE_RANDOM_VEC4, drawPointsModPtr, ofxMarkSynth::DrawPointsMod::SINK_POINT_COLOR);
-    audioDataSourceModPtr->addSink(ofxMarkSynth::AudioDataSourceMod::SOURCE_POLAR_PITCH_RMS_POINTS, drawPointsModPtr, ofxMarkSynth::DrawPointsMod::SINK_POINTS);
+    audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_RANDOM_VEC4, drawPointsModPtr, DrawPointsMod::SINK_POINT_COLOR);
+    audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_POLAR_PITCH_RMS_POINTS, drawPointsModPtr, DrawPointsMod::SINK_POINTS);
     
-    auto translateModPtr = addMod<ofxMarkSynth::TranslateMod>(mods, "Translate Raw Points", {});
-    drawPointsModPtr->addSink(ofxMarkSynth::DrawPointsMod::SOURCE_FBO, translateModPtr, ofxMarkSynth::TranslateMod::SINK_FBO);
+    auto translateModPtr = addMod<TranslateMod>(mods, "Translate Raw Points", {});
+    drawPointsModPtr->addSink(DrawPointsMod::SOURCE_FBO, translateModPtr, TranslateMod::SINK_FBO);
     
-    auto multiplyModPtr = addMod<ofxMarkSynth::MultiplyMod>(mods, "Fade Raw Points", {
+    auto multiplyModPtr = addMod<MultiplyMod>(mods, "Fade Raw Points", {
       {"Multiply By", "1.0,1.0,1.0,0.9"}
     });
-    translateModPtr->addSink(ofxMarkSynth::TranslateMod::SOURCE_FBO, multiplyModPtr, ofxMarkSynth::MultiplyMod::SINK_FBO);
-    drawPointsModPtr->receive(ofxMarkSynth::DrawPointsMod::SINK_FBO, rawPointsFboPtr);
+    translateModPtr->addSink(TranslateMod::SOURCE_FBO, multiplyModPtr, MultiplyMod::SINK_FBO);
+    drawPointsModPtr->receive(DrawPointsMod::SINK_FBO, rawPointsFboPtr);
   }
   
   { // Collage layer (onto the fluid FBO)
-    auto pixelSnapshotModPtr = addMod<ofxMarkSynth::PixelSnapshotMod>(mods, "Fluid Snapshot", {});
-    pixelSnapshotModPtr->receive(ofxMarkSynth::PixelSnapshotMod::SINK_FBO, fluidFboPtr);
+    auto pixelSnapshotModPtr = addMod<PixelSnapshotMod>(mods, "Fluid Snapshot", {});
+    pixelSnapshotModPtr->receive(PixelSnapshotMod::SINK_FBO, fluidFboPtr);
     
-    auto pathModPtr = addMod<ofxMarkSynth::PathMod>(mods, "Collage Path", {});
-    audioDataSourceModPtr->addSink(ofxMarkSynth::AudioDataSourceMod::SOURCE_POLAR_PITCH_RMS_POINTS,
+    auto pathModPtr = addMod<PathMod>(mods, "Collage Path", {});
+    audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_POLAR_PITCH_RMS_POINTS,
                                    pathModPtr,
-                                   ofxMarkSynth::PathMod::SINK_VEC2);
+                                   PathMod::SINK_VEC2);
     
-    auto fluidCollageModPtr = addMod<ofxMarkSynth::CollageMod>(mods, "Fluid Collage", {});
-    pixelSnapshotModPtr->addSink(ofxMarkSynth::PixelSnapshotMod::SOURCE_PIXELS,
+    auto fluidCollageModPtr = addMod<CollageMod>(mods, "Fluid Collage", {});
+    pixelSnapshotModPtr->addSink(PixelSnapshotMod::SOURCE_PIXELS,
                                  fluidCollageModPtr,
-                                 ofxMarkSynth::CollageMod::SINK_PIXELS);
-    pathModPtr->addSink(ofxMarkSynth::PathMod::SOURCE_PATH,
+                                 CollageMod::SINK_PIXELS);
+    pathModPtr->addSink(PathMod::SOURCE_PATH,
                         fluidCollageModPtr,
-                        ofxMarkSynth::CollageMod::SINK_PATH);
-    audioPaletteModPtr->addSink(ofxMarkSynth::SomPaletteMod::SOURCE_RANDOM_VEC4,
+                        CollageMod::SINK_PATH);
+    audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_RANDOM_VEC4,
                                 fluidCollageModPtr,
-                                ofxMarkSynth::CollageMod::SINK_COLOR);
-    fluidCollageModPtr->receive(ofxMarkSynth::CollageMod::SINK_FBO, fluidFboPtr);
+                                CollageMod::SINK_COLOR);
+    fluidCollageModPtr->receive(CollageMod::SINK_FBO, fluidFboPtr);
     
-    auto collageModPtr = addMod<ofxMarkSynth::CollageMod>(mods, "Collage", {});
-    pixelSnapshotModPtr->addSink(ofxMarkSynth::PixelSnapshotMod::SOURCE_PIXELS,
+    auto collageModPtr = addMod<CollageMod>(mods, "Collage", {});
+    pixelSnapshotModPtr->addSink(PixelSnapshotMod::SOURCE_PIXELS,
                                  collageModPtr,
-                                 ofxMarkSynth::CollageMod::SINK_PIXELS);
-    pathModPtr->addSink(ofxMarkSynth::PathMod::SOURCE_PATH,
+                                 CollageMod::SINK_PIXELS);
+    pathModPtr->addSink(PathMod::SOURCE_PATH,
                         collageModPtr,
-                        ofxMarkSynth::CollageMod::SINK_PATH);
-    audioPaletteModPtr->addSink(ofxMarkSynth::SomPaletteMod::SOURCE_RANDOM_VEC4,
+                        CollageMod::SINK_PATH);
+    audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_RANDOM_VEC4,
                                 collageModPtr,
-                                ofxMarkSynth::CollageMod::SINK_COLOR);
-    auto multiplyModPtr = addMod<ofxMarkSynth::MultiplyMod>(mods, "Fade Collage", {
+                                CollageMod::SINK_COLOR);
+    auto multiplyModPtr = addMod<MultiplyMod>(mods, "Fade Collage", {
       {"Multiply By", "1.0,1.0,1.0,0.95"}
     });
-    collageModPtr->addSink(ofxMarkSynth::CollageMod::SOURCE_FBO, multiplyModPtr, ofxMarkSynth::MultiplyMod::SINK_FBO);
-    collageModPtr->receive(ofxMarkSynth::CollageMod::SINK_FBO, fboCollagePtr);
+    collageModPtr->addSink(CollageMod::SOURCE_FBO, multiplyModPtr, MultiplyMod::SINK_FBO);
+    collageModPtr->receive(CollageMod::SINK_FBO, fboCollagePtr);
   }
   
   { // DividedArea
-    auto dividedAreaModPtr = addMod<ofxMarkSynth::DividedAreaMod>(mods, "Divided Area", {});
-    clusterModPtr->addSink(ofxMarkSynth::ClusterMod::SOURCE_VEC2,
+    auto dividedAreaModPtr = addMod<DividedAreaMod>(mods, "Divided Area", {});
+    clusterModPtr->addSink(ClusterMod::SOURCE_VEC2,
                            dividedAreaModPtr,
-                           ofxMarkSynth::DividedAreaMod::SINK_MAJOR_ANCHORS);
-    audioDataSourceModPtr->addSink(ofxMarkSynth::AudioDataSourceMod::SOURCE_POLAR_PITCH_RMS_POINTS, dividedAreaModPtr, ofxMarkSynth::DividedAreaMod::SINK_MINOR_ANCHORS);
-
-    auto multiplyModPtr = addMod<ofxMarkSynth::MultiplyMod>(mods, "Fade Unconstrained Lines", {
+                           DividedAreaMod::SINK_MAJOR_ANCHORS);
+    audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_POLAR_PITCH_RMS_POINTS, dividedAreaModPtr, DividedAreaMod::SINK_MINOR_ANCHORS);
+    
+    auto multiplyModPtr = addMod<MultiplyMod>(mods, "Fade Unconstrained Lines", {
       {"Multiply By", "1.0,1.0,1.0,0.8"}
     });
-    dividedAreaModPtr->addSink(ofxMarkSynth::DrawPointsMod::SOURCE_FBO_2, // Fade unconstrained lines
-                              multiplyModPtr,
-                              ofxMarkSynth::MultiplyMod::SINK_FBO);
-
-    dividedAreaModPtr->receive(ofxMarkSynth::DividedAreaMod::SINK_FBO, fboPtrMinorLinesPtr);
-    dividedAreaModPtr->receive(ofxMarkSynth::DividedAreaMod::SINK_FBO_2, fboPtrMajorLinesPtr);
+    dividedAreaModPtr->addSink(DrawPointsMod::SOURCE_FBO_2, // Fade unconstrained lines
+                               multiplyModPtr,
+                               MultiplyMod::SINK_FBO);
+    
+    dividedAreaModPtr->receive(DividedAreaMod::SINK_FBO, fboPtrMinorLinesPtr);
+    dividedAreaModPtr->receive(DividedAreaMod::SINK_FBO_2, fboPtrMajorLinesPtr);
   }
   
   { // Sandlines
-    auto sandLineModPtr = addMod<ofxMarkSynth::SandLineMod>(mods, "Sand lines", {
+    auto sandLineModPtr = addMod<SandLineMod>(mods, "Sand lines", {
       {"PointRadius", "1.0"},
       {"Density", "0.05"}
     });
-    audioPaletteModPtr->addSink(ofxMarkSynth::SomPaletteMod::SOURCE_RANDOM_VEC4, sandLineModPtr, ofxMarkSynth::SandLineMod::SINK_POINT_COLOR);
-    clusterModPtr->addSink(ofxMarkSynth::ClusterMod::SOURCE_VEC2,
-                                   sandLineModPtr,
-                                   ofxMarkSynth::SandLineMod::SINK_POINTS);
-    sandLineModPtr->receive(ofxMarkSynth::CollageMod::SINK_FBO, fluidFboPtr);
+    audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_RANDOM_VEC4, sandLineModPtr, SandLineMod::SINK_POINT_COLOR);
+    clusterModPtr->addSink(ClusterMod::SOURCE_VEC2,
+                           sandLineModPtr,
+                           SandLineMod::SINK_POINTS);
+    sandLineModPtr->receive(CollageMod::SINK_FBO, fluidFboPtr);
   }
   
   return mods;
 }
 
-ofxMarkSynth::FboConfigPtrs ofApp::createFboConfigs() {
-  ofxMarkSynth::FboConfigPtrs fbos;
-
-  auto fboConfigPtrFluidValues = std::make_shared<ofxMarkSynth::FboConfig>(fluidFboPtr);
+FboConfigPtrs ofApp::createFboConfigs() {
+  FboConfigPtrs fbos;
+  
+  auto fboConfigPtrFluidValues = std::make_shared<FboConfig>(fluidFboPtr);
   fbos.emplace_back(fboConfigPtrFluidValues);
-
-  auto fboConfigPtrMinorLines = std::make_shared<ofxMarkSynth::FboConfig>(fboPtrMinorLinesPtr);
+  
+  auto fboConfigPtrMinorLines = std::make_shared<FboConfig>(fboPtrMinorLinesPtr);
   fbos.emplace_back(fboConfigPtrMinorLines);
-
-  auto fboConfigPtrRawPoints = std::make_shared<ofxMarkSynth::FboConfig>(rawPointsFboPtr);
+  
+  auto fboConfigPtrRawPoints = std::make_shared<FboConfig>(rawPointsFboPtr);
   fbos.emplace_back(fboConfigPtrRawPoints);
-
-  auto fboConfigPtrCollage = std::make_shared<ofxMarkSynth::FboConfig>(fboCollagePtr);
+  
+  auto fboConfigPtrCollage = std::make_shared<FboConfig>(fboCollagePtr);
   fbos.emplace_back(fboConfigPtrCollage);
-
-  auto fboConfigPtrMajorLines = std::make_shared<ofxMarkSynth::FboConfig>(fboPtrMajorLinesPtr);
+  
+  auto fboConfigPtrMajorLines = std::make_shared<FboConfig>(fboPtrMajorLinesPtr);
   fbos.emplace_back(fboConfigPtrMajorLines);
-
+  
   return fbos;
 }
 
@@ -176,32 +177,32 @@ void ofApp::setup(){
   ofSetFrameRate(60);
   
   const std::filesystem::path rootSourceMaterialPath { "/Users/steve/Documents/music-source-material" };
-//    audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>(rootSourceMaterialPath/"Alex Petcu Bell Plates.wav");
-//    audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>(rootSourceMaterialPath/"Alex Petcu Sound Bath.wav");
-//    audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>(rootSourceMaterialPath/"20250208-trombone-melody.wav");
+  //    audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>(rootSourceMaterialPath/"Alex Petcu Bell Plates.wav");
+  //    audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>(rootSourceMaterialPath/"Alex Petcu Sound Bath.wav");
+  //    audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>(rootSourceMaterialPath/"20250208-trombone-melody.wav");
   audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>();
   audioDataProcessorPtr = std::make_shared<ofxAudioData::Processor>(audioAnalysisClientPtr);
   audioDataProcessorPtr->setDefaultValiditySpecs();
   audioDataPlotsPtr = std::make_shared<ofxAudioData::Plots>(audioDataProcessorPtr);
   
-  ofxMarkSynth::allocateFbo(fluidFboPtr, ofGetWindowSize(), GL_RGBA32F, GL_REPEAT);
+  allocateFbo(fluidFboPtr, ofGetWindowSize(), GL_RGBA32F, GL_REPEAT);
   fluidFboPtr->getSource().clearColorBuffer(ofFloatColor(0.0, 0.0, 0.0, 0.0));
   
-  ofxMarkSynth::allocateFbo(fluidVelocitiesFboPtr, ofGetWindowSize(), GL_RGB32F, GL_REPEAT);
+  allocateFbo(fluidVelocitiesFboPtr, ofGetWindowSize(), GL_RGB32F, GL_REPEAT);
   fluidVelocitiesFboPtr->getSource().clearColorBuffer(ofFloatColor(0.0, 0.0, 0.0));
   
-  ofxMarkSynth::allocateFbo(rawPointsFboPtr, ofGetWindowSize(), GL_RGBA32F, GL_REPEAT);
+  allocateFbo(rawPointsFboPtr, ofGetWindowSize(), GL_RGBA32F, GL_REPEAT);
   rawPointsFboPtr->getSource().clearColorBuffer(ofFloatColor(0.0, 0.0, 0.0, 0.0));
-
-  ofxMarkSynth::allocateFbo(fboPtrMinorLinesPtr, ofGetWindowSize(), GL_RGBA8);
+  
+  allocateFbo(fboPtrMinorLinesPtr, ofGetWindowSize(), GL_RGBA8);
   fboPtrMinorLinesPtr->getSource().clearColorBuffer(ofFloatColor(0.0, 0.0, 0.0, 0.0));
-
-  ofxMarkSynth::allocateFbo(fboPtrMajorLinesPtr, ofGetWindowSize(), GL_RGBA32F);
+  
+  allocateFbo(fboPtrMajorLinesPtr, ofGetWindowSize(), GL_RGBA32F);
   fboPtrMajorLinesPtr->getSource().clearColorBuffer(ofFloatColor(0.0, 0.0, 0.0, 0.0));
-
-  ofxMarkSynth::allocateFbo(fboCollagePtr, ofGetWindowSize(), GL_RGBA32F);
+  
+  allocateFbo(fboCollagePtr, ofGetWindowSize(), GL_RGBA32F);
   fboCollagePtr->getSource().clearColorBuffer(ofFloatColor(0.0, 0.0, 0.0, 0.0));
-
+  
   synth.configure(createMods(), createFboConfigs(), ofGetWindowSize());
   
   parameters.add(synth.getParameterGroup("Synth"));
@@ -236,55 +237,55 @@ void ofApp::keyPressed(int key){
 
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key){
-
+  
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseMoved(int x, int y ){
-
+  
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button){
-
+  
 }
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
-
+  
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
-
+  
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseScrolled(int x, int y, float scrollX, float scrollY){
-
+  
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseEntered(int x, int y){
-
+  
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseExited(int x, int y){
-
+  
 }
 
 //--------------------------------------------------------------
 void ofApp::windowResized(int w, int h){
-
+  
 }
 
 //--------------------------------------------------------------
 void ofApp::gotMessage(ofMessage msg){
-
+  
 }
 
 //--------------------------------------------------------------
-void ofApp::dragEvent(ofDragInfo dragInfo){ 
-
+void ofApp::dragEvent(ofDragInfo dragInfo){
+  
 }
