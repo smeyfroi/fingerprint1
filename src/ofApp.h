@@ -36,6 +36,9 @@ private:
   ofxMarkSynth::FboPtr fluidFboPtr = std::make_shared<PingPongFbo>();
   ofxMarkSynth::FboPtr fluidVelocitiesFboPtr = std::make_shared<PingPongFbo>();
   ofxMarkSynth::FboPtr rawPointsFboPtr = std::make_shared<PingPongFbo>();
+  ofxMarkSynth::FboPtr fboPtrMinorLinesPtr = std::make_shared<PingPongFbo>();
+  ofxMarkSynth::FboPtr fboPtrMajorLinesPtr = std::make_shared<PingPongFbo>();
+  ofxMarkSynth::FboPtr fboCollagePtr = std::make_shared<PingPongFbo>();
 
   bool guiVisible { true };
   ofxPanel gui;

@@ -1,15 +1,16 @@
-ofxIntrospector
-ofxGui
 ofxNetwork
 ofxOsc
 ofxHistoryPlot
 ofxGist
 ofxAudioFile
+ofxGui
 ofxSoundObjects
 ofxAudioAnalysisClient
 ofxAudioData
-ofxRenderer
 ofxDividedArea
+ofxFFmpegRecorder
+ofxIntrospector
+ofxRenderer
 ofxMotionFromVideo
 ofxSpatialHash
 ofxParticleSet
@@ -17,5 +18,4 @@ ofxPlottable
 ofxPointClusters
 ofxSelfOrganizingMap
 ofxSomPalette
-ofxFFmpegRecorder
 ofxMarkSynth
