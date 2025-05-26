@@ -29,12 +29,16 @@ ModPtrs ofApp::createMods() {
     {"Max", "0.05"}
   }, std::pair<float, float>{0.0, 0.1}, std::pair<float, float>{0.0, 0.1});
   
-  auto drawPointsModPtr = addMod<SoftCircleMod>(mods, "Draw Fluid Points", {});
+  auto drawPointsModPtr = addMod<SoftCircleMod>(mods, "Draw Fluid Points", {
+    {"ColorMultiplier", "0.1"}
+  });
   radiiModPtr->addSink(RandomFloatSourceMod::SOURCE_FLOAT, drawPointsModPtr, DrawPointsMod::SINK_POINT_RADIUS);
   audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_RANDOM_VEC4, drawPointsModPtr, DrawPointsMod::SINK_POINT_COLOR);
   clusterModPtr->addSink(ClusterMod::SOURCE_VEC2, drawPointsModPtr, DrawPointsMod::SINK_POINTS);
   
   auto fluidModPtr = addMod<FluidMod>(mods, "Fluid", {
+    {"dt", "0.002"},
+    {"value:dissipation", "0.999"},
     {"dt", "0.002"},
     {"vorticity", "20.0"}
   });
@@ -45,8 +49,8 @@ ModPtrs ofApp::createMods() {
   
   { // Cluster radial impulses
     auto fluidRadialImpulseModPtr = addMod<FluidRadialImpulseMod>(mods, "Cluster Impulses", {
-      {"ImpulseRadius", "0.04"},
-      {"ImpulseStrength", "0.01"}
+      {"ImpulseRadius", "0.02"},
+      {"ImpulseStrength", "0.05"}
     });
     clusterModPtr->addSink(ClusterMod::SOURCE_VEC2, fluidRadialImpulseModPtr, FluidRadialImpulseMod::SINK_POINTS);
     fluidRadialImpulseModPtr->receive(FluidRadialImpulseMod::SINK_FBO, fluidVelocitiesFboPtr);
@@ -55,7 +59,7 @@ ModPtrs ofApp::createMods() {
   { // Raw data points into fluid
     auto drawPointsModPtr = addMod<SoftCircleMod>(mods, "Fluid Raw Points", {
       {"Radius", "0.01"},
-      {"ColorMultiplier", "0.01"}
+      {"ColorMultiplier", "0.2"}
     });
     audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_RANDOM_VEC4, drawPointsModPtr, DrawPointsMod::SINK_POINT_COLOR);
     audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_POLAR_PITCH_RMS_POINTS, drawPointsModPtr, DrawPointsMod::SINK_POINTS);
@@ -69,11 +73,13 @@ ModPtrs ofApp::createMods() {
     audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_RANDOM_VEC4, drawPointsModPtr, DrawPointsMod::SINK_POINT_COLOR);
     audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_POLAR_PITCH_RMS_POINTS, drawPointsModPtr, DrawPointsMod::SINK_POINTS);
     
-    auto translateModPtr = addMod<TranslateMod>(mods, "Translate Raw Points", {});
+    auto translateModPtr = addMod<TranslateMod>(mods, "Translate Raw Points", {
+      {"Translate By", "0.0, 0.0002"}
+    });
     drawPointsModPtr->addSink(DrawPointsMod::SOURCE_FBO, translateModPtr, TranslateMod::SINK_FBO);
     
     auto multiplyModPtr = addMod<MultiplyMod>(mods, "Fade Raw Points", {
-      {"Multiply By", "1.0,1.0,1.0,0.9"}
+      {"Multiply By", "1.0, 1.0, 1.0, 0.9"}
     });
     translateModPtr->addSink(TranslateMod::SOURCE_FBO, multiplyModPtr, MultiplyMod::SINK_FBO);
     drawPointsModPtr->receive(DrawPointsMod::SINK_FBO, rawPointsFboPtr);
@@ -83,22 +89,25 @@ ModPtrs ofApp::createMods() {
     auto pixelSnapshotModPtr = addMod<PixelSnapshotMod>(mods, "Fluid Snapshot", {});
     pixelSnapshotModPtr->receive(PixelSnapshotMod::SINK_FBO, fluidFboPtr);
     
-    auto pathModPtr = addMod<PathMod>(mods, "Collage Path", {});
+    auto pathModPtr = addMod<PathMod>(mods, "Collage Path", {
+      {"MaxVertices", "7"},
+      {"VertexProximity", "0.02"}
+    });
     audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_POLAR_PITCH_RMS_POINTS,
                                    pathModPtr,
                                    PathMod::SINK_VEC2);
     
-    auto fluidCollageModPtr = addMod<CollageMod>(mods, "Fluid Collage", {});
-    pixelSnapshotModPtr->addSink(PixelSnapshotMod::SOURCE_PIXELS,
-                                 fluidCollageModPtr,
-                                 CollageMod::SINK_PIXELS);
-    pathModPtr->addSink(PathMod::SOURCE_PATH,
-                        fluidCollageModPtr,
-                        CollageMod::SINK_PATH);
-    audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_RANDOM_VEC4,
-                                fluidCollageModPtr,
-                                CollageMod::SINK_COLOR);
-    fluidCollageModPtr->receive(CollageMod::SINK_FBO, fluidFboPtr);
+//    auto fluidCollageModPtr = addMod<CollageMod>(mods, "Fluid Collage", {});
+//    pixelSnapshotModPtr->addSink(PixelSnapshotMod::SOURCE_PIXELS,
+//                                 fluidCollageModPtr,
+//                                 CollageMod::SINK_PIXELS);
+//    pathModPtr->addSink(PathMod::SOURCE_PATH,
+//                        fluidCollageModPtr,
+//                        CollageMod::SINK_PATH);
+//    audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_RANDOM_VEC4,
+//                                fluidCollageModPtr,
+//                                CollageMod::SINK_COLOR);
+//    fluidCollageModPtr->receive(CollageMod::SINK_FBO, fluidFboPtr);
     
     auto collageModPtr = addMod<CollageMod>(mods, "Collage", {});
     pixelSnapshotModPtr->addSink(PixelSnapshotMod::SOURCE_PIXELS,
@@ -111,7 +120,7 @@ ModPtrs ofApp::createMods() {
                                 collageModPtr,
                                 CollageMod::SINK_COLOR);
     auto multiplyModPtr = addMod<MultiplyMod>(mods, "Fade Collage", {
-      {"Multiply By", "1.0,1.0,1.0,0.95"}
+      {"Multiply By", "1.0, 1.0, 1.0, 0.95"}
     });
     collageModPtr->addSink(CollageMod::SOURCE_FBO, multiplyModPtr, MultiplyMod::SINK_FBO);
     collageModPtr->receive(CollageMod::SINK_FBO, fboCollagePtr);
@@ -125,7 +134,7 @@ ModPtrs ofApp::createMods() {
     audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_POLAR_PITCH_RMS_POINTS, dividedAreaModPtr, DividedAreaMod::SINK_MINOR_ANCHORS);
     
     auto multiplyModPtr = addMod<MultiplyMod>(mods, "Fade Unconstrained Lines", {
-      {"Multiply By", "1.0,1.0,1.0,0.8"}
+      {"Multiply By", "1.0, 1.0, 1.0, 0.8"}
     });
     dividedAreaModPtr->addSink(DrawPointsMod::SOURCE_FBO_2, // Fade unconstrained lines
                                multiplyModPtr,
@@ -144,7 +153,15 @@ ModPtrs ofApp::createMods() {
     clusterModPtr->addSink(ClusterMod::SOURCE_VEC2,
                            sandLineModPtr,
                            SandLineMod::SINK_POINTS);
-    sandLineModPtr->receive(CollageMod::SINK_FBO, fluidFboPtr);
+
+    auto multiplyModPtr = addMod<MultiplyMod>(mods, "Fade Sand Lines", {
+      {"Multiply By", "1.0, 1.0, 1.0, 0.995"}
+    });
+    sandLineModPtr->addSink(SandLineMod::SOURCE_FBO,
+                            multiplyModPtr,
+                            MultiplyMod::SINK_FBO);
+    
+    sandLineModPtr->receive(CollageMod::SINK_FBO, fboSandlinesPtr);
   }
   
   return mods;
@@ -155,6 +172,9 @@ FboConfigPtrs ofApp::createFboConfigs() {
   
   auto fboConfigPtrFluidValues = std::make_shared<FboConfig>(fluidFboPtr);
   fbos.emplace_back(fboConfigPtrFluidValues);
+  
+  auto fboConfigPtrSandlines = std::make_shared<FboConfig>(fboSandlinesPtr);
+  fbos.emplace_back(fboConfigPtrSandlines);
   
   auto fboConfigPtrMinorLines = std::make_shared<FboConfig>(fboPtrMinorLinesPtr);
   fbos.emplace_back(fboConfigPtrMinorLines);
@@ -169,6 +189,17 @@ FboConfigPtrs ofApp::createFboConfigs() {
   fbos.emplace_back(fboConfigPtrMajorLines);
   
   return fbos;
+}
+
+// TODO: find a home for this util
+void minimizeAllGuiGroupsRecursive(ofxGuiGroup& guiGroup) {
+  for (int i = 0; i < guiGroup.getNumControls(); ++i) {
+    auto control = guiGroup.getControl(i);
+    if (auto childGuiGroup = dynamic_cast<ofxGuiGroup*>(control)) {
+      childGuiGroup->minimize();
+      minimizeAllGuiGroupsRecursive(*childGuiGroup);
+    }
+  }
 }
 
 void ofApp::setup(){
@@ -203,10 +234,14 @@ void ofApp::setup(){
   allocateFbo(fboCollagePtr, ofGetWindowSize(), GL_RGBA32F);
   fboCollagePtr->getSource().clearColorBuffer(ofFloatColor(0.0, 0.0, 0.0, 0.0));
   
+  allocateFbo(fboSandlinesPtr, ofGetWindowSize(), GL_RGBA32F);
+  fboSandlinesPtr->getSource().clearColorBuffer(ofFloatColor(0.0, 0.0, 0.0, 0.0));
+  
   synth.configure(createMods(), createFboConfigs(), ofGetWindowSize());
   
   parameters.add(synth.getParameterGroup("Synth"));
   gui.setup(parameters);
+  minimizeAllGuiGroupsRecursive(gui.getGroup("Synth"));
 }
 
 //--------------------------------------------------------------
