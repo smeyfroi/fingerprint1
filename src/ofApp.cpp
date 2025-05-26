@@ -120,7 +120,7 @@ ModPtrs ofApp::createMods() {
                                 collageModPtr,
                                 CollageMod::SINK_COLOR);
     auto multiplyModPtr = addMod<MultiplyMod>(mods, "Fade Collage", {
-      {"Multiply By", "1.0, 1.0, 1.0, 0.95"}
+      {"Multiply By", "1.0, 1.0, 1.0, 0.99"}
     });
     collageModPtr->addSink(CollageMod::SOURCE_FBO, multiplyModPtr, MultiplyMod::SINK_FBO);
     collageModPtr->receive(CollageMod::SINK_FBO, fboCollagePtr);
@@ -133,13 +133,6 @@ ModPtrs ofApp::createMods() {
                            DividedAreaMod::SINK_MAJOR_ANCHORS);
     audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_POLAR_PITCH_RMS_POINTS, dividedAreaModPtr, DividedAreaMod::SINK_MINOR_ANCHORS);
     
-    auto multiplyModPtr = addMod<MultiplyMod>(mods, "Fade Unconstrained Lines", {
-      {"Multiply By", "1.0, 1.0, 1.0, 0.8"}
-    });
-    dividedAreaModPtr->addSink(DrawPointsMod::SOURCE_FBO_2, // Fade unconstrained lines
-                               multiplyModPtr,
-                               MultiplyMod::SINK_FBO);
-    
     dividedAreaModPtr->receive(DividedAreaMod::SINK_FBO, fboPtrMinorLinesPtr);
     dividedAreaModPtr->receive(DividedAreaMod::SINK_FBO_2, fboPtrMajorLinesPtr);
   }
@@ -147,7 +140,7 @@ ModPtrs ofApp::createMods() {
   { // Sandlines
     auto sandLineModPtr = addMod<SandLineMod>(mods, "Sand lines", {
       {"PointRadius", "1.0"},
-      {"Density", "0.05"}
+      {"Density", "0.1"}
     });
     audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_RANDOM_VEC4, sandLineModPtr, SandLineMod::SINK_POINT_COLOR);
     clusterModPtr->addSink(ClusterMod::SOURCE_VEC2,
@@ -155,7 +148,7 @@ ModPtrs ofApp::createMods() {
                            SandLineMod::SINK_POINTS);
 
     auto multiplyModPtr = addMod<MultiplyMod>(mods, "Fade Sand Lines", {
-      {"Multiply By", "1.0, 1.0, 1.0, 0.995"}
+      {"Multiply By", "1.0, 1.0, 1.0, 0.999"}
     });
     sandLineModPtr->addSink(SandLineMod::SOURCE_FBO,
                             multiplyModPtr,
@@ -168,27 +161,17 @@ ModPtrs ofApp::createMods() {
 }
 
 FboConfigPtrs ofApp::createFboConfigs() {
-  FboConfigPtrs fbos;
+  FboConfigPtrs fboConfigPtrs;
   
-  auto fboConfigPtrFluidValues = std::make_shared<FboConfig>(fluidFboPtr);
-  fbos.emplace_back(fboConfigPtrFluidValues);
+  ofFloatColor backgroundColor { 0.0, 0.0, 0.0, 0.0 };
+  addFboConfigPtr(fboConfigPtrs, "fluid", fluidFboPtr, ofGetWindowSize(), GL_RGBA32F, GL_REPEAT, backgroundColor, false, OF_BLENDMODE_ALPHA);
+  addFboConfigPtr(fboConfigPtrs, "sandlines", fboSandlinesPtr, ofGetWindowSize(), GL_RGBA32F, GL_CLAMP_TO_EDGE, backgroundColor, false, OF_BLENDMODE_ADD);
+  addFboConfigPtr(fboConfigPtrs, "minor lines", fboPtrMinorLinesPtr, ofGetWindowSize(), GL_RGBA8, GL_CLAMP_TO_EDGE, backgroundColor, false, OF_BLENDMODE_ALPHA);
+  addFboConfigPtr(fboConfigPtrs, "raw points", rawPointsFboPtr, ofGetWindowSize(), GL_RGBA32F, GL_REPEAT, backgroundColor, false, OF_BLENDMODE_ALPHA);
+  addFboConfigPtr(fboConfigPtrs, "collage", fboCollagePtr, ofGetWindowSize(), GL_RGBA32F, GL_CLAMP_TO_EDGE, backgroundColor, false, OF_BLENDMODE_ALPHA);
+  addFboConfigPtr(fboConfigPtrs, "major lines", fboPtrMajorLinesPtr, ofGetWindowSize(), GL_RGBA32F, GL_CLAMP_TO_EDGE, backgroundColor, true, OF_BLENDMODE_ALPHA);
   
-  auto fboConfigPtrSandlines = std::make_shared<FboConfig>(fboSandlinesPtr);
-  fbos.emplace_back(fboConfigPtrSandlines);
-  
-  auto fboConfigPtrMinorLines = std::make_shared<FboConfig>(fboPtrMinorLinesPtr);
-  fbos.emplace_back(fboConfigPtrMinorLines);
-  
-  auto fboConfigPtrRawPoints = std::make_shared<FboConfig>(rawPointsFboPtr);
-  fbos.emplace_back(fboConfigPtrRawPoints);
-  
-  auto fboConfigPtrCollage = std::make_shared<FboConfig>(fboCollagePtr);
-  fbos.emplace_back(fboConfigPtrCollage);
-  
-  auto fboConfigPtrMajorLines = std::make_shared<FboConfig>(fboPtrMajorLinesPtr);
-  fbos.emplace_back(fboConfigPtrMajorLines);
-  
-  return fbos;
+  return fboConfigPtrs;
 }
 
 // TODO: find a home for this util
@@ -205,7 +188,7 @@ void minimizeAllGuiGroupsRecursive(ofxGuiGroup& guiGroup) {
 void ofApp::setup(){
   ofSetBackgroundColor(0);
   ofDisableArbTex();
-  ofSetFrameRate(60);
+  ofSetFrameRate(30);
   
   const std::filesystem::path rootSourceMaterialPath { "/Users/steve/Documents/music-source-material" };
   //    audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>(rootSourceMaterialPath/"Alex Petcu Bell Plates.wav");
@@ -216,28 +199,10 @@ void ofApp::setup(){
   audioDataProcessorPtr->setDefaultValiditySpecs();
   audioDataPlotsPtr = std::make_shared<ofxAudioData::Plots>(audioDataProcessorPtr);
   
-  allocateFbo(fluidFboPtr, ofGetWindowSize(), GL_RGBA32F, GL_REPEAT);
-  fluidFboPtr->getSource().clearColorBuffer(ofFloatColor(0.0, 0.0, 0.0, 0.0));
-  
   allocateFbo(fluidVelocitiesFboPtr, ofGetWindowSize(), GL_RGB32F, GL_REPEAT);
   fluidVelocitiesFboPtr->getSource().clearColorBuffer(ofFloatColor(0.0, 0.0, 0.0));
   
-  allocateFbo(rawPointsFboPtr, ofGetWindowSize(), GL_RGBA32F, GL_REPEAT);
-  rawPointsFboPtr->getSource().clearColorBuffer(ofFloatColor(0.0, 0.0, 0.0, 0.0));
-  
-  allocateFbo(fboPtrMinorLinesPtr, ofGetWindowSize(), GL_RGBA8);
-  fboPtrMinorLinesPtr->getSource().clearColorBuffer(ofFloatColor(0.0, 0.0, 0.0, 0.0));
-  
-  allocateFbo(fboPtrMajorLinesPtr, ofGetWindowSize(), GL_RGBA32F);
-  fboPtrMajorLinesPtr->getSource().clearColorBuffer(ofFloatColor(0.0, 0.0, 0.0, 0.0));
-  
-  allocateFbo(fboCollagePtr, ofGetWindowSize(), GL_RGBA32F);
-  fboCollagePtr->getSource().clearColorBuffer(ofFloatColor(0.0, 0.0, 0.0, 0.0));
-  
-  allocateFbo(fboSandlinesPtr, ofGetWindowSize(), GL_RGBA32F);
-  fboSandlinesPtr->getSource().clearColorBuffer(ofFloatColor(0.0, 0.0, 0.0, 0.0));
-  
-  synth.configure(createMods(), createFboConfigs(), ofGetWindowSize());
+  synth.configure(createFboConfigs(), createMods(), ofGetWindowSize());
   
   parameters.add(synth.getParameterGroup("Synth"));
   gui.setup(parameters);
