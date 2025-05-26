@@ -39,7 +39,8 @@ ModPtrs ofApp::createMods() {
   auto fluidModPtr = addMod<FluidMod>(mods, "Fluid", {
     {"dt", "0.002"},
     {"value:dissipation", "0.999"},
-    {"dt", "0.002"},
+    {"velocity:dissipation", "0.999"},
+    {"dt", "0.008"},
     {"vorticity", "20.0"}
   });
   
@@ -143,18 +144,31 @@ ModPtrs ofApp::createMods() {
       {"Density", "0.1"}
     });
     audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_RANDOM_VEC4, sandLineModPtr, SandLineMod::SINK_POINT_COLOR);
-    clusterModPtr->addSink(ClusterMod::SOURCE_VEC2,
-                           sandLineModPtr,
-                           SandLineMod::SINK_POINTS);
+    clusterModPtr->addSink(ClusterMod::SOURCE_VEC2, sandLineModPtr, SandLineMod::SINK_POINTS);
 
     auto multiplyModPtr = addMod<MultiplyMod>(mods, "Fade Sand Lines", {
       {"Multiply By", "1.0, 1.0, 1.0, 0.999"}
     });
-    sandLineModPtr->addSink(SandLineMod::SOURCE_FBO,
-                            multiplyModPtr,
-                            MultiplyMod::SINK_FBO);
+    sandLineModPtr->addSink(SandLineMod::SOURCE_FBO, multiplyModPtr, MultiplyMod::SINK_FBO);
     
     sandLineModPtr->receive(CollageMod::SINK_FBO, fboSandlinesPtr);
+  }
+  
+  { //Particles
+    auto particleSetModPtr = addMod<ParticleSetMod>(mods, "Particles", {
+      
+    });
+    clusterModPtr->addSink(ClusterMod::SOURCE_VEC2,
+                           particleSetModPtr,
+                           ofxMarkSynth::ParticleSetMod::SINK_POINTS);
+    audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_RANDOM_VEC4, particleSetModPtr, DrawPointsMod::SINK_POINT_COLOR);
+
+//    auto multiplyModPtr = addMod<MultiplyMod>(mods, "Fade Particles", {
+//      {"Multiply By", "1.0, 1.0, 1.0, 0.995"}
+//    });
+//    particleSetModPtr->addSink(ParticleSetMod::SOURCE_FBO, multiplyModPtr, MultiplyMod::SINK_FBO);
+
+    particleSetModPtr->receive(CollageMod::SINK_FBO, fboSandlinesPtr);
   }
   
   return mods;
