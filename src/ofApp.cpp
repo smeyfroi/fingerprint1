@@ -6,21 +6,17 @@ using namespace ofxMarkSynth;
 ModPtrs ofApp::createMods() {
   auto mods = ModPtrs {};
   
-  // Audio and palette
+  // Audio, palette from raw spectral points, clusters from raw pitch/RMS points
   auto audioDataSourceModPtr = addMod<AudioDataSourceMod>(mods, "Audio Points", {
     {"MinPitch", "50.0"},
     {"MaxPitch", "2500.0"}
   }, audioDataProcessorPtr);
   
   auto audioPaletteModPtr = addMod<SomPaletteMod>(mods, "Palette Creator", {});
-  audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_SPECTRAL_POINTS,
-                                 audioPaletteModPtr,
-                                 SomPaletteMod::SINK_VEC3);
+  audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_SPECTRAL_POINTS, audioPaletteModPtr, SomPaletteMod::SINK_VEC3);
   
   auto clusterModPtr = addMod<ClusterMod>(mods, "Clusters", {});
-  audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_POLAR_PITCH_RMS_POINTS,
-                                 clusterModPtr,
-                                 ClusterMod::SINK_VEC2);
+  audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_POLAR_PITCH_RMS_POINTS, clusterModPtr, ClusterMod::SINK_VEC2);
   
   // Fluid
   auto radiiModPtr = addMod<RandomFloatSourceMod>(mods, "Fluid Points Radii", {
@@ -48,7 +44,7 @@ ModPtrs ofApp::createMods() {
   fluidModPtr->receive(FluidMod::SINK_VALUES_FBO, fluidFboPtr);
   fluidModPtr->receive(FluidMod::SINK_VELOCITIES_FBO, fluidVelocitiesFboPtr);
   
-  { // Cluster radial impulses
+  { // Radial impulses from clusters
     auto fluidRadialImpulseModPtr = addMod<FluidRadialImpulseMod>(mods, "Cluster Impulses", {
       {"ImpulseRadius", "0.02"},
       {"ImpulseStrength", "0.05"}
@@ -86,7 +82,7 @@ ModPtrs ofApp::createMods() {
     drawPointsModPtr->receive(DrawPointsMod::SINK_FBO, rawPointsFboPtr);
   }
   
-  { // Collage layer (onto the fluid FBO)
+  { // Collage layer from raw pitch/RMS and the fluid FBO
     auto pixelSnapshotModPtr = addMod<PixelSnapshotMod>(mods, "Fluid Snapshot", {});
     pixelSnapshotModPtr->receive(PixelSnapshotMod::SINK_FBO, fluidFboPtr);
     
@@ -94,9 +90,7 @@ ModPtrs ofApp::createMods() {
       {"MaxVertices", "7"},
       {"VertexProximity", "0.02"}
     });
-    audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_POLAR_PITCH_RMS_POINTS,
-                                   pathModPtr,
-                                   PathMod::SINK_VEC2);
+    audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_POLAR_PITCH_RMS_POINTS, pathModPtr, PathMod::SINK_VEC2);
     
 //    auto fluidCollageModPtr = addMod<CollageMod>(mods, "Fluid Collage", {});
 //    pixelSnapshotModPtr->addSink(PixelSnapshotMod::SOURCE_PIXELS,
@@ -111,15 +105,10 @@ ModPtrs ofApp::createMods() {
 //    fluidCollageModPtr->receive(CollageMod::SINK_FBO, fluidFboPtr);
     
     auto collageModPtr = addMod<CollageMod>(mods, "Collage", {});
-    pixelSnapshotModPtr->addSink(PixelSnapshotMod::SOURCE_PIXELS,
-                                 collageModPtr,
-                                 CollageMod::SINK_PIXELS);
-    pathModPtr->addSink(PathMod::SOURCE_PATH,
-                        collageModPtr,
-                        CollageMod::SINK_PATH);
-    audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_RANDOM_VEC4,
-                                collageModPtr,
-                                CollageMod::SINK_COLOR);
+    pixelSnapshotModPtr->addSink(PixelSnapshotMod::SOURCE_PIXELS, collageModPtr, CollageMod::SINK_PIXELS);
+    pathModPtr->addSink(PathMod::SOURCE_PATH, collageModPtr, CollageMod::SINK_PATH);
+    audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_RANDOM_VEC4, collageModPtr, CollageMod::SINK_COLOR);
+
     auto multiplyModPtr = addMod<MultiplyMod>(mods, "Fade Collage", {
       {"Multiply By", "1.0, 1.0, 1.0, 0.99"}
     });
@@ -129,9 +118,7 @@ ModPtrs ofApp::createMods() {
   
   { // DividedArea
     auto dividedAreaModPtr = addMod<DividedAreaMod>(mods, "Divided Area", {});
-    clusterModPtr->addSink(ClusterMod::SOURCE_VEC2,
-                           dividedAreaModPtr,
-                           DividedAreaMod::SINK_MAJOR_ANCHORS);
+    clusterModPtr->addSink(ClusterMod::SOURCE_VEC2, dividedAreaModPtr, DividedAreaMod::SINK_MAJOR_ANCHORS);
     audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_POLAR_PITCH_RMS_POINTS, dividedAreaModPtr, DividedAreaMod::SINK_MINOR_ANCHORS);
     
     dividedAreaModPtr->receive(DividedAreaMod::SINK_FBO, fboPtrMinorLinesPtr);
@@ -158,9 +145,7 @@ ModPtrs ofApp::createMods() {
     auto particleSetModPtr = addMod<ParticleSetMod>(mods, "Particles", {
       
     });
-    clusterModPtr->addSink(ClusterMod::SOURCE_VEC2,
-                           particleSetModPtr,
-                           ofxMarkSynth::ParticleSetMod::SINK_POINTS);
+    clusterModPtr->addSink(ClusterMod::SOURCE_VEC2, particleSetModPtr, ParticleSetMod::SINK_POINTS);
     audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_RANDOM_VEC4, particleSetModPtr, DrawPointsMod::SINK_POINT_COLOR);
 
 //    auto multiplyModPtr = addMod<MultiplyMod>(mods, "Fade Particles", {
