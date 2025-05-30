@@ -40,6 +40,7 @@ private:
   ofxMarkSynth::FboPtr fboPtrMajorLinesPtr = std::make_shared<PingPongFbo>();
   ofxMarkSynth::FboPtr fboCollagePtr = std::make_shared<PingPongFbo>();
   ofxMarkSynth::FboPtr fboSandlinesPtr = std::make_shared<PingPongFbo>();
+  ofxMarkSynth::FboPtr fboMotionParticlesPtr = std::make_shared<PingPongFbo>();
 
   bool guiVisible { true };
   ofxPanel gui;

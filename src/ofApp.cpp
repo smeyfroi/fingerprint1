@@ -18,7 +18,18 @@ ModPtrs ofApp::createMods() {
   auto clusterModPtr = addMod<ClusterMod>(mods, "Clusters", {});
   audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_POLAR_PITCH_RMS_POINTS, clusterModPtr, ClusterMod::SINK_VEC2);
   
-  // Fluid
+  // Fluid simulation
+  auto fluidModPtr = addMod<FluidMod>(mods, "Fluid", {
+    {"dt", "0.002"},
+    {"value:dissipation", "0.999"},
+    {"velocity:dissipation", "0.999"},
+    {"dt", "0.008"},
+    {"vorticity", "20.0"}
+  });
+  fluidModPtr->receive(FluidMod::SINK_VALUES_FBO, fluidFboPtr);
+  fluidModPtr->receive(FluidMod::SINK_VELOCITIES_FBO, fluidVelocitiesFboPtr);
+
+  // Soft circles into fluid values
   auto radiiModPtr = addMod<RandomFloatSourceMod>(mods, "Fluid Points Radii", {
     {"CreatedPerUpdate", "0.05"},
     {"Min", "0.005"},
@@ -31,18 +42,7 @@ ModPtrs ofApp::createMods() {
   radiiModPtr->addSink(RandomFloatSourceMod::SOURCE_FLOAT, drawPointsModPtr, DrawPointsMod::SINK_POINT_RADIUS);
   audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_RANDOM_VEC4, drawPointsModPtr, DrawPointsMod::SINK_POINT_COLOR);
   clusterModPtr->addSink(ClusterMod::SOURCE_VEC2, drawPointsModPtr, DrawPointsMod::SINK_POINTS);
-  
-  auto fluidModPtr = addMod<FluidMod>(mods, "Fluid", {
-    {"dt", "0.002"},
-    {"value:dissipation", "0.999"},
-    {"velocity:dissipation", "0.999"},
-    {"dt", "0.008"},
-    {"vorticity", "20.0"}
-  });
-  
   drawPointsModPtr->receive(DrawPointsMod::SINK_FBO, fluidFboPtr);
-  fluidModPtr->receive(FluidMod::SINK_VALUES_FBO, fluidFboPtr);
-  fluidModPtr->receive(FluidMod::SINK_VELOCITIES_FBO, fluidVelocitiesFboPtr);
   
   { // Radial impulses from clusters
     auto fluidRadialImpulseModPtr = addMod<FluidRadialImpulseMod>(mods, "Cluster Impulses", {
@@ -138,13 +138,26 @@ ModPtrs ofApp::createMods() {
     });
     sandLineModPtr->addSink(SandLineMod::SOURCE_FBO, multiplyModPtr, MultiplyMod::SINK_FBO);
     
-    sandLineModPtr->receive(CollageMod::SINK_FBO, fboSandlinesPtr);
+    sandLineModPtr->receive(SandLineMod::SINK_FBO, fboSandlinesPtr);
   }
   
-  { //Particles
-    auto particleSetModPtr = addMod<ParticleSetMod>(mods, "Particles", {
-      
+  { // Motion particles
+    auto videoFlowModPtr = addMod<VideoFlowSourceMod>(mods, "Video flow", {}, 0, glm::vec2 { 640, 480 });
+    
+    auto particleSetModPtr = addMod<ParticleSetMod>(mods, "Motion Particles", {});
+    videoFlowModPtr->addSink(VideoFlowSourceMod::SOURCE_VEC4, particleSetModPtr, ParticleSetMod::SINK_POINT_VELOCITIES);
+    audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_RANDOM_VEC4, particleSetModPtr, DrawPointsMod::SINK_POINT_COLOR);
+
+    auto multiplyModPtr = addMod<MultiplyMod>(mods, "Fade Particles", {
+      {"Multiply By", "1.0, 1.0, 1.0, 0.995"}
     });
+    particleSetModPtr->addSink(ParticleSetMod::SOURCE_FBO, multiplyModPtr, MultiplyMod::SINK_FBO);
+
+    particleSetModPtr->receive(ParticleSetMod::SINK_FBO, fboMotionParticlesPtr);
+  }
+  
+  { // Cluster particles
+    auto particleSetModPtr = addMod<ParticleSetMod>(mods, "Cluster Particles", {});
     clusterModPtr->addSink(ClusterMod::SOURCE_VEC2, particleSetModPtr, ParticleSetMod::SINK_POINTS);
     audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_RANDOM_VEC4, particleSetModPtr, DrawPointsMod::SINK_POINT_COLOR);
 
@@ -153,7 +166,7 @@ ModPtrs ofApp::createMods() {
 //    });
 //    particleSetModPtr->addSink(ParticleSetMod::SOURCE_FBO, multiplyModPtr, MultiplyMod::SINK_FBO);
 
-    particleSetModPtr->receive(CollageMod::SINK_FBO, fboSandlinesPtr);
+    particleSetModPtr->receive(ParticleSetMod::SINK_FBO, fboSandlinesPtr);
   }
   
   return mods;
@@ -162,8 +175,9 @@ ModPtrs ofApp::createMods() {
 FboConfigPtrs ofApp::createFboConfigs() {
   FboConfigPtrs fboConfigPtrs;
   
-  ofFloatColor backgroundColor { 0.0, 0.0, 0.0, 0.0 };
+  ofFloatColor backgroundColor { 0.0, 1.0, 1.0, 0.0 };
   addFboConfigPtr(fboConfigPtrs, "fluid", fluidFboPtr, ofGetWindowSize(), GL_RGBA32F, GL_REPEAT, backgroundColor, false, OF_BLENDMODE_ALPHA);
+  addFboConfigPtr(fboConfigPtrs, "motion particles", fboMotionParticlesPtr, ofGetWindowSize(), GL_RGBA32F, GL_CLAMP_TO_EDGE, backgroundColor, false, OF_BLENDMODE_ALPHA);
   addFboConfigPtr(fboConfigPtrs, "sandlines", fboSandlinesPtr, ofGetWindowSize(), GL_RGBA32F, GL_CLAMP_TO_EDGE, backgroundColor, false, OF_BLENDMODE_ADD);
   addFboConfigPtr(fboConfigPtrs, "minor lines", fboPtrMinorLinesPtr, ofGetWindowSize(), GL_RGBA8, GL_CLAMP_TO_EDGE, backgroundColor, false, OF_BLENDMODE_ALPHA);
   addFboConfigPtr(fboConfigPtrs, "raw points", rawPointsFboPtr, ofGetWindowSize(), GL_RGBA32F, GL_REPEAT, backgroundColor, false, OF_BLENDMODE_ALPHA);
