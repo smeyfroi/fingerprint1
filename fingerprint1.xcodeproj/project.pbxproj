@@ -72,6 +72,7 @@
 		"A54AC479-5717-4E36-A28E-F660EFB76FF8" /* ofxSlidersGrid.cpp in Sources */ = {isa = PBXBuildFile; fileRef = "E9006036-1BC2-49A3-888B-B63B7D449229" /* ofxSlidersGrid.cpp */; };
 		"A6E0A58B-B724-4CFA-8F61-0BA7D6BA31D9" /* ofxMotionFromVideo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = "7548D156-B79B-4A07-BDEE-4AA139C92FE8" /* ofxMotionFromVideo.cpp */; };
 		AA085B4E2DE3569100BC4C06 /* SoftCircleMod.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA085B4D2DE3569100BC4C06 /* SoftCircleMod.cpp */; };
+		AA085B522DE9C20600BC4C06 /* AddTextureMod.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA085B512DE9C20600BC4C06 /* AddTextureMod.cpp */; };
 		"AAB0B8EF-AC59-4F67-9569-411FC79BE44F" /* ofxOscParameterSync.cpp in Sources */ = {isa = PBXBuildFile; fileRef = "88886441-82E4-439E-9666-E9A9D0E0E8A6" /* ofxOscParameterSync.cpp */; };
 		"AC1DA666-C88F-49DD-AC7A-B63242533B9C" /* SomPaletteMod.cpp in Sources */ = {isa = PBXBuildFile; fileRef = "D5A09C53-E3A2-4E13-86E8-2DE3EA94EC0B" /* SomPaletteMod.cpp */; };
 		"AE83FF0A-7115-4B6B-BB97-7DE55086F286" /* OnsetDetectionFunction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = "8E7EF425-E93D-4D71-B50A-75609275F45C" /* OnsetDetectionFunction.cpp */; };
@@ -297,6 +298,9 @@
 		"A6B8058B-A7D2-4BC8-91CD-3EDD6421DF59" /* ofxSoundObjectsConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ofxSoundObjectsConstants.h; sourceTree = "<group>"; };
 		AA085B4C2DE3569100BC4C06 /* SoftCircleMod.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SoftCircleMod.hpp; sourceTree = "<group>"; };
 		AA085B4D2DE3569100BC4C06 /* SoftCircleMod.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SoftCircleMod.cpp; sourceTree = "<group>"; };
+		AA085B4F2DE78D0F00BC4C06 /* AddSegmentImpulseShader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AddSegmentImpulseShader.h; sourceTree = "<group>"; };
+		AA085B502DE9C20600BC4C06 /* AddTextureMod.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = AddTextureMod.hpp; sourceTree = "<group>"; };
+		AA085B512DE9C20600BC4C06 /* AddTextureMod.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AddTextureMod.cpp; sourceTree = "<group>"; };
 		"AA63E27E-1293-4816-9A26-3820497C4964" /* ChordDetector.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ChordDetector.cpp; sourceTree = "<group>"; };
 		"AA9440B9-4E48-47FB-B0B4-21D3DB90F5A8" /* DivergenceRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = DivergenceRenderer.h; sourceTree = "<group>"; };
 		"AB55F986-6EEB-4802-A633-C086A1760BCF" /* ofxSliderGroup.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxSliderGroup.cpp; sourceTree = "<group>"; };
@@ -910,6 +914,7 @@
 				"DD1F8C1F-BE03-47C1-9A57-B25DDE2D1033" /* JacobiShader.h */,
 				"4572BCB2-0F07-4733-9B85-6668B9DEFB07" /* SubtractDivergenceShader.h */,
 				"9D4920D0-7D05-4B1A-92AD-BFB0EE30B8F9" /* VorticityRenderer.h */,
+				AA085B4F2DE78D0F00BC4C06 /* AddSegmentImpulseShader.h */,
 			);
 			path = fluid;
 			sourceTree = "<group>";
@@ -1094,10 +1099,12 @@
 		"DF9506AD-F5EF-4C26-A897-098FD7081196" /* shaderMods */ = {
 			isa = PBXGroup;
 			children = (
-				"456396DB-4FF2-4BDD-B50A-366C4907B8F5" /* MultiplyMod.cpp */,
+				AA085B502DE9C20600BC4C06 /* AddTextureMod.hpp */,
+				AA085B512DE9C20600BC4C06 /* AddTextureMod.cpp */,
 				"526EC74E-17C5-49F6-8379-ADF68F388050" /* MultiplyMod.hpp */,
-				"CD339439-A35B-4DB0-B9FE-0CF09D7B06C2" /* TranslateMod.cpp */,
+				"456396DB-4FF2-4BDD-B50A-366C4907B8F5" /* MultiplyMod.cpp */,
 				"1685E4E5-B2A5-4AD5-A029-1692EA076391" /* TranslateMod.hpp */,
+				"CD339439-A35B-4DB0-B9FE-0CF09D7B06C2" /* TranslateMod.cpp */,
 			);
 			path = shaderMods;
 			sourceTree = "<group>";
@@ -1422,6 +1429,7 @@
 				"73CA6826-BDC8-4F30-82F1-8717D1C2F43C" /* ofxDividedArea.cpp in Sources */,
 				"74B1200F-61FA-428F-A461-1B5C0EE999CA" /* ofxFFmpegRecorder.cpp in Sources */,
 				"DD1AA382-DF1C-42FC-96B4-1D5987DAF4CD" /* ofxIntrospector.cpp in Sources */,
+				AA085B522DE9C20600BC4C06 /* AddTextureMod.cpp in Sources */,
 				"A6E0A58B-B724-4CFA-8F61-0BA7D6BA31D9" /* ofxMotionFromVideo.cpp in Sources */,
 				"5E5A4B5A-46D6-4055-B14E-EA956461B85F" /* ofxParticleSet.cpp in Sources */,
 				"C4B7E3EF-758E-4472-BBEE-FDC068570429" /* ofxPlottable.cpp in Sources */,

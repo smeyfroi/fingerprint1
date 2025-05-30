@@ -2,6 +2,8 @@
 
 using namespace ofxMarkSynth;
 
+const std::filesystem::path rootSourceMaterialPath { "/Users/steve/Documents/music-source-material" };
+
 //--------------------------------------------------------------
 ModPtrs ofApp::createMods() {
   auto mods = ModPtrs {};
@@ -141,9 +143,10 @@ ModPtrs ofApp::createMods() {
     sandLineModPtr->receive(SandLineMod::SINK_FBO, fboSandlinesPtr);
   }
   
+  auto videoFlowModPtr = addMod<VideoFlowSourceMod>(mods, "Video flow", {}, 0, glm::vec2 { 640, 480 });
+//  auto videoFlowModPtr = addMod<VideoFlowSourceMod>(mods, "Video flow", {}, rootSourceMaterialPath/"trombone-trimmed.mov", true);
+  
   { // Motion particles
-    auto videoFlowModPtr = addMod<VideoFlowSourceMod>(mods, "Video flow", {}, 0, glm::vec2 { 640, 480 });
-    
     auto particleSetModPtr = addMod<ParticleSetMod>(mods, "Motion Particles", {});
     videoFlowModPtr->addSink(VideoFlowSourceMod::SOURCE_VEC4, particleSetModPtr, ParticleSetMod::SINK_POINT_VELOCITIES);
     audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_RANDOM_VEC4, particleSetModPtr, DrawPointsMod::SINK_POINT_COLOR);
@@ -154,6 +157,13 @@ ModPtrs ofApp::createMods() {
     particleSetModPtr->addSink(ParticleSetMod::SOURCE_FBO, multiplyModPtr, MultiplyMod::SINK_FBO);
 
     particleSetModPtr->receive(ParticleSetMod::SINK_FBO, fboMotionParticlesPtr);
+  }
+  
+  { // Video flow into fluid
+    auto addTextureModPtr = addMod<AddTextureMod>(mods, "Add motion flow", {});
+    videoFlowModPtr->addSink(VideoFlowSourceMod::SOURCE_FLOW_PIXELS, addTextureModPtr, AddTextureMod::SINK_ADD_PIXELS);
+
+    addTextureModPtr->receive(AddTextureMod::SINK_TARGET_FBO, fluidVelocitiesFboPtr);
   }
   
   { // Cluster particles
@@ -203,7 +213,6 @@ void ofApp::setup(){
   ofDisableArbTex();
   ofSetFrameRate(30);
   
-  const std::filesystem::path rootSourceMaterialPath { "/Users/steve/Documents/music-source-material" };
   //    audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>(rootSourceMaterialPath/"Alex Petcu Bell Plates.wav");
   //    audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>(rootSourceMaterialPath/"Alex Petcu Sound Bath.wav");
   //    audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>(rootSourceMaterialPath/"20250208-trombone-melody.wav");
