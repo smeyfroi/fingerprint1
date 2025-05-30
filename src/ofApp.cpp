@@ -197,17 +197,6 @@ FboConfigPtrs ofApp::createFboConfigs() {
   return fboConfigPtrs;
 }
 
-// TODO: find a home for this util
-void minimizeAllGuiGroupsRecursive(ofxGuiGroup& guiGroup) {
-  for (int i = 0; i < guiGroup.getNumControls(); ++i) {
-    auto control = guiGroup.getControl(i);
-    if (auto childGuiGroup = dynamic_cast<ofxGuiGroup*>(control)) {
-      childGuiGroup->minimize();
-      minimizeAllGuiGroupsRecursive(*childGuiGroup);
-    }
-  }
-}
-
 void ofApp::setup(){
   ofSetBackgroundColor(0);
   ofDisableArbTex();
@@ -228,7 +217,7 @@ void ofApp::setup(){
   
   parameters.add(synth.getParameterGroup("Synth"));
   gui.setup(parameters);
-  minimizeAllGuiGroupsRecursive(gui.getGroup("Synth"));
+  synth.minimizeAllGuiGroupsRecursive(gui);
 }
 
 //--------------------------------------------------------------

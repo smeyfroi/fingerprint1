@@ -7,6 +7,7 @@ ofxGui
 ofxSoundObjects
 ofxAudioAnalysisClient
 ofxAudioData
+ofxConvexHull
 ofxDividedArea
 ofxFFmpegRecorder
 ofxIntrospector
