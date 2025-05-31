@@ -7,7 +7,7 @@ const std::filesystem::path rootSourceMaterialPath { "/Users/steve/Documents/mus
 // ***********************************************
 // ***********************************************
 constexpr bool RECORD_FLOW_VIDEO = false;
-constexpr bool RECORD_AUDIO = true;
+constexpr bool RECORD_AUDIO = false;
 // ***********************************************
 // ***********************************************
 
@@ -18,7 +18,9 @@ ModPtrs ofApp::createMods() {
   // Audio, palette from raw spectral points, clusters from raw pitch/RMS points
   auto audioDataSourceModPtr = addMod<AudioDataSourceMod>(mods, "Audio Points", {
     {"MinPitch", "50.0"},
-    {"MaxPitch", "2500.0"}
+    {"MaxPitch", "2500.0"},
+    {"minRmsParameter", "0.001"},
+    {"maxRmsParameter", "0.04"}
   }, audioDataProcessorPtr);
   
   auto audioPaletteModPtr = addMod<SomPaletteMod>(mods, "Palette Creator", {});
@@ -154,12 +156,18 @@ ModPtrs ofApp::createMods() {
 //  auto videoFlowModPtr = addMod<VideoFlowSourceMod>(mods, "Video flow", {}, rootSourceMaterialPath/"trombone-trimmed.mov", true);
   
   { // Motion particles
-    auto particleSetModPtr = addMod<ParticleSetMod>(mods, "Motion Particles", {});
+    auto particleSetModPtr = addMod<ParticleSetMod>(mods, "Motion Particles", {
+      { "particleAttraction", "0.05" },
+      { "particleAttractionRadius", "0.2" },
+      { "particleConnectionRadius", "0.01" },
+      { "particleDrawRadius", "0.0005" },
+      { "forceScale", "0.01" }
+    });
     videoFlowModPtr->addSink(VideoFlowSourceMod::SOURCE_VEC4, particleSetModPtr, ParticleSetMod::SINK_POINT_VELOCITIES);
     audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_RANDOM_VEC4, particleSetModPtr, DrawPointsMod::SINK_POINT_COLOR);
 
     auto multiplyModPtr = addMod<MultiplyMod>(mods, "Fade Particles", {
-      {"Multiply By", "1.0, 1.0, 1.0, 0.995"}
+      {"Multiply By", "1.0, 1.0, 1.0, 0.97"}
     });
     particleSetModPtr->addSink(ParticleSetMod::SOURCE_FBO, multiplyModPtr, MultiplyMod::SINK_FBO);
 
