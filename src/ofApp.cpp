@@ -4,6 +4,13 @@ using namespace ofxMarkSynth;
 
 const std::filesystem::path rootSourceMaterialPath { "/Users/steve/Documents/music-source-material" };
 
+// ***********************************************
+// ***********************************************
+constexpr bool RECORD_FLOW_VIDEO = false;
+constexpr bool RECORD_AUDIO = true;
+// ***********************************************
+// ***********************************************
+
 //--------------------------------------------------------------
 ModPtrs ofApp::createMods() {
   auto mods = ModPtrs {};
@@ -143,7 +150,7 @@ ModPtrs ofApp::createMods() {
     sandLineModPtr->receive(SandLineMod::SINK_FBO, fboSandlinesPtr);
   }
   
-  auto videoFlowModPtr = addMod<VideoFlowSourceMod>(mods, "Video flow", {}, 0, glm::vec2 { 640, 480 });
+  auto videoFlowModPtr = addMod<VideoFlowSourceMod>(mods, "Video flow", {}, 0, glm::vec2 { 640, 480 }, RECORD_FLOW_VIDEO, saveFilePath("video-recordings"));
 //  auto videoFlowModPtr = addMod<VideoFlowSourceMod>(mods, "Video flow", {}, rootSourceMaterialPath/"trombone-trimmed.mov", true);
   
   { // Motion particles
@@ -176,6 +183,7 @@ ModPtrs ofApp::createMods() {
 //    });
 //    particleSetModPtr->addSink(ParticleSetMod::SOURCE_FBO, multiplyModPtr, MultiplyMod::SINK_FBO);
 
+//    particleSetModPtr->receive(ParticleSetMod::SINK_FBO, fluidFboPtr);
     particleSetModPtr->receive(ParticleSetMod::SINK_FBO, fboSandlinesPtr);
   }
   
@@ -205,7 +213,9 @@ void ofApp::setup(){
   //    audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>(rootSourceMaterialPath/"Alex Petcu Bell Plates.wav");
   //    audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>(rootSourceMaterialPath/"Alex Petcu Sound Bath.wav");
   //    audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>(rootSourceMaterialPath/"20250208-trombone-melody.wav");
-  audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>();
+  auto recordingPath = saveFilePath("audio-recordings");
+  std::filesystem::create_directory(recordingPath);
+  audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>(RECORD_AUDIO, recordingPath);
   audioDataProcessorPtr = std::make_shared<ofxAudioData::Processor>(audioAnalysisClientPtr);
   audioDataProcessorPtr->setDefaultValiditySpecs();
   audioDataPlotsPtr = std::make_shared<ofxAudioData::Plots>(audioDataProcessorPtr);
@@ -235,6 +245,7 @@ void ofApp::draw(){
 
 //--------------------------------------------------------------
 void ofApp::exit(){
+  audioAnalysisClientPtr->stopRecording();
   audioAnalysisClientPtr->closeStream();
 }
 
