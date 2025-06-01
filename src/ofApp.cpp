@@ -232,10 +232,6 @@ void ofApp::setup(){
   fluidVelocitiesFboPtr->getSource().clearColorBuffer(ofFloatColor(0.0, 0.0, 0.0));
   
   synth.configure(createFboConfigs(), createMods(), ofGetWindowSize());
-  
-  parameters.add(synth.getParameterGroup("Synth"));
-  gui.setup(parameters);
-  synth.minimizeAllGuiGroupsRecursive(gui);
 }
 
 //--------------------------------------------------------------
@@ -248,7 +244,6 @@ void ofApp::update(){
 void ofApp::draw(){
   synth.draw();
   audioDataPlotsPtr->drawPlots();
-  if (guiVisible) gui.draw();
 }
 
 //--------------------------------------------------------------
@@ -259,7 +254,6 @@ void ofApp::exit(){
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-  if (key == OF_KEY_TAB) { guiVisible = not guiVisible; return; }
   if (audioAnalysisClientPtr->keyPressed(key)) return;
   if (audioDataPlotsPtr->keyPressed(key)) return;
   if (synth.keyPressed(key)) return;

@@ -2,7 +2,6 @@
 
 #include "ofMain.h"
 #include "ofxMarkSynth.h"
-#include "ofxGui.h"
 
 class ofApp : public ofBaseApp{
   
@@ -30,7 +29,7 @@ private:
   std::shared_ptr<ofxAudioData::Processor> audioDataProcessorPtr;
   std::shared_ptr<ofxAudioData::Plots> audioDataPlotsPtr;
   
-  ofxMarkSynth::Synth synth;
+  ofxMarkSynth::Synth synth { "synth1" };
   ofxMarkSynth::ModPtrs createMods();
   ofxMarkSynth::FboConfigPtrs createFboConfigs();
   ofxMarkSynth::FboPtr fluidFboPtr = std::make_shared<PingPongFbo>();
@@ -41,9 +40,5 @@ private:
   ofxMarkSynth::FboPtr fboCollagePtr = std::make_shared<PingPongFbo>();
   ofxMarkSynth::FboPtr fboSandlinesPtr = std::make_shared<PingPongFbo>();
   ofxMarkSynth::FboPtr fboMotionParticlesPtr = std::make_shared<PingPongFbo>();
-
-  bool guiVisible { true };
-  ofxPanel gui;
-  ofParameterGroup parameters; // I think we rely on this declaration coming after the synth to ensure that destructors are done in the right order
   
 };
