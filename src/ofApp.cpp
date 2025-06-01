@@ -193,7 +193,7 @@ ModPtrs ofApp::createMods() {
     clusterModPtr->addSink(ClusterMod::SOURCE_VEC2, particleSetModPtr, ParticleSetMod::SINK_POINTS);
     audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_RANDOM_VEC4, particleSetModPtr, DrawPointsMod::SINK_POINT_COLOR);
 
-    auto multiplyModPtr = addMod<MultiplyMod>(mods, "Fade Particles", {
+    auto multiplyModPtr = addMod<MultiplyMod>(mods, "Fade Cluster Particles", {
       {"Multiply By", "1.0, 1.0, 1.0, 0.995"}
     });
     particleSetModPtr->addSink(ParticleSetMod::SOURCE_FBO, multiplyModPtr, MultiplyMod::SINK_FBO);
