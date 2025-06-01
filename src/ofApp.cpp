@@ -157,14 +157,18 @@ ModPtrs ofApp::createMods() {
   
   { // Motion particles
     auto particleSetModPtr = addMod<ParticleSetMod>(mods, "Motion Particles", {
+      { "maxParticles", "1000" },
       { "particleAttraction", "0.05" },
-      { "particleAttractionRadius", "0.2" },
+      { "particleAttractionRadius", "0.05" },
       { "particleConnectionRadius", "0.01" },
       { "particleDrawRadius", "0.0005" },
-      { "forceScale", "0.01" }
+      { "particleVelocityDamping", "0.98" },
+      { "forceScale", "0.005" },
+      { "Color", "1.0, 1.0, 1.0, 1.0" },
+      { "Spin", "0.01" }
     });
     videoFlowModPtr->addSink(VideoFlowSourceMod::SOURCE_VEC4, particleSetModPtr, ParticleSetMod::SINK_POINT_VELOCITIES);
-    audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_RANDOM_VEC4, particleSetModPtr, DrawPointsMod::SINK_POINT_COLOR);
+//    audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_RANDOM_VEC4, particleSetModPtr, DrawPointsMod::SINK_POINT_COLOR);
 
     auto multiplyModPtr = addMod<MultiplyMod>(mods, "Fade Particles", {
       {"Multiply By", "1.0, 1.0, 1.0, 0.97"}
@@ -182,17 +186,20 @@ ModPtrs ofApp::createMods() {
   }
   
   { // Cluster particles
-    auto particleSetModPtr = addMod<ParticleSetMod>(mods, "Cluster Particles", {});
+    auto particleSetModPtr = addMod<ParticleSetMod>(mods, "Cluster Particles", {
+      {"maxParticles", "500"},
+      {"maxParticleAge", "300"}
+    });
     clusterModPtr->addSink(ClusterMod::SOURCE_VEC2, particleSetModPtr, ParticleSetMod::SINK_POINTS);
     audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_RANDOM_VEC4, particleSetModPtr, DrawPointsMod::SINK_POINT_COLOR);
 
-//    auto multiplyModPtr = addMod<MultiplyMod>(mods, "Fade Particles", {
-//      {"Multiply By", "1.0, 1.0, 1.0, 0.995"}
-//    });
-//    particleSetModPtr->addSink(ParticleSetMod::SOURCE_FBO, multiplyModPtr, MultiplyMod::SINK_FBO);
+    auto multiplyModPtr = addMod<MultiplyMod>(mods, "Fade Particles", {
+      {"Multiply By", "1.0, 1.0, 1.0, 0.995"}
+    });
+    particleSetModPtr->addSink(ParticleSetMod::SOURCE_FBO, multiplyModPtr, MultiplyMod::SINK_FBO);
 
 //    particleSetModPtr->receive(ParticleSetMod::SINK_FBO, fluidFboPtr);
-    particleSetModPtr->receive(ParticleSetMod::SINK_FBO, fboSandlinesPtr);
+    particleSetModPtr->receive(ParticleSetMod::SINK_FBO, fboClusterParticlesPtr);
   }
   
   return mods;
@@ -208,6 +215,7 @@ FboConfigPtrs ofApp::createFboConfigs() {
   addFboConfigPtr(fboConfigPtrs, "minor lines", fboPtrMinorLinesPtr, ofGetWindowSize(), GL_RGBA8, GL_CLAMP_TO_EDGE, backgroundColor, false, OF_BLENDMODE_ALPHA);
   addFboConfigPtr(fboConfigPtrs, "raw points", rawPointsFboPtr, ofGetWindowSize(), GL_RGBA32F, GL_REPEAT, backgroundColor, false, OF_BLENDMODE_ALPHA);
   addFboConfigPtr(fboConfigPtrs, "collage", fboCollagePtr, ofGetWindowSize(), GL_RGBA32F, GL_CLAMP_TO_EDGE, backgroundColor, false, OF_BLENDMODE_ALPHA);
+  addFboConfigPtr(fboConfigPtrs, "cluster particles", fboClusterParticlesPtr, ofGetWindowSize(), GL_RGBA32F, GL_CLAMP_TO_EDGE, backgroundColor, false, OF_BLENDMODE_ALPHA);
   addFboConfigPtr(fboConfigPtrs, "major lines", fboPtrMajorLinesPtr, ofGetWindowSize(), GL_RGBA32F, GL_CLAMP_TO_EDGE, backgroundColor, true, OF_BLENDMODE_ALPHA);
   
   return fboConfigPtrs;
