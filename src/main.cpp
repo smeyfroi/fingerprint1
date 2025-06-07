@@ -1,17 +1,25 @@
 #include "ofMain.h"
 #include "ofApp.h"
+#include "ofAppGLFWWindow.h"
 
 //========================================================================
 int main( ){
+  ofGLFWWindowSettings settings;
 
-	//Use ofGLFWWindowSettings for more options like multi-monitor fullscreen
-	ofGLWindowSettings settings;
 	settings.setSize(1024, 1024);
-	settings.windowMode = OF_WINDOW; //can also be OF_FULLSCREEN
+  settings.setPosition({255, 0}); // **************** Change the position depending on screen/projector setup
+  settings.resizable = false;
+	auto mainWindow = ofCreateWindow(settings);
+  
+  settings.setSize(256, 1024);
+  settings.setPosition({0, 0});
+  settings.resizable = true;
+  auto guiWindow = ofCreateWindow(settings);
+  guiWindow->setVerticalSync(false);
 
-	auto window = ofCreateWindow(settings);
-
-	ofRunApp(window, std::make_shared<ofApp>());
+  auto mainApp = std::make_shared<ofApp>();
+//  mainApp->setupGui();
+  ofAddListener(guiWindow->events().draw, mainApp.get(), &ofApp::drawGui);
+	ofRunApp(mainWindow, mainApp);
 	ofRunMainLoop();
-
 }

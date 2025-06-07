@@ -15,10 +15,12 @@ class ofApp : public ofBaseApp{
   
 public:
   void setup() override;
+  void setupGui();
   void update() override;
   void draw() override;
   void exit() override;
-  
+  void drawGui(ofEventArgs& args);
+
   void keyPressed(int key) override;
   void keyReleased(int key) override;
   void mouseMoved(int x, int y ) override;

@@ -20,9 +20,9 @@ void ofApp::setup(){
 //      audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>(rootSourceMaterialPath/"20250208-violin-separate-scale-vibrato-harmonics.wav");
 //      audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>(rootSourceMaterialPath/"Alex Petcu Bell Plates.wav");
   //    audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>(rootSourceMaterialPath/"Alex Petcu Sound Bath.wav");
-//  audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>(rootSourceMaterialPath/"20250208-trombone-melody.wav");
+  audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>(rootSourceMaterialPath/"20250208-trombone-melody.wav");
 //  audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>(rootSourceMaterialPath/"nightsong.wav");
-  audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>(rootSourceMaterialPath/"treganna.wav");
+//  audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>(rootSourceMaterialPath/"treganna.wav");
 
   auto recordingPath = saveFilePath("audio-recordings");
   std::filesystem::create_directory(recordingPath);
@@ -46,6 +46,16 @@ void ofApp::update(){
 void ofApp::draw(){
   synth.draw();
   audioDataPlotsPtr->drawPlots();
+}
+
+void ofApp::drawGui(ofEventArgs& args){
+  static glm::vec2 guiWindowSize = {0.0, 0.0};
+  auto currentWindowSize = ofGetCurrentWindow()->getWindowSize();
+  if (guiWindowSize != currentWindowSize) {
+    guiWindowSize = currentWindowSize;
+    synth.setGuiSize(currentWindowSize);
+  }
+  synth.drawGui();
 }
 
 //--------------------------------------------------------------
