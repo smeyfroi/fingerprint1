@@ -124,14 +124,14 @@ ModPtrs ofApp::createMods2() {
       {"maxParticleAge", "100"},
       {"particleAttraction", "-0.2"},
       {"particleAttractionRadius", "0.4"},
-      {"particleDrawRadius", "0.001"},
-      {"colourMultiplier", "0.5"},
-      {"forceScale", "0.1"},
+      {"particleDrawRadius", "0.005"},
+      {"colourMultiplier", "0.04"},
+      {"forceScale", "0.05"},
       {"Spin", "-0.02"},
       {"BlendStrategy", "0"} // ADD, ALPHA
     });
     clusterModPtr->addSink(ClusterMod::SOURCE_VEC2, particleSetModPtr, ParticleSetMod::SINK_POINTS);
-    audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_RANDOM_DARK_VEC4, particleSetModPtr, DrawPointsMod::SINK_POINT_COLOR);
+    audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_RANDOM_DARK_VEC4, particleSetModPtr, ParticleSetMod::SINK_COLOR);
 
     auto clampModPtr = addMod<ClampMod>(mods, "Clamp", {});
     particleSetModPtr->addSink(ParticleSetMod::SOURCE_FBO, clampModPtr, ClampMod::SINK_FBO);
@@ -142,7 +142,7 @@ ModPtrs ofApp::createMods2() {
 //    particleSetModPtr->addSink(ParticleSetMod::SOURCE_FBO, logisticFnModPtr, LogisticFnMod::SINK_FBO);
 
     auto multiplyModPtr = addMod<MultiplyMod>(mods, "Fade Cluster Particles", {
-      {"Multiply By", "1.0, 1.0, 1.0, 0.998"}
+      {"Multiply By", "1.0, 1.0, 1.0, 0.99"}
     });
     particleSetModPtr->addSink(ClampMod::SOURCE_FBO, multiplyModPtr, MultiplyMod::SINK_FBO);
 
@@ -154,14 +154,14 @@ ModPtrs ofApp::createMods2() {
     pixelSnapshotModPtr->receive(PixelSnapshotMod::SINK_FBO, rawPointsFboPtr);
     
     auto pathModPtr = addMod<PathMod>(mods, "Collage Path", {
-      {"Strategy", "3"},
+      {"Strategy", "2"},
       {"MaxVertices", "7"},
-      {"VertexProximity", "0.1"}
+      {"VertexProximity", "0.3"}
     });
     audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_POLAR_PITCH_RMS_POINTS, pathModPtr, PathMod::SINK_VEC2);
     
     auto collageModPtr = addMod<CollageMod>(mods, "Collage", {
-      {"Strength", "0.6"}
+      {"Strength", "1.0"}
     });
     pixelSnapshotModPtr->addSink(PixelSnapshotMod::SOURCE_PIXELS, collageModPtr, CollageMod::SINK_PIXELS);
     pathModPtr->addSink(PathMod::SOURCE_PATH, collageModPtr, CollageMod::SINK_PATH);
@@ -193,10 +193,10 @@ FboConfigPtrs ofApp::createFboConfigs2() {
 //  addFboConfigPtr(fboConfigPtrs, "fluid", fluidFboPtr, ofGetWindowSize(), GL_RGBA32F, GL_REPEAT, backgroundColor, false, OF_BLENDMODE_ALPHA);
   addFboConfigPtr(fboConfigPtrs, "sandlines", fboSandlinesPtr, ofGetWindowSize(), GL_RGBA32F, GL_CLAMP_TO_EDGE, backgroundColor, false, OF_BLENDMODE_ADD);
   addFboConfigPtr(fboConfigPtrs, "motion particles", fboMotionParticlesPtr, ofGetWindowSize(), GL_RGBA32F, GL_CLAMP_TO_EDGE, backgroundColor, false, OF_BLENDMODE_ALPHA);
+  addFboConfigPtr(fboConfigPtrs, "collage", fboCollagePtr, ofGetWindowSize(), GL_RGBA32F, GL_CLAMP_TO_EDGE, backgroundColor, false, OF_BLENDMODE_ALPHA);
   addFboConfigPtr(fboConfigPtrs, "raw points", rawPointsFboPtr, ofGetWindowSize(), GL_RGBA32F, GL_REPEAT, backgroundColor, false, OF_BLENDMODE_ALPHA);
   addFboConfigPtr(fboConfigPtrs, "minor lines", fboPtrMinorLinesPtr, ofGetWindowSize(), GL_RGBA8, GL_CLAMP_TO_EDGE, backgroundColor, false, OF_BLENDMODE_ALPHA);
   addFboConfigPtr(fboConfigPtrs, "cluster particles", fboClusterParticlesPtr, ofGetWindowSize(), GL_RGBA32F, GL_CLAMP_TO_EDGE, backgroundColor, false, OF_BLENDMODE_ALPHA);
-  addFboConfigPtr(fboConfigPtrs, "collage", fboCollagePtr, ofGetWindowSize(), GL_RGBA32F, GL_CLAMP_TO_EDGE, backgroundColor, false, OF_BLENDMODE_ALPHA);
   addFboConfigPtr(fboConfigPtrs, "major lines", fboPtrMajorLinesPtr, ofGetWindowSize(), GL_RGBA32F, GL_CLAMP_TO_EDGE, backgroundColor, true, OF_BLENDMODE_ALPHA);
   return fboConfigPtrs;
 }
