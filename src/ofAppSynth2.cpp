@@ -122,11 +122,11 @@ ModPtrs ofApp::createMods2() {
       {"strategy", "1"}, // POINTS, CONNECTIONS, BOTH
       {"maxParticles", "1000"},
       {"maxParticleAge", "100"},
-      {"particleAttraction", "-0.2"},
+      {"particleAttraction", "-0.1"},
       {"particleAttractionRadius", "0.4"},
       {"particleDrawRadius", "0.005"},
-      {"colourMultiplier", "0.04"},
-      {"forceScale", "0.05"},
+      {"colourMultiplier", "0.3"},
+      {"forceScale", "0.01"},
       {"Spin", "-0.02"},
       {"BlendStrategy", "0"} // ADD, ALPHA
     });
