@@ -9,7 +9,7 @@
 
 using namespace ofxMarkSynth;
 
-ModPtrs ofApp::createMods() {
+ModPtrs ofApp::createMods1() {
   auto mods = ModPtrs {};
   
   // Audio, palette from raw spectral points, clusters from raw pitch/RMS points
@@ -117,14 +117,14 @@ ModPtrs ofApp::createMods() {
 //    fluidCollageModPtr->receive(CollageMod::SINK_FBO, fluidFboPtr);
     
     auto collageModPtr = addMod<CollageMod>(mods, "Collage", {
-      {"Strength", "1.0"}
+      {"Strength", "0.4"}
     });
     pixelSnapshotModPtr->addSink(PixelSnapshotMod::SOURCE_PIXELS, collageModPtr, CollageMod::SINK_PIXELS);
     pathModPtr->addSink(PathMod::SOURCE_PATH, collageModPtr, CollageMod::SINK_PATH);
     audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_RANDOM_VEC4, collageModPtr, CollageMod::SINK_COLOR);
 
     auto multiplyModPtr = addMod<MultiplyMod>(mods, "Fade Collage", {
-      {"Multiply By", "1.0, 1.0, 1.0, 0.995"}
+      {"Multiply By", "1.0, 1.0, 1.0, 0.99"}
     });
     collageModPtr->addSink(CollageMod::SOURCE_FBO, multiplyModPtr, MultiplyMod::SINK_FBO);
     collageModPtr->receive(CollageMod::SINK_FBO, fboCollagePtr);
@@ -155,45 +155,12 @@ ModPtrs ofApp::createMods() {
     sandLineModPtr->receive(SandLineMod::SINK_FBO, fboSandlinesPtr);
   }
   
-  // FIXME: Creating this mod breaks the fluid sim, even when this mod is not updating
-//  auto videoFlowModPtr = addMod<VideoFlowSourceMod>(mods, "Video flow", {}, 0, glm::vec2 { 640, 480 }, RECORD_FLOW_VIDEO, saveFilePath("video-recordings"));
-//  auto videoFlowModPtr = addMod<VideoFlowSourceMod>(mods, "Video flow", {}, rootSourceMaterialPath/"trombone-trimmed.mov", true);
-  
-//  { // Motion particles
-//    auto particleSetModPtr = addMod<ParticleSetMod>(mods, "Motion Particles", {
-//      { "maxParticles", "1000" },
-//      { "particleAttraction", "0.03" },
-//      { "particleAttractionRadius", "0.05" },
-//      { "particleConnectionRadius", "0.01" },
-//      { "particleDrawRadius", "0.0005" },
-//      { "particleVelocityDamping", "0.98" },
-//      { "forceScale", "0.02" },
-//      { "Color", "1.0, 1.0, 1.0, 1.0" },
-//      { "Spin", "0.01" }
-//    });
-//    videoFlowModPtr->addSink(VideoFlowSourceMod::SOURCE_VEC4, particleSetModPtr, ParticleSetMod::SINK_POINT_VELOCITIES);
-////    audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_RANDOM_VEC4, particleSetModPtr, DrawPointsMod::SINK_POINT_COLOR);
-//
-//    auto multiplyModPtr = addMod<MultiplyMod>(mods, "Fade Particles", {
-//      {"Multiply By", "1.0, 1.0, 1.0, 0.97"}
-//    });
-//    particleSetModPtr->addSink(ParticleSetMod::SOURCE_FBO, multiplyModPtr, MultiplyMod::SINK_FBO);
-//
-////    particleSetModPtr->receive(ParticleSetMod::SINK_FBO, fluidFboPtr);
-//    particleSetModPtr->receive(ParticleSetMod::SINK_FBO, fboMotionParticlesPtr);
-//  }
-//
-//  { // Video flow into fluid
-//    auto addTextureModPtr = addMod<AddTextureMod>(mods, "Add motion flow", {});
-//    videoFlowModPtr->addSink(VideoFlowSourceMod::SOURCE_FLOW_PIXELS, addTextureModPtr, AddTextureMod::SINK_ADD_PIXELS);
-//
-//    addTextureModPtr->receive(AddTextureMod::SINK_TARGET_FBO, fluidVelocitiesFboPtr);
-//  }
-  
   { // Cluster particles
     auto particleSetModPtr = addMod<ParticleSetMod>(mods, "Cluster Particles", {
       {"maxParticles", "500"},
-      {"maxParticleAge", "300"}
+      {"maxParticleAge", "300"},
+      {"colourMultiplier", "0.5"},
+      {"BlendStrategy", "1"} // ALPHA
     });
     clusterModPtr->addSink(ClusterMod::SOURCE_VEC2, particleSetModPtr, ParticleSetMod::SINK_POINTS);
     audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_RANDOM_LIGHT_VEC4, particleSetModPtr, DrawPointsMod::SINK_POINT_COLOR);
@@ -210,7 +177,7 @@ ModPtrs ofApp::createMods() {
   return mods;
 }
 
-FboConfigPtrs ofApp::createFboConfigs() {
+FboConfigPtrs ofApp::createFboConfigs1() {
   // Used by fluid sim but not drawn
   allocateFbo(fluidVelocitiesFboPtr, ofGetWindowSize(), GL_RGB32F, GL_REPEAT);
   fluidVelocitiesFboPtr->getSource().clearColorBuffer({ 0.0, 0.0, 0.0 });
@@ -224,7 +191,6 @@ FboConfigPtrs ofApp::createFboConfigs() {
   FboConfigPtrs fboConfigPtrs;
   const ofFloatColor backgroundColor { 0.0, 0.0, 0.0, 0.0 };
   addFboConfigPtr(fboConfigPtrs, "fluid", fluidFboPtr, ofGetWindowSize(), GL_RGBA32F, GL_REPEAT, backgroundColor, false, OF_BLENDMODE_ALPHA);
-  addFboConfigPtr(fboConfigPtrs, "motion particles", fboMotionParticlesPtr, ofGetWindowSize(), GL_RGBA32F, GL_CLAMP_TO_EDGE, backgroundColor, false, OF_BLENDMODE_ALPHA);
   addFboConfigPtr(fboConfigPtrs, "sandlines", fboSandlinesPtr, ofGetWindowSize(), GL_RGBA32F, GL_CLAMP_TO_EDGE, backgroundColor, false, OF_BLENDMODE_ADD);
   addFboConfigPtr(fboConfigPtrs, "minor lines", fboPtrMinorLinesPtr, ofGetWindowSize(), GL_RGBA8, GL_CLAMP_TO_EDGE, backgroundColor, false, OF_BLENDMODE_ALPHA);
   addFboConfigPtr(fboConfigPtrs, "raw points", rawPointsFboPtr, ofGetWindowSize(), GL_RGBA32F, GL_REPEAT, backgroundColor, false, OF_BLENDMODE_ALPHA);

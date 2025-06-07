@@ -2,14 +2,15 @@
 
 using namespace ofxMarkSynth;
 
-const std::filesystem::path rootSourceMaterialPath { "/Users/steve/Documents/music-source-material" };
+void ofApp::configSynth1() {
+  synth.configure(createFboConfigs1(), createMods1(), ofGetWindowSize());
+  synth.name = "Synth1";
+}
 
-// ***********************************************
-// ***********************************************
-constexpr bool RECORD_FLOW_VIDEO = false;
-constexpr bool RECORD_AUDIO = false;
-// ***********************************************
-// ***********************************************
+void ofApp::configSynth2() {
+  synth.configure(createFboConfigs2(), createMods2(), ofGetWindowSize());
+  synth.name = "Synth2";
+}
 
 void ofApp::setup(){
   ofSetBackgroundColor(0);
@@ -21,18 +22,18 @@ void ofApp::setup(){
   //    audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>(rootSourceMaterialPath/"Alex Petcu Sound Bath.wav");
 //  audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>(rootSourceMaterialPath/"20250208-trombone-melody.wav");
 //  audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>(rootSourceMaterialPath/"nightsong.wav");
-//  audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>(rootSourceMaterialPath/"treganna.wav");
+  audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>(rootSourceMaterialPath/"treganna.wav");
 
   auto recordingPath = saveFilePath("audio-recordings");
   std::filesystem::create_directory(recordingPath);
-  audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>(RECORD_AUDIO, recordingPath);
+//  audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>(RECORD_AUDIO, recordingPath);
 
   audioDataProcessorPtr = std::make_shared<ofxAudioData::Processor>(audioAnalysisClientPtr);
   audioDataProcessorPtr->setDefaultValiditySpecs();
   audioDataPlotsPtr = std::make_shared<ofxAudioData::Plots>(audioDataProcessorPtr);
   
-  synth.configure(createFboConfigs(), createMods(), ofGetWindowSize());
-  synth.name = "Synth1";
+//  configSynth1();
+  configSynth2();
 }
 
 //--------------------------------------------------------------

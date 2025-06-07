@@ -3,6 +3,14 @@
 #include "ofMain.h"
 #include "ofxMarkSynth.h"
 
+// ***********************************************
+// ***********************************************
+const std::filesystem::path rootSourceMaterialPath { "/Users/steve/Documents/music-source-material" };
+constexpr bool RECORD_FLOW_VIDEO = false;
+constexpr bool RECORD_AUDIO = false;
+// ***********************************************
+// ***********************************************
+
 class ofApp : public ofBaseApp{
   
 public:
@@ -29,9 +37,14 @@ private:
   std::shared_ptr<ofxAudioData::Processor> audioDataProcessorPtr;
   std::shared_ptr<ofxAudioData::Plots> audioDataPlotsPtr;
   
+  void configSynth1();
+  void configSynth2();
+  ofxMarkSynth::ModPtrs createMods1();
+  ofxMarkSynth::FboConfigPtrs createFboConfigs1();
+  ofxMarkSynth::ModPtrs createMods2();
+  ofxMarkSynth::FboConfigPtrs createFboConfigs2();
+
   ofxMarkSynth::Synth synth;
-  ofxMarkSynth::ModPtrs createMods();
-  ofxMarkSynth::FboConfigPtrs createFboConfigs();
   ofxMarkSynth::FboPtr fluidFboPtr = std::make_shared<PingPongFbo>();
   ofxMarkSynth::FboPtr fluidVelocitiesFboPtr = std::make_shared<PingPongFbo>();
   ofxMarkSynth::FboPtr rawPointsFboPtr = std::make_shared<PingPongFbo>();
@@ -41,5 +54,5 @@ private:
   ofxMarkSynth::FboPtr fboSandlinesPtr = std::make_shared<PingPongFbo>();
   ofxMarkSynth::FboPtr fboClusterParticlesPtr = std::make_shared<PingPongFbo>();
   ofxMarkSynth::FboPtr fboMotionParticlesPtr = std::make_shared<PingPongFbo>();
-  
+
 };
