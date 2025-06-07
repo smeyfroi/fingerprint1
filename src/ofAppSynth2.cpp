@@ -156,7 +156,7 @@ ModPtrs ofApp::createMods2() {
     auto pathModPtr = addMod<PathMod>(mods, "Collage Path", {
       {"Strategy", "2"},
       {"MaxVertices", "7"},
-      {"VertexProximity", "0.3"}
+      {"VertexProximity", "0.06"}
     });
     audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_POLAR_PITCH_RMS_POINTS, pathModPtr, PathMod::SINK_VEC2);
     
