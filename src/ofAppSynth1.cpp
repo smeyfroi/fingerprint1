@@ -88,7 +88,7 @@ ModPtrs ofApp::createMods1() {
     drawPointsModPtr->addSink(DrawPointsMod::SOURCE_FBO, translateModPtr, TranslateMod::SINK_FBO);
     
     auto multiplyModPtr = addMod<MultiplyMod>(mods, "Fade Raw Points", {
-      {"Multiply By", "1.0, 1.0, 1.0, 0.999"}
+      {"Multiply By", "0.999"}
     });
     translateModPtr->addSink(TranslateMod::SOURCE_FBO, multiplyModPtr, MultiplyMod::SINK_FBO);
     drawPointsModPtr->receive(DrawPointsMod::SINK_FBO, rawPointsFboPtr);
@@ -124,7 +124,7 @@ ModPtrs ofApp::createMods1() {
     audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_RANDOM_VEC4, collageModPtr, CollageMod::SINK_COLOR);
 
     auto multiplyModPtr = addMod<MultiplyMod>(mods, "Fade Collage", {
-      {"Multiply By", "1.0, 1.0, 1.0, 0.99"}
+      {"Multiply By", "0.99"}
     });
     collageModPtr->addSink(CollageMod::SOURCE_FBO, multiplyModPtr, MultiplyMod::SINK_FBO);
     collageModPtr->receive(CollageMod::SINK_FBO, fboCollagePtr);
@@ -148,7 +148,7 @@ ModPtrs ofApp::createMods1() {
     clusterModPtr->addSink(ClusterMod::SOURCE_VEC2, sandLineModPtr, SandLineMod::SINK_POINTS);
 
     auto multiplyModPtr = addMod<MultiplyMod>(mods, "Fade Sand Lines", {
-      {"Multiply By", "1.0, 1.0, 1.0, 0.995"}
+      {"Multiply By", "0.995"}
     });
     sandLineModPtr->addSink(SandLineMod::SOURCE_FBO, multiplyModPtr, MultiplyMod::SINK_FBO);
     
@@ -159,14 +159,13 @@ ModPtrs ofApp::createMods1() {
     auto particleSetModPtr = addMod<ParticleSetMod>(mods, "Cluster Particles", {
       {"maxParticles", "500"},
       {"maxParticleAge", "300"},
-      {"colourMultiplier", "0.5"},
-      {"BlendStrategy", "1"} // ALPHA
+      {"colourMultiplier", "0.5"}
     });
     clusterModPtr->addSink(ClusterMod::SOURCE_VEC2, particleSetModPtr, ParticleSetMod::SINK_POINTS);
     audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_RANDOM_LIGHT_VEC4, particleSetModPtr, DrawPointsMod::SINK_POINT_COLOR);
 
     auto multiplyModPtr = addMod<MultiplyMod>(mods, "Fade Cluster Particles", {
-      {"Multiply By", "1.0, 1.0, 1.0, 0.995"}
+      {"Multiply By", "0.995"}
     });
     particleSetModPtr->addSink(ParticleSetMod::SOURCE_FBO, multiplyModPtr, MultiplyMod::SINK_FBO);
 

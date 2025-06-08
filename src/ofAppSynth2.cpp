@@ -45,7 +45,7 @@ ModPtrs ofApp::createMods2() {
     drawPointsModPtr->addSink(DrawPointsMod::SOURCE_FBO, translateModPtr, TranslateMod::SINK_FBO);
     
     auto multiplyModPtr = addMod<MultiplyMod>(mods, "Fade Raw Points", {
-      {"Multiply By", "1.0, 1.0, 1.0, 0.98"}
+      {"Multiply By", "0.98"}
     });
     translateModPtr->addSink(TranslateMod::SOURCE_FBO, multiplyModPtr, MultiplyMod::SINK_FBO);
     drawPointsModPtr->receive(DrawPointsMod::SINK_FBO, rawPointsFboPtr);
@@ -72,7 +72,7 @@ ModPtrs ofApp::createMods2() {
     clusterModPtr->addSink(ClusterMod::SOURCE_VEC2, sandLineModPtr, SandLineMod::SINK_POINTS);
 
     auto multiplyModPtr = addMod<MultiplyMod>(mods, "Fade Sand Lines", {
-      {"Multiply By", "1.0, 1.0, 1.0, 0.95"}
+      {"Multiply By", "0.95"}
     });
     sandLineModPtr->addSink(SandLineMod::SOURCE_FBO, multiplyModPtr, MultiplyMod::SINK_FBO);
     
@@ -88,63 +88,48 @@ ModPtrs ofApp::createMods2() {
   { // Motion particles
     auto particleSetModPtr = addMod<ParticleSetMod>(mods, "Motion Particles", {
       { "strategy", "2" }, // POINTS, CONNECTIONS, BOTH
-      { "maxParticles", "1000" },
-      { "maxParticleAge", "120" },
-      { "particleVelocityDamping", "0.97" },
-      { "particleAttraction", "-0.015" },
+      { "maxParticles", "500" },
+      { "maxParticleAge", "60" },
+      { "particleVelocityDamping", "0.999" },
+      { "particleAttraction", "-0.1" },
       { "particleAttractionRadius", "0.2" },
-      { "particleConnectionRadius", "0.05" },
+      { "particleConnectionRadius", "0.07" },
       { "particleDrawRadius", "0.0015" },
-      { "colourMultiplier", "0.25" },
-      { "forceScale", "0.04" },
-      { "Spin", "0.001" },
-      { "BlendStrategy", "0" } // ADD
+      { "colourMultiplier", "0.5" },
+      { "forceScale", "0.1" },
+      { "Spin", "0.001" }
     });
     videoFlowModPtr->addSink(VideoFlowSourceMod::SOURCE_VEC4, particleSetModPtr, ParticleSetMod::SINK_POINT_VELOCITIES);
     audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_RANDOM_LIGHT_VEC4, particleSetModPtr, DrawPointsMod::SINK_POINT_COLOR);
-    
-    auto logisticFnModPtr = addMod<LogisticFnMod>(mods, "Logistic Fn", {
-      { "clampFactor", "0.65" }
-    });
-    particleSetModPtr->addSink(ParticleSetMod::SOURCE_FBO, logisticFnModPtr, LogisticFnMod::SINK_FBO);
 
     auto multiplyModPtr = addMod<MultiplyMod>(mods, "Fade Particles", {
-      {"Multiply By", "1.0, 1.0, 1.0, 0.999"}
+      {"Multiply By", "0.99"}
     });
-    logisticFnModPtr->addSink(LogisticFnMod::SOURCE_FBO, multiplyModPtr, MultiplyMod::SINK_FBO);
+    particleSetModPtr->addSink(ParticleSetMod::SOURCE_FBO, multiplyModPtr, MultiplyMod::SINK_FBO);
 
-//    particleSetModPtr->receive(ParticleSetMod::SINK_FBO, fluidFboPtr);
     particleSetModPtr->receive(ParticleSetMod::SINK_FBO, fboMotionParticlesPtr);
   }
 
   { // Cluster particles
     auto particleSetModPtr = addMod<ParticleSetMod>(mods, "Cluster Particles", {
       {"strategy", "1"}, // POINTS, CONNECTIONS, BOTH
-      {"maxParticles", "1000"},
-      {"maxParticleAge", "100"},
-      {"particleAttraction", "-0.1"},
-      {"particleAttractionRadius", "0.4"},
-      {"particleDrawRadius", "0.005"},
-      {"colourMultiplier", "0.3"},
-      {"forceScale", "0.01"},
-      {"Spin", "-0.02"},
-      {"BlendStrategy", "0"} // ADD, ALPHA
+      {"maxParticles", "500"},
+      {"maxParticleAge", "70"},
+      {"particleAttraction", "-0.05"},
+      {"particleAttractionRadius", "0.15"},
+      {"particleConnectionRadius", "0.2"},
+      {"particleDrawRadius", "0.002"},
+      {"colourMultiplier", "0.25"},
+      {"forceScale", "0.15"},
+      {"Spin", "-0.02"}
     });
     clusterModPtr->addSink(ClusterMod::SOURCE_VEC2, particleSetModPtr, ParticleSetMod::SINK_POINTS);
     audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_RANDOM_DARK_VEC4, particleSetModPtr, ParticleSetMod::SINK_COLOR);
 
-    auto clampModPtr = addMod<ClampMod>(mods, "Clamp", {});
-    particleSetModPtr->addSink(ParticleSetMod::SOURCE_FBO, clampModPtr, ClampMod::SINK_FBO);
-
-//    auto logisticFnModPtr = addMod<LogisticFnMod>(mods, "Logistic Fn", {
-//      { "clampFactor", "0.65" }
-//    });
-//    particleSetModPtr->addSink(ParticleSetMod::SOURCE_FBO, logisticFnModPtr, LogisticFnMod::SINK_FBO);
-
     auto multiplyModPtr = addMod<MultiplyMod>(mods, "Fade Cluster Particles", {
-      {"Multiply By", "1.0, 1.0, 1.0, 0.99"}
+      {"Multiply By", "0.99"}
     });
-    particleSetModPtr->addSink(ClampMod::SOURCE_FBO, multiplyModPtr, MultiplyMod::SINK_FBO);
+    particleSetModPtr->addSink(ParticleSetMod::SOURCE_FBO, multiplyModPtr, MultiplyMod::SINK_FBO);
 
     particleSetModPtr->receive(ParticleSetMod::SINK_FBO, fboClusterParticlesPtr);
   }
@@ -168,7 +153,7 @@ ModPtrs ofApp::createMods2() {
     audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_RANDOM_VEC4, collageModPtr, CollageMod::SINK_COLOR);
 
     auto multiplyModPtr = addMod<MultiplyMod>(mods, "Fade Collage", {
-      {"Multiply By", "1.0, 1.0, 1.0, 0.97"}
+      {"Multiply By", "0.97"}
     });
     collageModPtr->addSink(CollageMod::SOURCE_FBO, multiplyModPtr, MultiplyMod::SINK_FBO);
     collageModPtr->receive(CollageMod::SINK_FBO, fboCollagePtr);
@@ -179,8 +164,8 @@ ModPtrs ofApp::createMods2() {
 
 FboConfigPtrs ofApp::createFboConfigs2() {
   // Used by fluid sim but not drawn
-  allocateFbo(fluidVelocitiesFboPtr, ofGetWindowSize(), GL_RGB32F, GL_REPEAT);
-  fluidVelocitiesFboPtr->getSource().clearColorBuffer({ 0.0, 0.0, 0.0 });
+//  allocateFbo(fluidVelocitiesFboPtr, ofGetWindowSize(), GL_RGB32F, GL_REPEAT);
+//  fluidVelocitiesFboPtr->getSource().clearColorBuffer({ 0.0, 0.0, 0.0 });
 //  fluidVelocitiesFboPtr->getSource().begin();
 //  ofEnableBlendMode(OF_BLENDMODE_DISABLED);
 //  ofSetColor(ofFloatColor { 0.0, 0.0, 0.0 });
@@ -193,10 +178,10 @@ FboConfigPtrs ofApp::createFboConfigs2() {
 //  addFboConfigPtr(fboConfigPtrs, "fluid", fluidFboPtr, ofGetWindowSize(), GL_RGBA32F, GL_REPEAT, backgroundColor, false, OF_BLENDMODE_ALPHA);
   addFboConfigPtr(fboConfigPtrs, "sandlines", fboSandlinesPtr, ofGetWindowSize(), GL_RGBA32F, GL_CLAMP_TO_EDGE, backgroundColor, false, OF_BLENDMODE_ADD);
   addFboConfigPtr(fboConfigPtrs, "motion particles", fboMotionParticlesPtr, ofGetWindowSize(), GL_RGBA32F, GL_CLAMP_TO_EDGE, backgroundColor, false, OF_BLENDMODE_ALPHA);
+  addFboConfigPtr(fboConfigPtrs, "collage", fboCollagePtr, ofGetWindowSize(), GL_RGBA32F, GL_CLAMP_TO_EDGE, backgroundColor, false, OF_BLENDMODE_ALPHA);
   addFboConfigPtr(fboConfigPtrs, "raw points", rawPointsFboPtr, ofGetWindowSize(), GL_RGBA32F, GL_REPEAT, backgroundColor, false, OF_BLENDMODE_ALPHA);
   addFboConfigPtr(fboConfigPtrs, "minor lines", fboPtrMinorLinesPtr, ofGetWindowSize(), GL_RGBA8, GL_CLAMP_TO_EDGE, backgroundColor, false, OF_BLENDMODE_ALPHA);
   addFboConfigPtr(fboConfigPtrs, "cluster particles", fboClusterParticlesPtr, ofGetWindowSize(), GL_RGBA32F, GL_CLAMP_TO_EDGE, backgroundColor, false, OF_BLENDMODE_ALPHA);
-  addFboConfigPtr(fboConfigPtrs, "collage", fboCollagePtr, ofGetWindowSize(), GL_RGBA32F, GL_CLAMP_TO_EDGE, backgroundColor, false, OF_BLENDMODE_ALPHA);
   addFboConfigPtr(fboConfigPtrs, "major lines", fboPtrMajorLinesPtr, ofGetWindowSize(), GL_RGBA32F, GL_CLAMP_TO_EDGE, backgroundColor, true, OF_BLENDMODE_ALPHA);
   return fboConfigPtrs;
 }
