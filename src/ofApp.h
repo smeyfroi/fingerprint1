@@ -39,12 +39,12 @@ private:
   std::shared_ptr<ofxAudioData::Processor> audioDataProcessorPtr;
   std::shared_ptr<ofxAudioData::Plots> audioDataPlotsPtr;
   
-  void configSynth1();
-  void configSynth2();
+  void configSynth1(glm::vec2 size);
+  void configSynth2(glm::vec2 size);
   ofxMarkSynth::ModPtrs createMods1();
-  ofxMarkSynth::FboConfigPtrs createFboConfigs1();
+  ofxMarkSynth::FboConfigPtrs createFboConfigs1(glm::vec2 size);
   ofxMarkSynth::ModPtrs createMods2();
-  ofxMarkSynth::FboConfigPtrs createFboConfigs2();
+  ofxMarkSynth::FboConfigPtrs createFboConfigs2(glm::vec2 size);
 
   ofxMarkSynth::Synth synth;
   ofxMarkSynth::FboPtr fluidFboPtr = std::make_shared<PingPongFbo>();

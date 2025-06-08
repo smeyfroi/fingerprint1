@@ -2,20 +2,20 @@
 
 using namespace ofxMarkSynth;
 
-void ofApp::configSynth1() {
-  synth.configure(createFboConfigs1(), createMods1(), ofGetWindowSize());
+void ofApp::configSynth1(glm::vec2 size) {
+  synth.configure(createFboConfigs1(size), createMods1(), size);
   synth.name = "Synth1";
 }
 
-void ofApp::configSynth2() {
-  synth.configure(createFboConfigs2(), createMods2(), ofGetWindowSize());
+void ofApp::configSynth2(glm::vec2 size) {
+  synth.configure(createFboConfigs2(size), createMods2(), size);
   synth.name = "Synth2";
 }
 
 void ofApp::setup(){
   ofSetBackgroundColor(0);
   ofDisableArbTex();
-  ofSetFrameRate(30);
+  ofSetFrameRate(20);
   
 //      audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>(rootSourceMaterialPath/"20250208-violin-separate-scale-vibrato-harmonics.wav");
 //      audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>(rootSourceMaterialPath/"Alex Petcu Bell Plates.wav");
@@ -26,14 +26,16 @@ void ofApp::setup(){
 
   auto recordingPath = saveFilePath("audio-recordings");
   std::filesystem::create_directory(recordingPath);
+//  audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>("Apple Inc.: Steve\325s iPhone Microphone", RECORD_AUDIO, recordingPath);
   audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>("Apple Inc.: MacBook Pro Microphone", RECORD_AUDIO, recordingPath);
 
   audioDataProcessorPtr = std::make_shared<ofxAudioData::Processor>(audioAnalysisClientPtr);
   audioDataProcessorPtr->setDefaultValiditySpecs();
   audioDataPlotsPtr = std::make_shared<ofxAudioData::Plots>(audioDataProcessorPtr);
   
-//  configSynth1();
-  configSynth2();
+  glm::vec2 size = { 7200, 7200 }; //ofGetWindowSize() * 2.0;
+//  configSynth1(size);
+  configSynth2(size);
 }
 
 //--------------------------------------------------------------
