@@ -113,8 +113,8 @@ ModPtrs ofApp::createMods2() {
   { // Cluster particles
     auto particleSetModPtr = addMod<ParticleSetMod>(mods, "Cluster Particles", {
       {"strategy", "1"}, // POINTS, CONNECTIONS, BOTH
-      {"maxParticles", "500"},
-      {"maxParticleAge", "100"},
+      {"maxParticles", "300"},
+      {"maxParticleAge", "50"},
       {"particleVelocityDamping", "0.999"},
       {"particleAttraction", "-0.1"},
       {"particleAttractionRadius", "0.15"},
@@ -128,37 +128,37 @@ ModPtrs ofApp::createMods2() {
     audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_RANDOM_DARK_VEC4, particleSetModPtr, ParticleSetMod::SINK_COLOR);
 
     auto multiplyModPtr = addMod<MultiplyMod>(mods, "Fade Cluster Particles", {
-      {"Multiply By", "0.99"}
+      {"Multiply By", "0.98"}
     });
     particleSetModPtr->addSink(ParticleSetMod::SOURCE_FBO, multiplyModPtr, MultiplyMod::SINK_FBO);
 
     particleSetModPtr->receive(ParticleSetMod::SINK_FBO, fboClusterParticlesPtr);
   }
 
-//  { // Collage layer from raw pitch/RMS points and the cluster particles FBO pixels
-//    auto pixelSnapshotModPtr = addMod<PixelSnapshotMod>(mods, "Pixel Snapshot", {});
-//    pixelSnapshotModPtr->receive(PixelSnapshotMod::SINK_FBO, rawPointsFboPtr);
-//    
-//    auto pathModPtr = addMod<PathMod>(mods, "Collage Path", {
-//      {"Strategy", "2"},
-//      {"MaxVertices", "7"},
-//      {"VertexProximity", "0.06"}
-//    });
-//    audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_POLAR_PITCH_RMS_POINTS, pathModPtr, PathMod::SINK_VEC2);
-//    
-//    auto collageModPtr = addMod<CollageMod>(mods, "Collage", {
-//      {"Strength", "1.0"}
-//    });
-//    pixelSnapshotModPtr->addSink(PixelSnapshotMod::SOURCE_PIXELS, collageModPtr, CollageMod::SINK_PIXELS);
-//    pathModPtr->addSink(PathMod::SOURCE_PATH, collageModPtr, CollageMod::SINK_PATH);
-//    audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_RANDOM_VEC4, collageModPtr, CollageMod::SINK_COLOR);
-//
-//    auto multiplyModPtr = addMod<MultiplyMod>(mods, "Fade Collage", {
-//      {"Multiply By", "0.97"}
-//    });
-//    collageModPtr->addSink(CollageMod::SOURCE_FBO, multiplyModPtr, MultiplyMod::SINK_FBO);
-//    collageModPtr->receive(CollageMod::SINK_FBO, fboCollagePtr);
-//  }
+  { // Collage layer from raw pitch/RMS points and the cluster particles FBO pixels
+    auto pixelSnapshotModPtr = addMod<PixelSnapshotMod>(mods, "Pixel Snapshot", {});
+    pixelSnapshotModPtr->receive(PixelSnapshotMod::SINK_FBO, rawPointsFboPtr);
+    
+    auto pathModPtr = addMod<PathMod>(mods, "Collage Path", {
+      {"Strategy", "0"},
+      {"MaxVertices", "7"},
+      {"VertexProximity", "0.06"}
+    });
+    audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_POLAR_PITCH_RMS_POINTS, pathModPtr, PathMod::SINK_VEC2);
+    
+    auto collageModPtr = addMod<CollageMod>(mods, "Collage", {
+      {"Strength", "1.0"}
+    });
+    pixelSnapshotModPtr->addSink(PixelSnapshotMod::SOURCE_PIXELS, collageModPtr, CollageMod::SINK_PIXELS);
+    pathModPtr->addSink(PathMod::SOURCE_PATH, collageModPtr, CollageMod::SINK_PATH);
+    audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_RANDOM_VEC4, collageModPtr, CollageMod::SINK_COLOR);
+
+    auto multiplyModPtr = addMod<MultiplyMod>(mods, "Fade Collage", {
+      {"Multiply By", "0.97"}
+    });
+    collageModPtr->addSink(CollageMod::SOURCE_FBO, multiplyModPtr, MultiplyMod::SINK_FBO);
+    collageModPtr->receive(CollageMod::SINK_FBO, fboCollagePtr);
+  }
 
   return mods;
 }
