@@ -87,14 +87,14 @@ ModPtrs ofApp::createMods2() {
   
   { // Motion particles
     auto particleSetModPtr = addMod<ParticleSetMod>(mods, "Motion Particles", {
-      { "strategy", "1" }, // POINTS, CONNECTIONS, BOTH
-      { "maxParticles", "500" },
-      { "maxParticleAge", "60" },
+      { "strategy", "0" }, // POINTS, CONNECTIONS, BOTH
+      { "maxParticles", "1000" },
+      { "maxParticleAge", "100" },
       { "particleVelocityDamping", "0.995" },
-      { "particleAttraction", "-0.06" },
+      { "particleAttraction", "0.04" },
       { "particleAttractionRadius", "0.2" },
       { "particleConnectionRadius", "0.04" },
-      { "particleDrawRadius", "0.0015" },
+      { "particleDrawRadius", "8.0" },
       { "colourMultiplier", "1.0" },
       { "forceScale", "0.05" },
       { "Spin", "0.001" }
