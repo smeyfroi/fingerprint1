@@ -15,11 +15,11 @@ int main( ){
   settings.setPosition({0, 0});
   settings.resizable = true;
   auto guiWindow = ofCreateWindow(settings);
-  guiWindow->setVerticalSync(false);
+//  guiWindow->setVerticalSync(false);
 
   auto mainApp = std::make_shared<ofApp>();
-//  mainApp->setupGui();
   ofAddListener(guiWindow->events().draw, mainApp.get(), &ofApp::drawGui);
+//  ofAddListener(guiWindow->events().keyPressed, mainApp.get(), &ofApp::keyPressed);
 	ofRunApp(mainWindow, mainApp);
 	ofRunMainLoop();
 }

@@ -1,4 +1,5 @@
 #include "ofApp.h"
+#include "ofxTimeMeasurements.h"
 
 using namespace ofxMarkSynth;
 
@@ -17,6 +18,11 @@ void ofApp::setup(){
   ofDisableArbTex();
   ofSetFrameRate(20);
   
+  TIME_SAMPLE_SET_FRAMERATE(20);
+  TIME_SAMPLE_SET_DRAW_LOCATION(TIME_MEASUREMENTS_BOTTOM_RIGHT);
+  TIME_SAMPLE_DISABLE();
+//  ofxTimeMeasurements::instance()->setEnabled(false);
+
 //      audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>(rootSourceMaterialPath/"20250208-violin-separate-scale-vibrato-harmonics.wav");
 //      audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>(rootSourceMaterialPath/"Alex Petcu Bell Plates.wav");
   //    audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>(rootSourceMaterialPath/"Alex Petcu Sound Bath.wav");
@@ -33,7 +39,8 @@ void ofApp::setup(){
   audioDataProcessorPtr->setDefaultValiditySpecs();
   audioDataPlotsPtr = std::make_shared<ofxAudioData::Plots>(audioDataProcessorPtr);
   
-  glm::vec2 size = { 7200, 7200 }; //ofGetWindowSize() * 2.0;
+  glm::vec2 size = { 4800, 4800 };
+//  glm::vec2 size = { 7200, 7200 };
 //  configSynth1(size);
   configSynth2(size);
 }
@@ -55,7 +62,8 @@ void ofApp::drawGui(ofEventArgs& args){
   auto currentWindowSize = ofGetCurrentWindow()->getWindowSize();
   if (guiWindowSize != currentWindowSize) {
     guiWindowSize = currentWindowSize;
-    synth.setGuiSize(currentWindowSize);
+    guiWindowSize.x = 256;
+    synth.setGuiSize(guiWindowSize);
   }
   synth.drawGui();
 }

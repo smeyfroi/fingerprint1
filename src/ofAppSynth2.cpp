@@ -91,7 +91,7 @@ ModPtrs ofApp::createMods2() {
       { "maxParticles", "1000" },
       { "maxParticleAge", "100" },
       { "particleVelocityDamping", "0.995" },
-      { "particleAttraction", "0.04" },
+      { "particleAttraction", "-0.01" },
       { "particleAttractionRadius", "0.2" },
       { "particleConnectionRadius", "0.04" },
       { "particleDrawRadius", "8.0" },

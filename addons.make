@@ -19,4 +19,5 @@ ofxPlottable
 ofxPointClusters
 ofxSelfOrganizingMap
 ofxSomPalette
+ofxTimeMeasurements
 ofxMarkSynth
