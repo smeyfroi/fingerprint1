@@ -7,6 +7,8 @@
 
 #include "ofApp.h"
 
+constexpr int VIDEO_DEVICE_ID = 2; // **********************************************************
+
 using namespace ofxMarkSynth;
 
 ModPtrs ofApp::createMods2() {
@@ -82,7 +84,7 @@ ModPtrs ofApp::createMods2() {
   auto videoFlowModPtr = addMod<VideoFlowSourceMod>(mods, "Video flow", {
     { "SamplesPerUpdate", "0.06" },
     { "velocityScale", "4.0" }
-  }, 0, glm::vec2 { 640, 480 }, RECORD_FLOW_VIDEO, saveFilePath("video-recordings"));
+  }, VIDEO_DEVICE_ID, glm::vec2 { 640, 480 }, RECORD_FLOW_VIDEO, saveFilePath("video-recordings"));
 //  auto videoFlowModPtr = addMod<VideoFlowSourceMod>(mods, "Video flow", {}, rootSourceMaterialPath/"trombone-trimmed.mov", true);
   
   { // Motion particles

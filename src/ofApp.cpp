@@ -20,8 +20,7 @@ void ofApp::setup(){
   
   TIME_SAMPLE_SET_FRAMERATE(20);
   TIME_SAMPLE_SET_DRAW_LOCATION(TIME_MEASUREMENTS_BOTTOM_RIGHT);
-  TIME_SAMPLE_DISABLE();
-//  ofxTimeMeasurements::instance()->setEnabled(false);
+  TIME_SAMPLE_DISABLE(); // ************************************************************************
 
 //      audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>(rootSourceMaterialPath/"20250208-violin-separate-scale-vibrato-harmonics.wav");
 //      audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>(rootSourceMaterialPath/"Alex Petcu Bell Plates.wav");
@@ -32,17 +31,16 @@ void ofApp::setup(){
 
   auto recordingPath = saveFilePath("audio-recordings");
   std::filesystem::create_directory(recordingPath);
-//  audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>("Apple Inc.: Steve\325s iPhone Microphone", RECORD_AUDIO, recordingPath);
-  audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>("Apple Inc.: MacBook Pro Microphone", RECORD_AUDIO, recordingPath);
+  audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>(MIC_DEVICE_NAME, RECORD_AUDIO, recordingPath);
 
   audioDataProcessorPtr = std::make_shared<ofxAudioData::Processor>(audioAnalysisClientPtr);
   audioDataProcessorPtr->setDefaultValiditySpecs();
   audioDataPlotsPtr = std::make_shared<ofxAudioData::Plots>(audioDataProcessorPtr);
   
-  glm::vec2 size = { 4800, 4800 };
-//  glm::vec2 size = { 7200, 7200 };
-//  configSynth1(size);
-  configSynth2(size);
+//  glm::vec2 size = { 4800, 4800 };
+  glm::vec2 size = { 7200, 7200 };
+  configSynth1(size);
+//  configSynth2(size);
 }
 
 //--------------------------------------------------------------
