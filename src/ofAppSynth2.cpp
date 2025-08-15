@@ -35,21 +35,31 @@ ModPtrs ofApp::createMods2() {
   { // Raw data points
     auto drawPointsModPtr = addMod<DrawPointsMod>(mods, "Draw Raw Points", {
       {"PointRadius", "0.002"},
+      {"PointRadiusVarianceScale", "0.014"},
       {"ColorMultiplier", "1.0"}
     });
     audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_RANDOM_VEC4, drawPointsModPtr, DrawPointsMod::SINK_POINT_COLOR);
     audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_PITCH_RMS_POINTS, drawPointsModPtr, DrawPointsMod::SINK_POINTS);
 //    audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_POLAR_PITCH_RMS_POINTS, drawPointsModPtr, DrawPointsMod::SINK_POINTS);
-    
-    auto translateModPtr = addMod<TranslateMod>(mods, "Translate Raw Points", {
-      {"Translate By", "0.0, 0.003"}
+    audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_SPECTRAL_CREST_SCALAR, drawPointsModPtr, DrawPointsMod::SINK_POINT_RADIUS_VARIANCE);
+
+    auto fadeModPtr = addMod<FadeMod>(mods, "Fade Raw Points", {
+      {"Translation", "0.0, 0.0015"},
+      {"Translation Alpha", "1.0"},
+      {"Fade Amount", "0.0001"},
     });
-    drawPointsModPtr->addSink(DrawPointsMod::SOURCE_FBO, translateModPtr, TranslateMod::SINK_FBO);
-    
-    auto multiplyModPtr = addMod<MultiplyMod>(mods, "Fade Raw Points", {
-      {"Multiply By", "0.98"}
-    });
-    translateModPtr->addSink(TranslateMod::SOURCE_FBO, multiplyModPtr, MultiplyMod::SINK_FBO);
+    drawPointsModPtr->addSink(DrawPointsMod::SOURCE_FBO, fadeModPtr, TranslateMod::SINK_FBO);
+
+//    auto translateModPtr = addMod<TranslateMod>(mods, "Translate Raw Points", {
+//      {"Translate By", "0.0, 0.003"}
+//    });
+//    drawPointsModPtr->addSink(DrawPointsMod::SOURCE_FBO, translateModPtr, TranslateMod::SINK_FBO);
+//    
+//    auto multiplyModPtr = addMod<MultiplyMod>(mods, "Fade Raw Points", {
+//      {"Multiply By", "0.98"}
+//    });
+//    translateModPtr->addSink(TranslateMod::SOURCE_FBO, multiplyModPtr, MultiplyMod::SINK_FBO);
+
     drawPointsModPtr->receive(DrawPointsMod::SINK_FBO, rawPointsFboPtr);
   }
   
@@ -182,7 +192,7 @@ FboConfigPtrs ofApp::createFboConfigs2(glm::vec2 size) {
   addFboConfigPtr(fboConfigPtrs, "sandlines", fboSandlinesPtr, size, GL_RGBA32F, GL_CLAMP_TO_EDGE, backgroundColor, false, OF_BLENDMODE_ADD);
   addFboConfigPtr(fboConfigPtrs, "motion particles", fboMotionParticlesPtr, size, GL_RGBA32F, GL_CLAMP_TO_EDGE, backgroundColor, false, OF_BLENDMODE_ALPHA);
   addFboConfigPtr(fboConfigPtrs, "collage", fboCollagePtr, size, GL_RGBA32F, GL_CLAMP_TO_EDGE, backgroundColor, false, OF_BLENDMODE_ALPHA);
-  addFboConfigPtr(fboConfigPtrs, "raw points", rawPointsFboPtr, size, GL_RGBA32F, GL_REPEAT, backgroundColor, false, OF_BLENDMODE_ALPHA);
+  addFboConfigPtr(fboConfigPtrs, "raw points", rawPointsFboPtr, size, FLOAT_A_MODE, GL_REPEAT, backgroundColor, false, OF_BLENDMODE_ALPHA);
   addFboConfigPtr(fboConfigPtrs, "cluster particles", fboClusterParticlesPtr, size, GL_RGBA32F, GL_CLAMP_TO_EDGE, backgroundColor, false, OF_BLENDMODE_ALPHA);
   addFboConfigPtr(fboConfigPtrs, "minor lines", fboPtrMinorLinesPtr, size, GL_RGBA8, GL_CLAMP_TO_EDGE, backgroundColor, true, OF_BLENDMODE_ALPHA);
   addFboConfigPtr(fboConfigPtrs, "major lines", fboPtrMajorLinesPtr, size, GL_RGBA32F, GL_CLAMP_TO_EDGE, backgroundColor, true, OF_BLENDMODE_ALPHA);

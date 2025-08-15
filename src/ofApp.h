@@ -11,6 +11,7 @@ constexpr bool RECORD_AUDIO = false;
 //const std::string MIC_DEVICE_NAME = "Audient: iD4";
 //const std::string MIC_DEVICE_NAME = "Apple Inc.: Steve\325s iPhone Microphone";
 const std::string MIC_DEVICE_NAME = "Apple Inc.: MacBook Pro Microphone";
+constexpr float FRAME_RATE = 25.0;
 // ***********************************************
 // ***********************************************
 

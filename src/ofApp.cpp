@@ -16,9 +16,9 @@ void ofApp::configSynth2(glm::vec2 size) {
 void ofApp::setup(){
   ofSetBackgroundColor(0);
   ofDisableArbTex();
-  ofSetFrameRate(20);
+  ofSetFrameRate(FRAME_RATE);
   
-  TIME_SAMPLE_SET_FRAMERATE(20);
+  TIME_SAMPLE_SET_FRAMERATE(FRAME_RATE);
   TIME_SAMPLE_SET_DRAW_LOCATION(TIME_MEASUREMENTS_BOTTOM_RIGHT);
   TIME_SAMPLE_DISABLE(); // ************************************************************************
 
