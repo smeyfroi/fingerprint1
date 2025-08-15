@@ -50,7 +50,7 @@ private:
   ofxMarkSynth::ModPtrs createMods2();
   ofxMarkSynth::FboConfigPtrs createFboConfigs2(glm::vec2 size);
 
-  ofxMarkSynth::Synth synth;
+  std::shared_ptr<ofxMarkSynth::Synth> synth;
   ofxMarkSynth::FboPtr fluidFboPtr = std::make_shared<PingPongFbo>();
   ofxMarkSynth::FboPtr fluidVelocitiesFboPtr = std::make_shared<PingPongFbo>();
   ofxMarkSynth::FboPtr rawPointsFboPtr = std::make_shared<PingPongFbo>();

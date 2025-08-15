@@ -4,13 +4,22 @@
 using namespace ofxMarkSynth;
 
 void ofApp::configSynth1(glm::vec2 size) {
-  synth.configure(createFboConfigs1(size), createMods1(), size);
-  synth.name = "Synth1";
+  synth = std::make_shared<Synth>("Synth1", ModConfig {});
+  auto mods = createMods1();
+  auto somPaletteIter = std::find_if(mods.begin(), mods.end(), [](const ModPtr modPtr) {
+    return modPtr->name == "Palette Creator";
+  });
+  if (somPaletteIter == mods.end()) {
+    ofLogError() << "No Palette Creator found in mods";
+    exit();
+  }
+  synth->configure(createFboConfigs1(size), std::move(mods), size);
+  (*somPaletteIter)->addSink(SomPaletteMod::SOURCE_DARKEST_VEC4, synth, Synth::SINK_BACKGROUND_COLOR);
 }
 
 void ofApp::configSynth2(glm::vec2 size) {
-  synth.configure(createFboConfigs2(size), createMods2(), size);
-  synth.name = "Synth2";
+  synth = std::make_shared<Synth>("Synth2", ModConfig {});
+  synth->configure(createFboConfigs2(size), createMods2(), size);
 }
 
 void ofApp::setup(){
@@ -46,12 +55,12 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::update(){
   audioDataProcessorPtr->update();
-  synth.update();
+  synth->update();
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-  synth.draw();
+  synth->draw();
   audioDataPlotsPtr->drawPlots();
 }
 
@@ -61,9 +70,9 @@ void ofApp::drawGui(ofEventArgs& args){
   if (guiWindowSize != currentWindowSize) {
     guiWindowSize = currentWindowSize;
     guiWindowSize.x = 256;
-    synth.setGuiSize(guiWindowSize);
+    synth->setGuiSize(guiWindowSize);
   }
-  synth.drawGui();
+  synth->drawGui();
 }
 
 //--------------------------------------------------------------
@@ -76,7 +85,7 @@ void ofApp::exit(){
 void ofApp::keyPressed(int key){
   if (audioAnalysisClientPtr->keyPressed(key)) return;
   if (audioDataPlotsPtr->keyPressed(key)) return;
-  if (synth.keyPressed(key)) return;
+  if (synth->keyPressed(key)) return;
 }
 
 //--------------------------------------------------------------
