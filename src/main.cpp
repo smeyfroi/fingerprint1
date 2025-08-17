@@ -7,12 +7,12 @@ int main( ){
   ofGLFWWindowSettings settings;
   settings.setGLVersion(4, 1);
 
-	settings.setSize(1024, 1024);
+	settings.setSize(1960, 1200);
   settings.setPosition({255, 0}); // **************** Change the position depending on screen/projector setup
   settings.resizable = false;
 	auto mainWindow = ofCreateWindow(settings);
   
-  settings.setSize(256, 1024);
+  settings.setSize(256, 1200);
   settings.setPosition({0, 0});
   settings.resizable = true;
   auto guiWindow = ofCreateWindow(settings);
