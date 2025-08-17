@@ -34,8 +34,8 @@ ModPtrs ofApp::createMods2() {
   
   { // Raw data points
     auto drawPointsModPtr = addMod<DrawPointsMod>(mods, "Draw Raw Points", {
-      {"PointRadius", "0.002"},
-      {"PointRadiusVarianceScale", "0.014"},
+      {"Radius", "0.002"},
+      {"RadiusVarianceScale", "0.014"},
       {"ColorMultiplier", "1.0"}
     });
     audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_RANDOM_VEC4, drawPointsModPtr, DrawPointsMod::SINK_POINT_COLOR);
