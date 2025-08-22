@@ -20,4 +20,5 @@ ofxPointClusters
 ofxSelfOrganizingMap
 ofxSomPalette
 ofxTimeMeasurements
+ofxTinyEXR
 ofxMarkSynth
