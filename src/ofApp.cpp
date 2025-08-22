@@ -78,6 +78,7 @@ void ofApp::drawGui(ofEventArgs& args){
 void ofApp::exit(){
   audioAnalysisClientPtr->stopRecording();
   audioAnalysisClientPtr->closeStream();
+  synth->shutdown();
 }
 
 //--------------------------------------------------------------
