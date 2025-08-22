@@ -143,22 +143,26 @@ ModPtrs ofApp::createMods1() {
 //    dividedAreaModPtr->receive(DividedAreaMod::SINK_FBO, fboPtrMajorLinesPtr);
 //  }
   
-//  { // Sandlines
-//    auto sandLineModPtr = addMod<SandLineMod>(mods, "Sand lines", {
-//      {"PointRadius", "1.0"},
-//      {"Density", "0.5"}
+  { // Sandlines
+    auto sandLineModPtr = addMod<SandLineMod>(mods, "Sand lines", {
+      {"PointRadius", "1.0"},
+      {"Density", "0.15"},
+      {"AlphaMultiplier", "1.0"},
+      {"StdDevAlong", "0.5"},
+      {"StdDevPerpendicular", "0.004"}
+    });
+    audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_RANDOM_LIGHT_VEC4, sandLineModPtr, SandLineMod::SINK_POINT_COLOR);
+    clusterModPtr->addSink(ClusterMod::SOURCE_VEC2, sandLineModPtr, SandLineMod::SINK_POINTS);
+
+//    auto fadeModPtr = addMod<FadeMod>(mods, "Fade Sand Lines", {
+//      {"Fade Amount", "0.00000005"}
 //    });
-//    audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_RANDOM_DARK_VEC4, sandLineModPtr, SandLineMod::SINK_POINT_COLOR);
-//    clusterModPtr->addSink(ClusterMod::SOURCE_VEC2, sandLineModPtr, SandLineMod::SINK_POINTS);
-//
-//    auto multiplyModPtr = addMod<MultiplyMod>(mods, "Fade Sand Lines", {
-//      {"Multiply By", "0.995"}
-//    });
-//    sandLineModPtr->addSink(SandLineMod::SOURCE_FBO, multiplyModPtr, MultiplyMod::SINK_FBO);
-//
-////    sandLineModPtr->receive(SandLineMod::SINK_FBO, fboSandlinesPtr);
+//    sandLineModPtr->addSink(SandLineMod::SOURCE_FBO, fadeModPtr, FadeMod::SINK_FBO);
+
+//    sandLineModPtr->receive(SandLineMod::SINK_FBO, fboSandlinesPtr);
+    sandLineModPtr->receive(SandLineMod::SINK_FBO, rawPointsFboPtr);
 //    sandLineModPtr->receive(SandLineMod::SINK_FBO, fluidFboPtr);
-//  }
+  }
   
 //  { // Cluster particles
 //    auto particleSetModPtr = addMod<ParticleSetMod>(mods, "Cluster Particles", {
@@ -195,9 +199,9 @@ FboConfigPtrs ofApp::createFboConfigs1(glm::vec2 size) {
   FboConfigPtrs fboConfigPtrs;
   const ofFloatColor backgroundColor { 0.0, 0.0, 0.0, 0.0 };
 //  addFboConfigPtr(fboConfigPtrs, "fluid", fluidFboPtr, size / 4.0, GL_RGBA32F, GL_REPEAT, backgroundColor, false, OF_BLENDMODE_ALPHA);
-//  addFboConfigPtr(fboConfigPtrs, "sandlines", fboSandlinesPtr, size, GL_RGBA32F, GL_CLAMP_TO_EDGE, backgroundColor, false, OF_BLENDMODE_ADD);
+  addFboConfigPtr(fboConfigPtrs, "raw points", rawPointsFboPtr, size, GL_RGBA16F, GL_REPEAT, backgroundColor, false, OF_BLENDMODE_ADD);
+//  addFboConfigPtr(fboConfigPtrs, "sandlines", fboSandlinesPtr, size, GL_RGBA16F, GL_CLAMP_TO_EDGE, backgroundColor, false, OF_BLENDMODE_ADD);
 //  addFboConfigPtr(fboConfigPtrs, "minor lines", fboPtrMinorLinesPtr, size, GL_RGBA8, GL_CLAMP_TO_EDGE, backgroundColor, true, OF_BLENDMODE_ALPHA);
-  addFboConfigPtr(fboConfigPtrs, "raw points", rawPointsFboPtr, size, GL_RGBA16F, GL_REPEAT, backgroundColor, false, OF_BLENDMODE_ALPHA);
 //  addFboConfigPtr(fboConfigPtrs, "collage", fboCollagePtr, size, GL_RGBA32F, GL_CLAMP_TO_EDGE, backgroundColor, false, OF_BLENDMODE_ALPHA);
 //  addFboConfigPtr(fboConfigPtrs, "cluster particles", fboClusterParticlesPtr, size, GL_RGBA32F, GL_CLAMP_TO_EDGE, backgroundColor, false, OF_BLENDMODE_ALPHA);
 //  addFboConfigPtr(fboConfigPtrs, "major lines", fboPtrMajorLinesPtr, size, GL_RGBA32F, GL_CLAMP_TO_EDGE, backgroundColor, true, OF_BLENDMODE_ALPHA);

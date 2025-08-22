@@ -19,7 +19,7 @@ int main( ){
 
   auto mainApp = std::make_shared<ofApp>();
   ofAddListener(guiWindow->events().draw, mainApp.get(), &ofApp::drawGui);
-//  ofAddListener(guiWindow->events().keyPressed, mainApp.get(), &ofBaseApp::keyPressed); // doesn't work
+//  ofAddListener(guiWindow->events().keyPressed, mainApp.get(), &ofBaseApp::keyPressed); // doesn't work because keyPressed doesn't take an ofEventArgs& parameter
 	ofRunApp(mainWindow, mainApp);
 	ofRunMainLoop();
 }

@@ -46,7 +46,6 @@ void ofApp::setup(){
   audioDataProcessorPtr->setDefaultValiditySpecs();
   audioDataPlotsPtr = std::make_shared<ofxAudioData::Plots>(audioDataProcessorPtr);
   
-//  glm::vec2 size = { 4800, 4800 };
   glm::vec2 size = { 7200, 7200 };
   configSynth1(size);
 //  configSynth2(size);
