@@ -13,14 +13,22 @@ ModPtrs ofApp::createMods1() {
   auto mods = ModPtrs {};
   
   // Audio, palette from raw spectral points, clusters from raw pitch/RMS points
-  auto audioDataSourceModPtr = addMod<AudioDataSourceMod>(mods, "Audio Points", {
+  auto audioDataSourceModPtr = addMod<AudioDataSourceMod>(mods, "Audio Source", {
     {"MinPitch", "50.0"},
-    {"MaxPitch", "1200.0"},
-    {"MinRms", "0.005"},
-    {"MaxRms", "0.06"}
+    {"MaxPitch", "1500.0"},
+    {"MinRms", "0.000"},
+    {"MaxRms", "0.04"},
+    {"MinComplexSpectralDifference", "200.0"},
+    {"MaxComplexSpectralDifference", "1000.0"},
+    {"MinSpectralCrest", "10.0"},
+    {"MaxSpectralCrest", "300.0"},
+    {"MinZeroCrossingRate", "5.0"},
+    {"MaxZeroCrossingRate", "15.0"}
   }, audioDataProcessorPtr);
   
-  auto audioPaletteModPtr = addMod<SomPaletteMod>(mods, "Palette Creator", {});
+  auto audioPaletteModPtr = addMod<SomPaletteMod>(mods, "Palette Creator", {
+    {"Iterations", "3000"}
+  });
   audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_SPECTRAL_POINTS, audioPaletteModPtr, SomPaletteMod::SINK_VEC3);
   
   auto clusterModPtr = addMod<ClusterMod>(mods, "Clusters", {

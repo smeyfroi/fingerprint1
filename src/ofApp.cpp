@@ -3,18 +3,26 @@
 
 using namespace ofxMarkSynth;
 
+ModPtr findModPtrByName(const std::vector<ModPtr>& mods, const std::string& name) {
+  auto it = std::find_if(mods.begin(), mods.end(), [&name](const ModPtr& modPtr) {
+    return modPtr->name == name;
+  });
+  if (it == mods.end()) {
+    ofLogError() << "No mod found with name " << name;
+    ofExit();
+  }
+  return *it;
+}
+
 void ofApp::configSynth1(glm::vec2 size) {
   synth = std::make_shared<Synth>("Synth1", ModConfig {});
   auto mods = createMods1();
-  auto somPaletteIter = std::find_if(mods.begin(), mods.end(), [](const ModPtr modPtr) {
-    return modPtr->name == "Palette Creator";
-  });
-  if (somPaletteIter == mods.end()) {
-    ofLogError() << "No Palette Creator found in mods";
-    exit();
-  }
+  auto somPaletteModPtr = findModPtrByName(mods, "Palette Creator");
+  auto audioDataSourceModPtr = findModPtrByName(mods, "Audio Source");
   synth->configure(createFboConfigs1(size), std::move(mods), size);
-  (*somPaletteIter)->addSink(SomPaletteMod::SOURCE_DARKEST_VEC4, synth, Synth::SINK_BACKGROUND_COLOR);
+  somPaletteModPtr->addSink(SomPaletteMod::SOURCE_DARKEST_VEC4, synth, Synth::SINK_BACKGROUND_COLOR);
+  audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_ONSET1, synth, Synth::SINK_AUDIO_ONSET);
+  audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_TIMBRE_CHANGE, synth, Synth::SINK_AUDIO_TIMBRE_CHANGE);
 }
 
 void ofApp::configSynth2(glm::vec2 size) {
@@ -45,14 +53,18 @@ void ofApp::setup(){
   audioDataProcessorPtr = std::make_shared<ofxAudioData::Processor>(audioAnalysisClientPtr);
   audioDataProcessorPtr->setDefaultValiditySpecs();
   audioDataPlotsPtr = std::make_shared<ofxAudioData::Plots>(audioDataProcessorPtr);
-  
+
   glm::vec2 size = { 7200, 7200 };
   configSynth1(size);
 //  configSynth2(size);
+  
+//  ofLogNotice() << "ofApp::setup synth configured"; // error happens between this and update()
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
+//  ofLogNotice() << "ofApp::update frame " << ofGetFrameNum();  // error happens before this and after setup()
+  
   audioDataProcessorPtr->update();
   synth->update();
 }
