@@ -16,18 +16,18 @@ ModPtrs ofApp::createMods1() {
   auto audioDataSourceModPtr = addMod<AudioDataSourceMod>(mods, "Audio Source", {
     {"MinPitch", "50.0"},
     {"MaxPitch", "1500.0"},
-    {"MinRms", "0.000"},
-    {"MaxRms", "0.04"},
+    {"MinRms", "0.0005"},
+    {"MaxRms", "0.11"},
     {"MinComplexSpectralDifference", "200.0"},
     {"MaxComplexSpectralDifference", "1000.0"},
-    {"MinSpectralCrest", "10.0"},
-    {"MaxSpectralCrest", "300.0"},
+    {"MinSpectralCrest", "20.0"},
+    {"MaxSpectralCrest", "350.0"},
     {"MinZeroCrossingRate", "5.0"},
     {"MaxZeroCrossingRate", "15.0"}
   }, audioDataProcessorPtr);
   
   auto audioPaletteModPtr = addMod<SomPaletteMod>(mods, "Palette Creator", {
-    {"Iterations", "3000"}
+    {"Iterations", "4000"}
   });
   audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_SPECTRAL_POINTS, audioPaletteModPtr, SomPaletteMod::SINK_VEC3);
   
@@ -84,10 +84,8 @@ ModPtrs ofApp::createMods1() {
   
   { // Smeared raw data points
     auto drawPointsModPtr = addMod<SoftCircleMod>(mods, "Raw Points", {
-      {"Radius", "0.0001"},
-      {"RadiusVarianceScale", "0.03"},
-      {"ColorMultiplier", "0.6"},
-//      {"Softness", "0.3"},
+      {"Radius", "0.001"}, // min
+      {"RadiusVarianceScale", "0.01"}, // scale the variance to some to the min
     });
     audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_RANDOM_LIGHT_VEC4, drawPointsModPtr, SoftCircleMod::SINK_POINT_COLOR);
 //    audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_PITCH_RMS_POINTS, drawPointsModPtr, SoftCircleMod::SINK_POINTS);
@@ -98,24 +96,25 @@ ModPtrs ofApp::createMods1() {
 
     auto smearModPtr = addMod<SmearMod>(mods, "Smear Raw Points", {
       {"Translation", "0.0, 0.0005"},
-      {"MixNew", "0.7"},
-      {"AlphaMultiplier", "0.998"},
+      {"MixNew", "0.8"},
+      {"AlphaMultiplier", "0.999"},
     });
     drawPointsModPtr->addSink(DrawPointsMod::SOURCE_FBO, smearModPtr, SmearMod::SINK_FBO);
 
     drawPointsModPtr->receive(DrawPointsMod::SINK_FBO, rawPointsFboPtr);
   }
   
-//  { // Collage layer from raw pitch/RMS and the fluid FBO
+  { // Collage layer from raw pitch/RMS and the fluid FBO
 //    auto pixelSnapshotModPtr = addMod<PixelSnapshotMod>(mods, "Fluid Snapshot", {});
 //    pixelSnapshotModPtr->receive(PixelSnapshotMod::SINK_FBO, fluidFboPtr);
-//
-//    auto pathModPtr = addMod<PathMod>(mods, "Collage Path", {
-//      {"MaxVertices", "7"},
-//      {"VertexProximity", "0.02"}
-//    });
-//    audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_POLAR_PITCH_RMS_POINTS, pathModPtr, PathMod::SINK_VEC2);
-//
+
+    auto pathModPtr = addMod<PathMod>(mods, "Collage Path", {
+      {"MaxVertices", "7"},
+      {"VertexProximity", "0.05"},
+      {"Strategy", "0"}
+    });
+    audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_POLAR_PITCH_RMS_POINTS, pathModPtr, PathMod::SINK_VEC2);
+
 ////    auto fluidCollageModPtr = addMod<CollageMod>(mods, "Fluid Collage", {});
 ////    pixelSnapshotModPtr->addSink(PixelSnapshotMod::SOURCE_PIXELS,
 ////                                 fluidCollageModPtr,
@@ -140,12 +139,12 @@ ModPtrs ofApp::createMods1() {
 //    });
 //    collageModPtr->addSink(CollageMod::SOURCE_FBO, multiplyModPtr, MultiplyMod::SINK_FBO);
 //    collageModPtr->receive(CollageMod::SINK_FBO, fboCollagePtr);
-//  }
   
-  { // DividedArea
+    // DividedArea
     auto dividedAreaModPtr = addMod<DividedAreaMod>(mods, "Divided Area", {});
     clusterModPtr->addSink(ClusterMod::SOURCE_VEC2, dividedAreaModPtr, DividedAreaMod::SINK_MAJOR_ANCHORS);
-    audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_POLAR_PITCH_RMS_POINTS, dividedAreaModPtr, DividedAreaMod::SINK_MINOR_ANCHORS);
+//    audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_POLAR_PITCH_RMS_POINTS, dividedAreaModPtr, DividedAreaMod::SINK_MINOR_ANCHORS);
+    pathModPtr->addSink(PathMod::SOURCE_PATH, dividedAreaModPtr, DividedAreaMod::SINK_MINOR_PATH);
 
     dividedAreaModPtr->receive(DividedAreaMod::SINK_FBO_2, fboPtrMinorLinesPtr);
     dividedAreaModPtr->receive(DividedAreaMod::SINK_FBO, fboPtrMajorLinesPtr);
