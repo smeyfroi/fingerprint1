@@ -119,14 +119,15 @@ ModPtrs ofApp::createMods1() {
     });
     audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_POLAR_PITCH_RMS_POINTS, pathModPtr, PathMod::SINK_VEC2);
 
-    auto fluidCollageModPtr = addMod<CollageMod>(mods, "Fluid Collage", {
-      {"Strength", "1.0"},
-      {"Strategy", "1"}, // 0=tint; 1=add tinted pixels
-    });
-    pixelSnapshotModPtr->addSink(PixelSnapshotMod::SOURCE_PIXELS, fluidCollageModPtr, CollageMod::SINK_PIXELS);
-    pathModPtr->addSink(PathMod::SOURCE_PATH, fluidCollageModPtr, CollageMod::SINK_PATH);
-    audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_RANDOM_VEC4, fluidCollageModPtr, CollageMod::SINK_COLOR);
-    fluidCollageModPtr->receive(CollageMod::SINK_FBO, fluidFboPtr);
+    // DON'T DO THIS IF COLLAGE IS DRAWIN INTO THE FLUID FBO
+//    auto fluidCollageModPtr = addMod<CollageMod>(mods, "Fluid Collage", {
+//      {"Strength", "1.0"},
+//      {"Strategy", "1"}, // 0=tint; 1=add tinted pixels
+//    });
+//    pixelSnapshotModPtr->addSink(PixelSnapshotMod::SOURCE_PIXELS, fluidCollageModPtr, CollageMod::SINK_PIXELS);
+//    pathModPtr->addSink(PathMod::SOURCE_PATH, fluidCollageModPtr, CollageMod::SINK_PATH);
+//    audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_RANDOM_VEC4, fluidCollageModPtr, CollageMod::SINK_COLOR);
+//    fluidCollageModPtr->receive(CollageMod::SINK_FBO, fluidFboPtr);
 
     auto collageModPtr = addMod<CollageMod>(mods, "Collage", {
       {"Strength", "1.0"},
@@ -173,23 +174,27 @@ ModPtrs ofApp::createMods1() {
 //    sandLineModPtr->receive(SandLineMod::SINK_FBO, fboSandlinesPtr);
   }
   
-//  { // Cluster particles
-//    auto particleSetModPtr = addMod<ParticleSetMod>(mods, "Cluster Particles", {
-//      {"maxParticles", "500"},
-//      {"maxParticleAge", "300"},
-//      {"colourMultiplier", "0.5"}
-//    });
-//    clusterModPtr->addSink(ClusterMod::SOURCE_VEC2, particleSetModPtr, ParticleSetMod::SINK_POINTS);
-//    audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_RANDOM_LIGHT_VEC4, particleSetModPtr, DrawPointsMod::SINK_POINT_COLOR);
-//
+  { // Cluster particles
+    auto particleSetModPtr = addMod<ParticleSetMod>(mods, "Cluster Particles", {
+      {"maxParticles", "500"},
+      {"maxParticleAge", "300"},
+      {"colourMultiplier", "0.5"}
+    });
+    clusterModPtr->addSink(ClusterMod::SOURCE_VEC2, particleSetModPtr, ParticleSetMod::SINK_POINTS);
+    audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_RANDOM_LIGHT_VEC4, particleSetModPtr, DrawPointsMod::SINK_POINT_COLOR);
+
+    auto fadeModPtr = addMod<FadeMod>(mods, "Fade Particles", {
+      {"Fade Amount", "0.0005"}
+    });
+    particleSetModPtr->addSink(ParticleSetMod::SOURCE_FBO, fadeModPtr, FadeMod::SINK_FBO);
 //    auto multiplyModPtr = addMod<MultiplyMod>(mods, "Fade Cluster Particles", {
 //      {"Multiply By", "0.995"}
 //    });
 //    particleSetModPtr->addSink(ParticleSetMod::SOURCE_FBO, multiplyModPtr, MultiplyMod::SINK_FBO);
-//
-////    particleSetModPtr->receive(ParticleSetMod::SINK_FBO, fluidFboPtr);
-//    particleSetModPtr->receive(ParticleSetMod::SINK_FBO, fboClusterParticlesPtr);
-//  }
+
+//    particleSetModPtr->receive(ParticleSetMod::SINK_FBO, fluidFboPtr);
+    particleSetModPtr->receive(ParticleSetMod::SINK_FBO, fboClusterParticlesPtr);
+  }
   
   return mods;
 }
@@ -208,7 +213,7 @@ FboConfigPtrs ofApp::createFboConfigs1(glm::vec2 size) {
 //  addFboConfigPtr(fboConfigPtrs, "sandlines", fboSandlinesPtr, size, GL_RGBA16F, GL_CLAMP_TO_EDGE, backgroundColor, false, OF_BLENDMODE_ADD);
   addFboConfigPtr(fboConfigPtrs, "minor lines", fboPtrMinorLinesPtr, size, GL_RGBA8, GL_CLAMP_TO_EDGE, backgroundColor, true, OF_BLENDMODE_ALPHA, false);
   addFboConfigPtr(fboConfigPtrs, "collage", fboCollagePtr, size, GL_RGBA16F, GL_CLAMP_TO_EDGE, backgroundColor, false, OF_BLENDMODE_ADD, true);
-//  addFboConfigPtr(fboConfigPtrs, "cluster particles", fboClusterParticlesPtr, size, GL_RGBA32F, GL_CLAMP_TO_EDGE, backgroundColor, false, OF_BLENDMODE_ALPHA);
+  addFboConfigPtr(fboConfigPtrs, "cluster particles", fboClusterParticlesPtr, size, GL_RGBA16F, GL_CLAMP_TO_EDGE, backgroundColor, false, OF_BLENDMODE_ALPHA, false);
   addFboConfigPtr(fboConfigPtrs, "major lines", fboPtrMajorLinesPtr, size, GL_RGBA16F, GL_CLAMP_TO_EDGE, backgroundColor, true, OF_BLENDMODE_ALPHA, false);
   return fboConfigPtrs;
 }
