@@ -64,7 +64,6 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::update(){
 //  ofLogNotice() << "ofApp::update frame " << ofGetFrameNum();  // error happens before this and after setup()
-  
   audioDataProcessorPtr->update();
   synth->update();
 }
