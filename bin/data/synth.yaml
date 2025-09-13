@@ -1,0 +1,22 @@
+---
+synth:
+
+  fbos:
+    - name: fluid
+      size:
+        width:
+        height:
+      format: GL_RGBA32F
+      wrap: GL_REPEAT # GL_CLAMP_TO_EDGE
+      blendmode: OF_BLENDMODE_ALPHA
+      clearOnUpdate: false
+
+  # Won't work for AudioDataSourceMod which has a custom ctor
+  mods:
+    - name: Palette Creator
+      # parameters:
+      sinks:
+        - fromMod: Audio Points
+          fromID: SOURCE_SPECTRAL_POINTS
+          toID: SINK_VEC3
+

@@ -10,15 +10,15 @@
 				<key>location-parameters</key>
 				<dict>
 					<key>EndingColumnNumber</key>
-					<string>0</string>
+					<string>2</string>
 					<key>EndingLineNumber</key>
-					<string>149</string>
+					<string>84</string>
 					<key>StartingColumnNumber</key>
 					<string>0</string>
 					<key>StartingLineNumber</key>
-					<string>148</string>
+					<string>84</string>
 					<key>Timestamp</key>
-					<string>770407111.027554</string>
+					<string>771753141.311776</string>
 				</dict>
 				<key>rebasable-url</key>
 				<dict>
@@ -27,23 +27,22 @@
 					<key>payload</key>
 					<dict>
 						<key>relative-path</key>
-						<string>Development/openframeworks/of_v0.12.1_osx_release/addons/ofxDividedArea/src/ofxDividedArea.cpp</string>
+						<string>Development/openframeworks/of_v0.12.1_osx_release/addons/ofxMotionFromVideo/src/ofxMotionFromVideo.cpp</string>
 					</dict>
 				</dict>
 			</dict>
 			<key>text-context</key>
 			<dict>
 				<key>focused</key>
-				<string>  float occlusionDistance = constrainedOcclusionDistanceParameter * size.x;
-</string>
+				<string>  </string>
 				<key>leading</key>
 				<string>
-std::optional&lt;DividerLine&gt; DividedArea::addConstrainedDividerLine(glm::vec2 ref1, glm::vec2 ref2) {
+  opticalFlowFbo.readToPixels(opticalFlowPixels);
 </string>
 				<key>trailing</key>
-				<string>  if (ref1 == ref2) return std::nullopt;
-  DividerLine dividerLine = createConstrainedDividerLine(ref1, ref2);
-  if (dividerLine.isOccludedByAny(constrainedDividerLines, occlusionDistance, occlusionAngleParameter)) return std::nullopt;
+				<string>if (isGrabbing) opticalFlowPixels.mirror(false, true); // ************************
+}
+
 </string>
 			</dict>
 			<key>type</key>

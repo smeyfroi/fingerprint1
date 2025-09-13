@@ -22,3 +22,4 @@ ofxSomPalette
 ofxTimeMeasurements
 ofxTinyEXR
 ofxMarkSynth
+ofxParticleField

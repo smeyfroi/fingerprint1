@@ -6,7 +6,8 @@
 // ***********************************************
 // ***********************************************
 const std::filesystem::path rootSourceMaterialPath { "/Users/steve/Documents/music-source-material" };
-constexpr bool RECORD_FLOW_VIDEO = false;
+constexpr int VIDEO_DEVICE_ID = 0;
+constexpr bool RECORD_VIDEO = false;
 constexpr bool RECORD_AUDIO = false;
 //const std::string MIC_DEVICE_NAME = "Audient: iD4";
 //const std::string MIC_DEVICE_NAME = "Apple Inc.: Steve\325s iPhone Microphone";
