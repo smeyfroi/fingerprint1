@@ -47,7 +47,7 @@ ModPtrs ofApp::createMods1() {
       {"maxVelocity", "0.001"},
       {"particleSize", "6.0"}
     }, -0.5);
-    audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_FIELD, particleFieldModPtr, ParticleFieldMod::SINK_FIELD);
+    audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_FIELD, particleFieldModPtr, ParticleFieldMod::SINK_FIELD_FBO);
     particleFieldModPtr->receive(ParticleFieldMod::SINK_FBO, fboMotionParticlesPtr);
   }
   

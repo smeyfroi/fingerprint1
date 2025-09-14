@@ -62,8 +62,8 @@ void ofApp::setup(){
   audioDataPlotsPtr = std::make_shared<ofxAudioData::Plots>(audioDataProcessorPtr);
 
   glm::vec2 size = { 7200, 7200 };
-//  configSynth1(size);
-  configSynth2(size);
+  configSynth1(size);
+//  configSynth2(size);
   
 //  ofLogNotice() << "ofApp::setup synth configured"; // error happens between this and update()
 }
