@@ -43,10 +43,10 @@ ModPtrs ofApp::createMods1() {
   {
     auto particleFieldModPtr = addMod<ParticleFieldMod>(mods, "Palette Particle Field", {
       {"velocityDamping", "0.992"},
-      {"forceMultiplier", "0.01"},
-      {"maxVelocity", "0.001"},
+      {"forceMultiplier", "0.125"},
+      {"maxVelocity", "0.0001"},
       {"particleSize", "6.0"}
-    }, -0.5);
+    }, 0.0);
     audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_FIELD, particleFieldModPtr, ParticleFieldMod::SINK_FIELD_FBO);
     particleFieldModPtr->receive(ParticleFieldMod::SINK_FBO, fboMotionParticlesPtr);
   }
