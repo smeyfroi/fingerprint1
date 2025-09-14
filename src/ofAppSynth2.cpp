@@ -122,9 +122,11 @@ ModPtrs ofApp::createMods2() {
   }
 
   auto videoFlowModPtr = addMod<VideoFlowSourceMod>(mods, "Video flow", {
-    { "SamplesPerUpdate", "0.0" }, // 0.06
-    { "velocityScale", "4.0" }
-  }, VIDEO_DEVICE_ID, glm::vec2 { 640, 480 }, RECORD_VIDEO, saveFilePath("video-recordings"));
+    { "offset", "2.0" },
+    { "threshold", "0.4" },
+    { "force", "5.0" },
+    { "power", "0.8" }
+  }, VIDEO_DEVICE_ID, glm::vec2 { 1280, 720 }, RECORD_VIDEO, saveFilePath("video-recordings"));
 //  auto videoFlowModPtr = addMod<VideoFlowSourceMod>(mods, "Video flow", {}, rootSourceMaterialPath/"trombone-trimmed.mov", true);
   
   // Video ParticleField
@@ -133,9 +135,9 @@ ModPtrs ofApp::createMods2() {
       {"velocityDamping", "0.995"},
       {"forceMultiplier", "0.5"},
       {"maxVelocity", "0.0005"},
-      {"particleSize", "4.0"}
+      {"particleSize", "3.0"}
     }, 0.0);
-    videoFlowModPtr->addSink(VideoFlowSourceMod::SOURCE_FLOW_PIXELS, particleFieldModPtr, ParticleFieldMod::SINK_FIELD);
+    videoFlowModPtr->addSink(VideoFlowSourceMod::SOURCE_FLOW_FBO, particleFieldModPtr, ParticleFieldMod::SINK_FIELD_FBO);
     particleFieldModPtr->receive(ParticleFieldMod::SINK_FBO, fboMotionParticlesPtr);
   }
   
