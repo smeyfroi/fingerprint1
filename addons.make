@@ -8,10 +8,10 @@ ofxSoundObjects
 ofxAudioAnalysisClient
 ofxAudioData
 ofxConvexHull
+ofxRenderer
 ofxDividedArea
 ofxFFmpegRecorder
 ofxIntrospector
-ofxRenderer
 ofxMotionFromVideo
 ofxSpatialHash
 ofxParticleSet
