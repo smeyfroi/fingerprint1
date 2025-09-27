@@ -20,9 +20,9 @@ void ofApp::configSynth1(glm::vec2 size) {
   auto somPaletteModPtr = findModPtrByName(mods, "Palette Creator");
   auto audioDataSourceModPtr = findModPtrByName(mods, "Audio Source");
   synth->configure(createFboConfigs1(size), std::move(mods), size);
-  somPaletteModPtr->addSink(SomPaletteMod::SOURCE_DARKEST_VEC4, synth, Synth::SINK_BACKGROUND_COLOR);
-  audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_ONSET1, synth, Synth::SINK_AUDIO_ONSET);
-  audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_TIMBRE_CHANGE, synth, Synth::SINK_AUDIO_TIMBRE_CHANGE);
+  somPaletteModPtr->connect(SomPaletteMod::SOURCE_DARKEST_VEC4, synth, Synth::SINK_BACKGROUND_COLOR);
+  audioDataSourceModPtr->connect(AudioDataSourceMod::SOURCE_ONSET1, synth, Synth::SINK_AUDIO_ONSET);
+  audioDataSourceModPtr->connect(AudioDataSourceMod::SOURCE_TIMBRE_CHANGE, synth, Synth::SINK_AUDIO_TIMBRE_CHANGE);
 }
 
 void ofApp::configSynth2(glm::vec2 size) {
@@ -31,9 +31,9 @@ void ofApp::configSynth2(glm::vec2 size) {
   auto somPaletteModPtr = findModPtrByName(mods, "Palette Creator");
   auto audioDataSourceModPtr = findModPtrByName(mods, "Audio Source");
   synth->configure(createFboConfigs2(size), std::move(mods), size);
-  somPaletteModPtr->addSink(SomPaletteMod::SOURCE_DARKEST_VEC4, synth, Synth::SINK_BACKGROUND_COLOR);
-  audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_ONSET1, synth, Synth::SINK_AUDIO_ONSET);
-  audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_TIMBRE_CHANGE, synth, Synth::SINK_AUDIO_TIMBRE_CHANGE);
+  somPaletteModPtr->connect(SomPaletteMod::SOURCE_DARKEST_VEC4, synth, Synth::SINK_BACKGROUND_COLOR);
+  audioDataSourceModPtr->connect(AudioDataSourceMod::SOURCE_ONSET1, synth, Synth::SINK_AUDIO_ONSET);
+  audioDataSourceModPtr->connect(AudioDataSourceMod::SOURCE_TIMBRE_CHANGE, synth, Synth::SINK_AUDIO_TIMBRE_CHANGE);
 }
 
 void ofApp::setup(){
