@@ -86,7 +86,6 @@ void ofApp::drawGui(ofEventArgs& args){
   auto currentWindowSize = ofGetCurrentWindow()->getWindowSize();
   if (guiWindowSize != currentWindowSize) {
     guiWindowSize = currentWindowSize;
-    guiWindowSize.x = 256;
     synth->setGuiSize(guiWindowSize);
   }
   synth->drawGui();
