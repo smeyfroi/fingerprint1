@@ -15,7 +15,7 @@ ModPtr findModPtrByName(const std::vector<ModPtr>& mods, const std::string& name
 }
 
 void ofApp::configSynth1(glm::vec2 size) {
-  synth = std::make_shared<Synth>("Synth1", ModConfig {});
+  synth = std::make_shared<Synth>("Synth1", ModConfig {}, START_PAUSED);
   auto mods = createMods1();
   auto somPaletteModPtr = findModPtrByName(mods, "Palette Creator");
   auto audioDataSourceModPtr = findModPtrByName(mods, "Audio Source");
@@ -26,7 +26,7 @@ void ofApp::configSynth1(glm::vec2 size) {
 }
 
 void ofApp::configSynth2(glm::vec2 size) {
-  synth = std::make_shared<Synth>("Synth2", ModConfig {});
+  synth = std::make_shared<Synth>("Synth2", ModConfig {}, START_PAUSED);
   auto mods = createMods2();
   auto somPaletteModPtr = findModPtrByName(mods, "Palette Creator");
   auto audioDataSourceModPtr = findModPtrByName(mods, "Audio Source");

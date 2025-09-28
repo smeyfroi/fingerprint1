@@ -238,6 +238,16 @@ FboConfigPtrs ofApp::createFboConfigs2(glm::vec2 size) {
   // Used by fluid sim but not drawn
   allocateFbo(fluidVelocitiesFboPtr, size / 8.0, GL_RGB16F, GL_REPEAT);
   fluidVelocitiesFboPtr->clearFloat(0.0, 0.0, 0.0, 0.0);
+
+  // Used by fluid sim but not drawn
+//  allocateFbo(fluidVelocitiesFboPtr, ofGetWindowSize(), GL_RGB32F, GL_REPEAT);
+//  fluidVelocitiesFboPtr->getSource().clearColorBuffer({ 0.0, 0.0, 0.0 });
+//  fluidVelocitiesFboPtr->getSource().begin();
+//  ofEnableBlendMode(OF_BLENDMODE_DISABLED);
+//  ofSetColor(ofFloatColor { 0.0, 0.0, 0.0 });
+//  ofFill();
+//  ofDrawRectangle(0.0, 0.0, fluidVelocitiesFboPtr->getSource().getWidth(), fluidVelocitiesFboPtr->getSource().getHeight());
+//  fluidVelocitiesFboPtr->getSource().end();
   
   FboConfigPtrs fboConfigPtrs;
   const ofFloatColor backgroundColor { 0.0, 0.0, 0.0, 0.0 };
