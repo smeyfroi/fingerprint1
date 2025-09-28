@@ -120,7 +120,72 @@ ModPtrs ofApp::createMods2() {
     clusterModPtr->connect(ClusterMod::SOURCE_VEC2, sandLineModPtr, SandLineMod::SINK_POINTS);
     sandLineModPtr->receive(SandLineMod::SINK_FBO, rawPointsFboPtr);
   }
+  
+  // Fluid simulation
+  auto fluidModPtr = addMod<FluidMod>(mods, "Fluid", {
+    {"dt", "0.007"},
+    {"value:dissipation", "0.999"},
+    {"velocity:dissipation", "0.998"},
+    {"vorticity", "50.0"},
+    {"value:iterations", "0.0"},
+    {"velocity:iterations", "0.0"},
+    {"pressure:iterations", "25.0"}
+  });
+  fluidModPtr->receive(FluidMod::SINK_VALUES_FBO, fluidFboPtr);
+  fluidModPtr->receive(FluidMod::SINK_VELOCITIES_FBO, fluidVelocitiesFboPtr);
 
+  // Clusters into fluid values
+  {
+    auto radiiModPtr = addMod<RandomFloatSourceMod>(mods, "Fluid Cluster Radius", {
+      {"CreatedPerUpdate", "0.05"},
+      {"Min", "0.005"},
+      {"Max", "0.02"}
+    }, std::pair<float, float>{0.0, 0.1}, std::pair<float, float>{0.0, 0.1});
+    auto drawPointsModPtr = addMod<SoftCircleMod>(mods, "Fluid Clusters", {
+      {"ColorMultiplier", "0.5"},
+      {"AlphaMultiplier", "0.3"},
+      {"Softness", "0.3"}
+    });
+    radiiModPtr->connect(RandomFloatSourceMod::SOURCE_FLOAT, drawPointsModPtr, SoftCircleMod::SINK_POINT_RADIUS);
+    audioPaletteModPtr->connect(SomPaletteMod::SOURCE_RANDOM_VEC4, drawPointsModPtr, SoftCircleMod::SINK_POINT_COLOR);
+    clusterModPtr->connect(ClusterMod::SOURCE_VEC2, drawPointsModPtr, SoftCircleMod::SINK_POINTS);
+    drawPointsModPtr->receive(SoftCircleMod::SINK_FBO, fluidFboPtr);
+  }
+
+  { // Radial fluid impulses from clusters
+    auto fluidRadialImpulseModPtr = addMod<FluidRadialImpulseMod>(mods, "Cluster Impulses", {
+      {"ImpulseRadius", "0.05"},
+      {"ImpulseStrength", "0.02"}
+    });
+    clusterModPtr->connect(ClusterMod::SOURCE_VEC2, fluidRadialImpulseModPtr, FluidRadialImpulseMod::SINK_POINTS);
+    fluidRadialImpulseModPtr->receive(FluidRadialImpulseMod::SINK_FBO, fluidVelocitiesFboPtr);
+  }
+
+  { // Raw data points into fluid
+    auto drawPointsModPtr = addMod<SoftCircleMod>(mods, "Fluid Raw Points", {
+      {"Radius", "0.01"},
+      {"ColorMultiplier", "0.4"},
+      {"AlphaMultiplier", "0.85"},
+      {"Softness", "0.1"}
+    });
+    audioPaletteModPtr->connect(SomPaletteMod::SOURCE_RANDOM_DARK_VEC4, drawPointsModPtr, SoftCircleMod::SINK_POINT_COLOR);
+//    audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_PITCH_RMS_POINTS, drawPointsModPtr, DrawPointsMod::SINK_POINTS);
+    audioDataSourceModPtr->connect(AudioDataSourceMod::SOURCE_POLAR_PITCH_RMS_POINTS, drawPointsModPtr, SoftCircleMod::SINK_POINTS);
+//    audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_SPECTRAL_CREST_SCALAR, drawPointsModPtr, SoftCircleMod::SINK_POINT_RADIUS_VARIANCE);
+//    audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_PITCH_SCALAR, drawPointsModPtr, SoftCircleMod::SINK_POINT_COLOR_MULTIPLIER);
+//    audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_RMS_SCALAR, drawPointsModPtr, SoftCircleMod::SINK_POINT_SOFTNESS);
+    drawPointsModPtr->receive(SoftCircleMod::SINK_FBO, fluidFboPtr);
+    
+    { // Radial fluid impulses from raw points
+      auto fluidRadialImpulseModPtr = addMod<FluidRadialImpulseMod>(mods, "Raw Point Impulses", {
+        {"ImpulseRadius", "0.02"},
+        {"ImpulseStrength", "0.06"}
+      });
+      audioDataSourceModPtr->connect(AudioDataSourceMod::SOURCE_POLAR_PITCH_RMS_POINTS, fluidRadialImpulseModPtr, FluidRadialImpulseMod::SINK_POINTS);
+      fluidRadialImpulseModPtr->receive(FluidRadialImpulseMod::SINK_FBO, fluidVelocitiesFboPtr);
+    }
+  }
+  
   auto videoFlowModPtr = addMod<VideoFlowSourceMod>(mods, "Video flow", {
     { "offset", "2.0" },
     { "threshold", "0.4" },
@@ -171,18 +236,12 @@ ModPtrs ofApp::createMods2() {
 
 FboConfigPtrs ofApp::createFboConfigs2(glm::vec2 size) {
   // Used by fluid sim but not drawn
-//  allocateFbo(fluidVelocitiesFboPtr, ofGetWindowSize(), GL_RGB32F, GL_REPEAT);
-//  fluidVelocitiesFboPtr->getSource().clearColorBuffer({ 0.0, 0.0, 0.0 });
-//  fluidVelocitiesFboPtr->getSource().begin();
-//  ofEnableBlendMode(OF_BLENDMODE_DISABLED);
-//  ofSetColor(ofFloatColor { 0.0, 0.0, 0.0 });
-//  ofFill();
-//  ofDrawRectangle(0.0, 0.0, fluidVelocitiesFboPtr->getSource().getWidth(), fluidVelocitiesFboPtr->getSource().getHeight());
-//  fluidVelocitiesFboPtr->getSource().end();
+  allocateFbo(fluidVelocitiesFboPtr, size / 8.0, GL_RGB16F, GL_REPEAT);
+  fluidVelocitiesFboPtr->clearFloat(0.0, 0.0, 0.0, 0.0);
   
   FboConfigPtrs fboConfigPtrs;
   const ofFloatColor backgroundColor { 0.0, 0.0, 0.0, 0.0 };
-//  addFboConfigPtr(fboConfigPtrs, "fluid", fluidFboPtr, fboSize, GL_RGBA32F, GL_REPEAT, backgroundColor, false, OF_BLENDMODE_ALPHA);
+  addFboConfigPtr(fboConfigPtrs, "fluid", fluidFboPtr, size / 8.0, GL_RGBA16F, GL_REPEAT, backgroundColor, false, OF_BLENDMODE_ALPHA, false, 0);
   addFboConfigPtr(fboConfigPtrs, "major lines", fboPtrMajorLinesPtr, size, GL_RGBA32F, GL_CLAMP_TO_EDGE, backgroundColor, true, OF_BLENDMODE_ALPHA, false, 0);
   addFboConfigPtr(fboConfigPtrs, "sandlines", fboSandlinesPtr, size, GL_RGBA32F, GL_CLAMP_TO_EDGE, backgroundColor, false, OF_BLENDMODE_ADD, false, 0);
   addFboConfigPtr(fboConfigPtrs, "collage", fboCollagePtr, size, GL_RGBA32F, GL_CLAMP_TO_EDGE, backgroundColor, false, OF_BLENDMODE_ALPHA, false, 0);
