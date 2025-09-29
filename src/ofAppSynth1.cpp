@@ -120,7 +120,7 @@ ModPtrs ofApp::createMods1() {
     auto drawPointsModPtr = addMod<SoftCircleMod>(mods, "Raw Points", {
       {"Radius", "0.005"}, // min
       {"RadiusVarianceScale", "0.01"}, // scale the variance to some to the min
-      {"Softness", "0.1"},
+      {"Softness", "0.5"},
       {"AlphaMultiplier", "0.9"},
       {"ColorMultiplier", "0.8"}
     });
@@ -132,14 +132,17 @@ ModPtrs ofApp::createMods1() {
 //    audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_RMS_SCALAR, drawPointsModPtr, SoftCircleMod::SINK_POINT_SOFTNESS);
 
     auto smearModPtr = addMod<SmearMod>(mods, "Smear Raw Points", {
-      {"Translation", "0.0, 0.0003"},
+      {"Translation", "0.0, 0.0"},
       {"MixNew", "0.7"},
-      {"AlphaMultiplier", "0.9999"},
-      {"FieldMultiplier", "0.001"},
-      {"FieldBias", "0.0, 0.0"},
+      {"AlphaMultiplier", "0.999"},
+      {"Field1Multiplier", "0.02"},
+      {"Field1Bias", "0, 0"},
+      {"Field2Multiplier", "0.01"},
+      {"Field2Bias", "0, 0"},
+//      {"FieldBias", "-0.5, -0.5"},
     });
     drawPointsModPtr->connect(DrawPointsMod::SOURCE_FBO, smearModPtr, SmearMod::SINK_FBO);
-    audioPaletteModPtr->connect(SomPaletteMod::SOURCE_FIELD, smearModPtr, SmearMod::SINK_FIELD_FBO);
+    audioPaletteModPtr->connect(SomPaletteMod::SOURCE_FIELD, smearModPtr, SmearMod::SINK_FIELD_1_FBO);
 
     drawPointsModPtr->receive(DrawPointsMod::SINK_FBO, rawPointsFboPtr);
   }

@@ -5,6 +5,7 @@ using namespace ofxMarkSynth;
 
 ModPtr findModPtrByName(const std::vector<ModPtr>& mods, const std::string& name) {
   auto it = std::find_if(mods.begin(), mods.end(), [&name](const ModPtr& modPtr) {
+//    ofLogNotice() << "Looking for Mod with name " << name << ", checking Mod with name " << modPtr->name;
     return modPtr->name == name;
   });
   if (it == mods.end()) {
@@ -19,10 +20,19 @@ void ofApp::configSynth1(glm::vec2 size) {
   auto mods = createMods1();
   auto somPaletteModPtr = findModPtrByName(mods, "Palette Creator");
   auto audioDataSourceModPtr = findModPtrByName(mods, "Audio Source");
+  
+  // FIXME: make fluid more Mod-like
+  auto fluidModPtr = findModPtrByName(mods, "Fluid");
+  auto smearModPtr = findModPtrByName(mods, "Smear Raw Points");
+  
   synth->configure(createFboConfigs1(size), std::move(mods), size);
   somPaletteModPtr->connect(SomPaletteMod::SOURCE_DARKEST_VEC4, synth, Synth::SINK_BACKGROUND_COLOR);
   audioDataSourceModPtr->connect(AudioDataSourceMod::SOURCE_ONSET1, synth, Synth::SINK_AUDIO_ONSET);
   audioDataSourceModPtr->connect(AudioDataSourceMod::SOURCE_TIMBRE_CHANGE, synth, Synth::SINK_AUDIO_TIMBRE_CHANGE);
+  
+  // FIXME: make fluid more Mod-like
+  dynamic_cast<FluidMod&>(*fluidModPtr).setup(); // force fluid FBO allocations
+  smearModPtr->receive(SmearMod::SINK_FIELD_2_FBO, fluidVelocitiesFboPtr->getSource());
 }
 
 void ofApp::configSynth2(glm::vec2 size) {
