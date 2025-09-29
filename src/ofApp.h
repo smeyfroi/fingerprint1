@@ -13,7 +13,7 @@ constexpr bool RECORD_AUDIO = false;
 //const std::string MIC_DEVICE_NAME = "Apple Inc.: Steve\325s iPhone Microphone";
 const std::string MIC_DEVICE_NAME = "Apple Inc.: MacBook Pro Microphone";
 constexpr float FRAME_RATE = 30.0;
-const bool START_PAUSED = true; // true for performance
+const bool START_PAUSED = false; // false for dev
 // ***********************************************
 // ***********************************************
 
