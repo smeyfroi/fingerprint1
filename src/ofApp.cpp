@@ -42,10 +42,17 @@ void ofApp::configSynth2(glm::vec2 size) {
   auto mods = createMods2();
   auto somPaletteModPtr = findModPtrByName(mods, "Palette Creator");
   auto audioDataSourceModPtr = findModPtrByName(mods, "Audio Source");
+  
+  auto fluidModPtr = findModPtrByName(mods, "Fluid");
+  auto particleFieldModPtr = findModPtrByName(mods, "Particle Field");
+
   synth->configure(createFboConfigs2(size), std::move(mods), size);
   somPaletteModPtr->connect(SomPaletteMod::SOURCE_DARKEST_VEC4, synth, Synth::SINK_BACKGROUND_COLOR);
   audioDataSourceModPtr->connect(AudioDataSourceMod::SOURCE_ONSET1, synth, Synth::SINK_AUDIO_ONSET);
   audioDataSourceModPtr->connect(AudioDataSourceMod::SOURCE_TIMBRE_CHANGE, synth, Synth::SINK_AUDIO_TIMBRE_CHANGE);
+  
+//  dynamic_cast<FluidMod&>(*fluidModPtr).setup(); // force fluid FBO allocations
+//  particleFieldModPtr->receive(ParticleFieldMod::SINK_FIELD_2_FBO, fluidVelocitiesFboPtr->getSource());
 }
 
 void ofApp::setup(){
@@ -74,8 +81,8 @@ void ofApp::setup(){
   audioDataPlotsPtr = std::make_shared<ofxAudioData::Plots>(audioDataProcessorPtr);
 
   glm::vec2 size = { 7200, 7200 };
-  configSynth1(size);
-//  configSynth2(size);
+//  configSynth1(size);
+  configSynth2(size);
   
 //  ofLogNotice() << "ofApp::setup synth configured"; // error happens between this and update()
 }

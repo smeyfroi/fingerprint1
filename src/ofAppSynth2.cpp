@@ -196,13 +196,14 @@ ModPtrs ofApp::createMods2() {
   
   // Video ParticleField
   {
-    auto particleFieldModPtr = addMod<ParticleFieldMod>(mods, "Video Motion Particle Field", {
+    auto particleFieldModPtr = addMod<ParticleFieldMod>(mods, "Particle Field", {
       {"velocityDamping", "0.995"},
       {"forceMultiplier", "0.5"},
       {"maxVelocity", "0.0005"},
       {"particleSize", "3.0"}
-    }, 0.0);
+    }, 0.0, 0.0, 500'000);
     videoFlowModPtr->connect(VideoFlowSourceMod::SOURCE_FLOW_FBO, particleFieldModPtr, ParticleFieldMod::SINK_FIELD_1_FBO);
+    audioPaletteModPtr->connect(SomPaletteMod::SOURCE_FIELD, particleFieldModPtr, ParticleFieldMod::SINK_FIELD_2_FBO);
     particleFieldModPtr->receive(ParticleFieldMod::SINK_FBO, fboMotionParticlesPtr);
   }
   
