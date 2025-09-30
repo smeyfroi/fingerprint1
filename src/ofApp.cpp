@@ -24,6 +24,7 @@ void ofApp::configSynth1(glm::vec2 size) {
   // FIXME: make fluid more Mod-like
   auto fluidModPtr = findModPtrByName(mods, "Fluid");
   auto smearModPtr = findModPtrByName(mods, "Smear Raw Points");
+  auto particleFieldModPtr = findModPtrByName(mods, "Particle Field");
   
   synth->configure(createFboConfigs1(size), std::move(mods), size);
   somPaletteModPtr->connect(SomPaletteMod::SOURCE_DARKEST_VEC4, synth, Synth::SINK_BACKGROUND_COLOR);
@@ -33,6 +34,7 @@ void ofApp::configSynth1(glm::vec2 size) {
   // FIXME: make fluid more Mod-like
   dynamic_cast<FluidMod&>(*fluidModPtr).setup(); // force fluid FBO allocations
   smearModPtr->receive(SmearMod::SINK_FIELD_2_FBO, fluidVelocitiesFboPtr->getSource());
+  particleFieldModPtr->receive(ParticleFieldMod::SINK_FIELD_2_FBO, fluidVelocitiesFboPtr->getSource());
 }
 
 void ofApp::configSynth2(glm::vec2 size) {

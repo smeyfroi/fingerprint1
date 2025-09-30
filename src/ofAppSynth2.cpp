@@ -202,7 +202,7 @@ ModPtrs ofApp::createMods2() {
       {"maxVelocity", "0.0005"},
       {"particleSize", "3.0"}
     }, 0.0);
-    videoFlowModPtr->connect(VideoFlowSourceMod::SOURCE_FLOW_FBO, particleFieldModPtr, ParticleFieldMod::SINK_FIELD_FBO);
+    videoFlowModPtr->connect(VideoFlowSourceMod::SOURCE_FLOW_FBO, particleFieldModPtr, ParticleFieldMod::SINK_FIELD_1_FBO);
     particleFieldModPtr->receive(ParticleFieldMod::SINK_FBO, fboMotionParticlesPtr);
   }
   

@@ -41,13 +41,13 @@ ModPtrs ofApp::createMods1() {
   
   // Palette ParticleField
   {
-    auto particleFieldModPtr = addMod<ParticleFieldMod>(mods, "Palette Particle Field", {
+    auto particleFieldModPtr = addMod<ParticleFieldMod>(mods, "Particle Field", {
       {"velocityDamping", "0.994"},
       {"forceMultiplier", "0.2"},
       {"maxVelocity", "0.0001"},
       {"particleSize", "4.0"}
-    }, 0.0, 500'000);
-    audioPaletteModPtr->connect(SomPaletteMod::SOURCE_FIELD, particleFieldModPtr, ParticleFieldMod::SINK_FIELD_FBO);
+    }, 0.0, 0.0, 500'000);
+    audioPaletteModPtr->connect(SomPaletteMod::SOURCE_FIELD, particleFieldModPtr, ParticleFieldMod::SINK_FIELD_1_FBO);
     particleFieldModPtr->receive(ParticleFieldMod::SINK_FBO, fboMotionParticlesPtr);
   }
   
