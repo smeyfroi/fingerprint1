@@ -149,12 +149,11 @@ ModPtrs ofApp::createMods1() {
   
   { // Collage layer from raw pitch/RMS and the raw points FBO
     auto snapshotModPtr = addMod<PixelSnapshotMod>(mods, "Snapshot", {});
-    snapshotModPtr->receive(PixelSnapshotMod::SINK_FBO, fluidFboPtr);
-//    pixelSnapshotModPtr->receive(PixelSnapshotMod::SINK_FBO, rawPointsFboPtr);
 
     auto pathModPtr = addMod<PathMod>(mods, "Collage Path", {
       {"MaxVertices", "7"},
-      {"VertexProximity", "0.1"},
+      {"MinVertexProximity", "0.01"},
+      {"MaxVertexProximity", "0.07"},
       {"Strategy", "0"} // 0=polypath; 1=bounds; 2=horizontals; 3=convex hull
     });
     audioDataSourceModPtr->connect(AudioDataSourceMod::SOURCE_POLAR_PITCH_RMS_POINTS, pathModPtr, PathMod::SINK_VEC2);
@@ -170,7 +169,7 @@ ModPtrs ofApp::createMods1() {
 ////    fluidCollageModPtr->receive(CollageMod::SINK_FBO, fluidFboPtr);
 
     auto collageModPtr = addMod<CollageMod>(mods, "Collage", {
-      {"Strength", "1.0"},
+      {"Strength", "2.0"},
       {"Strategy", "1"}, // 0=tint; 1=add tinted pixels; 2=add pixels
     });
     snapshotModPtr->connect(PixelSnapshotMod::SOURCE_SNAPSHOT, collageModPtr, CollageMod::SINK_SNAPSHOT_FBO);
@@ -182,16 +181,23 @@ ModPtrs ofApp::createMods1() {
     });
     collageModPtr->connect(CollageMod::SOURCE_FBO, fadeModPtr, FadeMod::SINK_FBO);
 
+    auto outlineFadeModPtr = addMod<FadeMod>(mods, "Fade Collage Outlines", {
+      {"Fade Amount", "0.01"}
+    });
+    collageModPtr->connect(CollageMod::SOURCE_FBO_2, outlineFadeModPtr, FadeMod::SINK_FBO);
+
     collageModPtr->receive(CollageMod::SINK_FBO, fboCollagePtr);
+    collageModPtr->receive(CollageMod::SINK_FBO_2, fboCollageOutlinesPtr);
 
     // DividedArea
     auto dividedAreaModPtr = addMod<DividedAreaMod>(mods, "Divided Area", {
       {"maxConstrainedLines", "1500"},
-      {"constrainedWidth", "0.001"}
+      {"constrainedWidth", "0.001"},
+      {"PathWidth", "0.003"}
     });
     clusterModPtr->connect(ClusterMod::SOURCE_VEC2, dividedAreaModPtr, DividedAreaMod::SINK_MAJOR_ANCHORS);
     audioDataSourceModPtr->connect(AudioDataSourceMod::SOURCE_POLAR_PITCH_RMS_POINTS, dividedAreaModPtr, DividedAreaMod::SINK_MINOR_ANCHORS);
-//    pathModPtr->addSink(PathMod::SOURCE_PATH, dividedAreaModPtr, DividedAreaMod::SINK_MINOR_PATH);
+    pathModPtr->connect(PathMod::SOURCE_PATH, dividedAreaModPtr, DividedAreaMod::SINK_MINOR_PATH);
 //    audioPaletteModPtr->connect(SomPaletteMod::SOURCE_DARKEST_VEC4, dividedAreaModPtr, DividedAreaMod::SINK_MINOR_LINES_COLOR);
 //    audioPaletteModPtr->connect(SomPaletteMod::SOURCE_DARKEST_VEC4, dividedAreaModPtr, DividedAreaMod::SINK_MAJOR_LINES_COLOR);
     
@@ -257,6 +263,7 @@ FboConfigPtrs ofApp::createFboConfigs1(glm::vec2 size) {
   addFboConfigPtr(fboConfigPtrs, "motion particles", fboMotionParticlesPtr, size/2.0, GL_RGBA, GL_CLAMP_TO_EDGE, backgroundColor, false, OF_BLENDMODE_ADD, false, 0);
   addFboConfigPtr(fboConfigPtrs, "minor lines", fboPtrMinorLinesPtr, size, GL_RGBA8, GL_CLAMP_TO_EDGE, backgroundColor, true, OF_BLENDMODE_ALPHA, false, 0);
   addFboConfigPtr(fboConfigPtrs, "collage", fboCollagePtr, size, GL_RGBA16F, GL_CLAMP_TO_EDGE, backgroundColor, false, OF_BLENDMODE_ADD, true, 0);
+  addFboConfigPtr(fboConfigPtrs, "collageOutlines", fboCollageOutlinesPtr, size, GL_RGBA16F, GL_CLAMP_TO_EDGE, backgroundColor, false, OF_BLENDMODE_ALPHA, false, 0);
   addFboConfigPtr(fboConfigPtrs, "cluster particles", fboClusterParticlesPtr, size, GL_RGBA16F, GL_CLAMP_TO_EDGE, backgroundColor, false, OF_BLENDMODE_ALPHA, false, 0);
   addFboConfigPtr(fboConfigPtrs, "major lines", fboPtrMajorLinesPtr, size, GL_RGBA16F, GL_CLAMP_TO_EDGE, backgroundColor, true, OF_BLENDMODE_ALPHA, false, 0);
   return fboConfigPtrs;

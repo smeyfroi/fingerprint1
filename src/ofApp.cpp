@@ -20,6 +20,7 @@ void ofApp::configSynth1(glm::vec2 size) {
   auto mods = createMods1();
   auto somPaletteModPtr = findModPtrByName(mods, "Palette Creator");
   auto audioDataSourceModPtr = findModPtrByName(mods, "Audio Source");
+  auto snapshotModPtr = findModPtrByName(mods, "Snapshot");
   
   // FIXME: make fluid more Mod-like
   auto fluidModPtr = findModPtrByName(mods, "Fluid");
@@ -35,6 +36,8 @@ void ofApp::configSynth1(glm::vec2 size) {
   dynamic_cast<FluidMod&>(*fluidModPtr).setup(); // force fluid FBO allocations
   smearModPtr->receive(SmearMod::SINK_FIELD_2_FBO, fluidVelocitiesFboPtr->getSource());
   particleFieldModPtr->receive(ParticleFieldMod::SINK_FIELD_2_FBO, fluidVelocitiesFboPtr->getSource());
+  
+  synth->connect(Synth::SOURCE_COMPOSITE_FBO, snapshotModPtr, PixelSnapshotMod::SINK_SNAPSHOT_SOURCE);
 }
 
 void ofApp::configSynth2(glm::vec2 size) {

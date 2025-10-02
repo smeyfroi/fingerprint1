@@ -11,6 +11,7 @@ ofxConvexHull
 ofxRenderer
 ofxDividedArea
 ofxFFmpegRecorder
+ofxFatLines
 ofxIntrospector
 ofxMotionFromVideo
 ofxSpatialHash
