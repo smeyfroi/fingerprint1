@@ -14,6 +14,7 @@ constexpr bool RECORD_AUDIO = false;
 const std::string MIC_DEVICE_NAME = "Apple Inc.: MacBook Pro Microphone";
 constexpr float FRAME_RATE = 30.0;
 const bool START_PAUSED = false; // false for dev
+const std::string MAX_RMS = "0.02"; // "0.11" more likely for live
 // ***********************************************
 // ***********************************************
 

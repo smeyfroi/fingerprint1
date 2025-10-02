@@ -17,7 +17,7 @@ ModPtrs ofApp::createMods1() {
     {"MinPitch", "50.0"},
     {"MaxPitch", "1500.0"},
     {"MinRms", "0.0005"},
-    {"MaxRms", "0.11"},
+    {"MaxRms", MAX_RMS},
     {"MinComplexSpectralDifference", "200.0"},
     {"MaxComplexSpectralDifference", "1000.0"},
     {"MinSpectralCrest", "20.0"},
@@ -99,8 +99,8 @@ ModPtrs ofApp::createMods1() {
       {"Softness", "0.1"}
     });
     audioPaletteModPtr->connect(SomPaletteMod::SOURCE_RANDOM_DARK_VEC4, drawPointsModPtr, SoftCircleMod::SINK_POINT_COLOR);
-//    audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_PITCH_RMS_POINTS, drawPointsModPtr, DrawPointsMod::SINK_POINTS);
-    audioDataSourceModPtr->connect(AudioDataSourceMod::SOURCE_POLAR_PITCH_RMS_POINTS, drawPointsModPtr, SoftCircleMod::SINK_POINTS);
+    audioDataSourceModPtr->connect(AudioDataSourceMod::SOURCE_PITCH_RMS_POINTS, drawPointsModPtr, SoftCircleMod::SINK_POINTS);
+//    audioDataSourceModPtr->connect(AudioDataSourceMod::SOURCE_POLAR_PITCH_RMS_POINTS, drawPointsModPtr, SoftCircleMod::SINK_POINTS);
 //    audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_SPECTRAL_CREST_SCALAR, drawPointsModPtr, SoftCircleMod::SINK_POINT_RADIUS_VARIANCE);
 //    audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_PITCH_SCALAR, drawPointsModPtr, SoftCircleMod::SINK_POINT_COLOR_MULTIPLIER);
 //    audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_RMS_SCALAR, drawPointsModPtr, SoftCircleMod::SINK_POINT_SOFTNESS);
@@ -192,8 +192,8 @@ ModPtrs ofApp::createMods1() {
     clusterModPtr->connect(ClusterMod::SOURCE_VEC2, dividedAreaModPtr, DividedAreaMod::SINK_MAJOR_ANCHORS);
     audioDataSourceModPtr->connect(AudioDataSourceMod::SOURCE_POLAR_PITCH_RMS_POINTS, dividedAreaModPtr, DividedAreaMod::SINK_MINOR_ANCHORS);
 //    pathModPtr->addSink(PathMod::SOURCE_PATH, dividedAreaModPtr, DividedAreaMod::SINK_MINOR_PATH);
-    audioPaletteModPtr->connect(SomPaletteMod::SOURCE_DARKEST_VEC4, dividedAreaModPtr, DividedAreaMod::SINK_MINOR_LINES_COLOR);
-    audioPaletteModPtr->connect(SomPaletteMod::SOURCE_DARKEST_VEC4, dividedAreaModPtr, DividedAreaMod::SINK_MAJOR_LINES_COLOR);
+//    audioPaletteModPtr->connect(SomPaletteMod::SOURCE_DARKEST_VEC4, dividedAreaModPtr, DividedAreaMod::SINK_MINOR_LINES_COLOR);
+//    audioPaletteModPtr->connect(SomPaletteMod::SOURCE_DARKEST_VEC4, dividedAreaModPtr, DividedAreaMod::SINK_MAJOR_LINES_COLOR);
     
     dividedAreaModPtr->receive(DividedAreaMod::SINK_FBO_2, fboPtrMinorLinesPtr);
     dividedAreaModPtr->receive(DividedAreaMod::SINK_FBO, fboPtrMajorLinesPtr);

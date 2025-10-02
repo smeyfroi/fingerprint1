@@ -17,7 +17,7 @@ ModPtrs ofApp::createMods2() {
     {"MinPitch", "50.0"},
     {"MaxPitch", "1500.0"},
     {"MinRms", "0.0005"},
-    {"MaxRms", "0.11"},
+    {"MaxRms", MAX_RMS},
     {"MinComplexSpectralDifference", "200.0"},
     {"MaxComplexSpectralDifference", "1000.0"},
     {"MinSpectralCrest", "20.0"},
