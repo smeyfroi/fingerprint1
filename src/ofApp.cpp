@@ -1,19 +1,8 @@
 #include "ofApp.h"
 #include "ofxTimeMeasurements.h"
+#include "Mod.hpp"
 
 using namespace ofxMarkSynth;
-
-ModPtr findModPtrByName(const std::vector<ModPtr>& mods, const std::string& name) {
-  auto it = std::find_if(mods.begin(), mods.end(), [&name](const ModPtr& modPtr) {
-//    ofLogNotice() << "Looking for Mod with name " << name << ", checking Mod with name " << modPtr->name;
-    return modPtr->name == name;
-  });
-  if (it == mods.end()) {
-    ofLogError() << "No mod found with name " << name;
-    ofExit();
-  }
-  return *it;
-}
 
 void ofApp::configSynth1(glm::vec2 size) {
   synth = std::make_shared<Synth>("Synth1", ModConfig {}, START_PAUSED);
@@ -68,21 +57,6 @@ void ofApp::setup(){
   TIME_SAMPLE_SET_DRAW_LOCATION(TIME_MEASUREMENTS_BOTTOM_RIGHT);
   TIME_SAMPLE_DISABLE(); // ************************************************************************
 
-//      audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>(rootSourceMaterialPath/"belfast/20250208-violin-separate-scale-vibrato-harmonics.wav");
-//      audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>(rootSourceMaterialPath/"percussion/Alex Petcu Bell Plates.wav");
-//      audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>(rootSourceMaterialPath/"percussion/Alex Petcu Sound Bath.wav");
-//  audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>(rootSourceMaterialPath/"belfast/20250208-trombone-melody.wav");
-//  audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>(rootSourceMaterialPath/"misc/nightsong.wav");
-//  audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>(rootSourceMaterialPath/"misc/treganna.wav");
-
-  auto recordingPath = saveFilePath("audio-recordings");
-  std::filesystem::create_directory(recordingPath);
-  audioAnalysisClientPtr = std::make_shared<ofxAudioAnalysisClient::LocalGistClient>(MIC_DEVICE_NAME, RECORD_AUDIO, recordingPath);
-
-  audioDataProcessorPtr = std::make_shared<ofxAudioData::Processor>(audioAnalysisClientPtr);
-  audioDataProcessorPtr->setDefaultValiditySpecs();
-  audioDataPlotsPtr = std::make_shared<ofxAudioData::Plots>(audioDataProcessorPtr);
-
   glm::vec2 size = { 7200, 7200 };
   configSynth1(size);
 //  configSynth2(size);
@@ -93,14 +67,12 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::update(){
 //  ofLogNotice() << "ofApp::update frame " << ofGetFrameNum();  // error happens before this and after setup()
-  audioDataProcessorPtr->update();
   synth->update();
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
   synth->draw();
-  audioDataPlotsPtr->drawPlots();
 }
 
 void ofApp::drawGui(ofEventArgs& args){
@@ -115,15 +87,11 @@ void ofApp::drawGui(ofEventArgs& args){
 
 //--------------------------------------------------------------
 void ofApp::exit(){
-  audioAnalysisClientPtr->stopRecording();
-  audioAnalysisClientPtr->closeStream();
   synth->shutdown();
 }
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-  if (audioAnalysisClientPtr->keyPressed(key)) return;
-  if (audioDataPlotsPtr->keyPressed(key)) return;
   if (synth->keyPressed(key)) return;
 }
 

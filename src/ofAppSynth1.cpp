@@ -24,7 +24,7 @@ ModPtrs ofApp::createMods1() {
     {"MaxSpectralCrest", "350.0"},
     {"MinZeroCrossingRate", "5.0"},
     {"MaxZeroCrossingRate", "15.0"}
-  }, audioDataProcessorPtr);
+  }, MIC_DEVICE_NAME, RECORD_AUDIO, RECORDING_PATH);
   
   // Palette from raw spectral points
   auto audioPaletteModPtr = addMod<SomPaletteMod>(mods, "Palette Creator", {
