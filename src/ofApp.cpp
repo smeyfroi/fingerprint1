@@ -45,8 +45,8 @@ void ofApp::configSynth2(glm::vec2 size) {
   audioDataSourceModPtr->connect(AudioDataSourceMod::SOURCE_ONSET1, synth, Synth::SINK_AUDIO_ONSET);
   audioDataSourceModPtr->connect(AudioDataSourceMod::SOURCE_TIMBRE_CHANGE, synth, Synth::SINK_AUDIO_TIMBRE_CHANGE);
   
-//  dynamic_cast<FluidMod&>(*fluidModPtr).setup(); // force fluid FBO allocations
-//  particleFieldModPtr->receive(ParticleFieldMod::SINK_FIELD_2_FBO, fluidVelocitiesFboPtr->getSource());
+  dynamic_cast<FluidMod&>(*fluidModPtr).setup(); // force fluid FBO allocations
+  particleFieldModPtr->receive(ParticleFieldMod::SINK_FIELD_2_FBO, fluidVelocitiesFboPtr->getSource());
 }
 
 void ofApp::setup(){
