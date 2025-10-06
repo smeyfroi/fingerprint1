@@ -50,7 +50,7 @@ int main( ){
 
 #ifdef FULLSCREEN
   settings.setPosition({0, 0});
-  settings.setSize(mainWindowW, mainWindowH-1); // defeat the 'game mode' notification on macOS
+  settings.setSize(mainWindowW, mainWindowH); // TODO: disable game mode notification
 #else
   settings.setPosition({255, 0});
   settings.setSize(1960, 1200);
