@@ -11,8 +11,6 @@ void ofApp::configSynth1(glm::vec2 size) {
   auto audioDataSourceModPtr = findModPtrByName(mods, "Audio Source");
   auto snapshotModPtr = findModPtrByName(mods, "Snapshot");
   auto dividedAreaModPtr = findModPtrByName(mods, "Divided Area");
-  
-  // FIXME: make fluid more Mod-like
   auto fluidModPtr = findModPtrByName(mods, "Fluid");
   auto smearModPtr = findModPtrByName(mods, "Smear Raw Points");
   auto particleFieldModPtr = findModPtrByName(mods, "Particle Field");

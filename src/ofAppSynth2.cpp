@@ -251,14 +251,13 @@ FboConfigPtrs ofApp::createFboConfigs2(glm::vec2 size) {
 //  fluidVelocitiesFboPtr->getSource().end();
   
   FboConfigPtrs fboConfigPtrs;
-  const ofFloatColor backgroundColor { 0.0, 0.0, 0.0, 0.0 };
-  addFboConfigPtr(fboConfigPtrs, "fluid", fluidFboPtr, size / 8.0, GL_RGBA16F, GL_REPEAT, backgroundColor, false, OF_BLENDMODE_ALPHA, false, 0);
-  addFboConfigPtr(fboConfigPtrs, "major lines", fboPtrMajorLinesPtr, size, GL_RGBA32F, GL_CLAMP_TO_EDGE, backgroundColor, true, OF_BLENDMODE_ALPHA, false, 0);
-  addFboConfigPtr(fboConfigPtrs, "sandlines", fboSandlinesPtr, size, GL_RGBA32F, GL_CLAMP_TO_EDGE, backgroundColor, false, OF_BLENDMODE_ADD, false, 0);
-  addFboConfigPtr(fboConfigPtrs, "collage", fboCollagePtr, size, GL_RGBA32F, GL_CLAMP_TO_EDGE, backgroundColor, false, OF_BLENDMODE_ALPHA, false, 0);
-  addFboConfigPtr(fboConfigPtrs, "raw points", rawPointsFboPtr, size, FLOAT_A_MODE, GL_REPEAT, backgroundColor, false, OF_BLENDMODE_ALPHA, false, 0);
-  addFboConfigPtr(fboConfigPtrs, "cluster particles", fboClusterParticlesPtr, size, GL_RGBA32F, GL_CLAMP_TO_EDGE, backgroundColor, false, OF_BLENDMODE_ALPHA, false, 0);
-  addFboConfigPtr(fboConfigPtrs, "motion particles", fboMotionParticlesPtr, size/4.0, GL_RGBA, GL_CLAMP_TO_EDGE, backgroundColor, true, OF_BLENDMODE_ADD, false, 0);
-  addFboConfigPtr(fboConfigPtrs, "minor lines", fboPtrMinorLinesPtr, size, GL_RGBA8, GL_CLAMP_TO_EDGE, backgroundColor, true, OF_BLENDMODE_ALPHA, false, 0);
+  addFboConfigPtr(fboConfigPtrs, "fluid", fluidFboPtr, size / 8.0, GL_RGBA16F, GL_REPEAT, false, OF_BLENDMODE_ALPHA, false, 0);
+  addFboConfigPtr(fboConfigPtrs, "major lines", fboPtrMajorLinesPtr, size, GL_RGBA32F, GL_CLAMP_TO_EDGE, true, OF_BLENDMODE_ALPHA, false, 0);
+  addFboConfigPtr(fboConfigPtrs, "sandlines", fboSandlinesPtr, size, GL_RGBA32F, GL_CLAMP_TO_EDGE, false, OF_BLENDMODE_ADD, false, 0);
+  addFboConfigPtr(fboConfigPtrs, "collage", fboCollagePtr, size, GL_RGBA32F, GL_CLAMP_TO_EDGE, false, OF_BLENDMODE_ALPHA, false, 0);
+  addFboConfigPtr(fboConfigPtrs, "raw points", rawPointsFboPtr, size, FLOAT_A_MODE, GL_REPEAT, false, OF_BLENDMODE_ALPHA, false, 0);
+  addFboConfigPtr(fboConfigPtrs, "cluster particles", fboClusterParticlesPtr, size, GL_RGBA32F, GL_CLAMP_TO_EDGE, false, OF_BLENDMODE_ALPHA, false, 0);
+  addFboConfigPtr(fboConfigPtrs, "motion particles", fboMotionParticlesPtr, size/4.0, GL_RGBA, GL_CLAMP_TO_EDGE, true, OF_BLENDMODE_ADD, false, 0);
+  addFboConfigPtr(fboConfigPtrs, "minor lines", fboPtrMinorLinesPtr, size, GL_RGBA8, GL_CLAMP_TO_EDGE, true, OF_BLENDMODE_ALPHA, false, 0);
   return fboConfigPtrs;
 }
