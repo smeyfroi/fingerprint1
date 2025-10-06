@@ -95,8 +95,8 @@ ModPtrs ofApp::createMods1() {
     auto drawPointsModPtr = addMod<SoftCircleMod>(mods, "Fluid Raw Points", {
       {"Radius", "0.01"},
       {"ColorMultiplier", "0.4"},
-      {"AlphaMultiplier", "0.85"},
-      {"Softness", "0.1"}
+      {"AlphaMultiplier", "0.6"},
+      {"Softness", "0.5"}
     });
     audioPaletteModPtr->connect(SomPaletteMod::SOURCE_RANDOM_DARK_VEC4, drawPointsModPtr, SoftCircleMod::SINK_POINT_COLOR);
     audioDataSourceModPtr->connect(AudioDataSourceMod::SOURCE_PITCH_RMS_POINTS, drawPointsModPtr, SoftCircleMod::SINK_POINTS);
@@ -108,10 +108,11 @@ ModPtrs ofApp::createMods1() {
     
     { // Radial fluid impulses from raw points
       auto fluidRadialImpulseModPtr = addMod<FluidRadialImpulseMod>(mods, "Raw Point Impulses", {
-        {"ImpulseRadius", "0.02"},
-        {"ImpulseStrength", "0.06"}
+        {"ImpulseRadius", "0.025"},
+        {"ImpulseStrength", "0.08"}
       });
-      audioDataSourceModPtr->connect(AudioDataSourceMod::SOURCE_POLAR_PITCH_RMS_POINTS, fluidRadialImpulseModPtr, FluidRadialImpulseMod::SINK_POINTS);
+      audioDataSourceModPtr->connect(AudioDataSourceMod::SOURCE_PITCH_RMS_POINTS, fluidRadialImpulseModPtr, FluidRadialImpulseMod::SINK_POINTS);
+//      audioDataSourceModPtr->connect(AudioDataSourceMod::SOURCE_POLAR_PITCH_RMS_POINTS, fluidRadialImpulseModPtr, FluidRadialImpulseMod::SINK_POINTS);
       fluidRadialImpulseModPtr->receive(FluidRadialImpulseMod::SINK_FBO, fluidVelocitiesFboPtr);
     }
   }
@@ -205,25 +206,25 @@ ModPtrs ofApp::createMods1() {
     dividedAreaModPtr->receive(DividedAreaMod::SINK_FBO, fboPtrMajorLinesPtr);
   }
   
-//  { // Sandlines
-//    auto sandLineModPtr = addMod<SandLineMod>(mods, "Sand lines", {
-//      {"PointRadius", "1.0"},
-//      {"Density", "0.15"},
-//      {"AlphaMultiplier", "1.0"},
-//      {"StdDevAlong", "0.5"},
-//      {"StdDevPerpendicular", "0.004"}
+  { // Sandlines
+    auto sandLineModPtr = addMod<SandLineMod>(mods, "Sand lines", {
+      {"PointRadius", "1.0"},
+      {"Density", "0.15"},
+      {"AlphaMultiplier", "1.0"},
+      {"StdDevAlong", "0.5"},
+      {"StdDevPerpendicular", "0.004"}
+    });
+    audioPaletteModPtr->connect(SomPaletteMod::SOURCE_RANDOM_LIGHT_VEC4, sandLineModPtr, SandLineMod::SINK_POINT_COLOR);
+    clusterModPtr->connect(ClusterMod::SOURCE_VEC2, sandLineModPtr, SandLineMod::SINK_POINTS);
+    sandLineModPtr->receive(SandLineMod::SINK_FBO, rawPointsFboPtr);
+//    sandLineModPtr->receive(SandLineMod::SINK_FBO, fluidFboPtr);
+
+//    auto fadeModPtr = addMod<FadeMod>(mods, "Fade Sand Lines", {
+//      {"Fade Amount", "0.00000005"}
 //    });
-//    audioPaletteModPtr->addSink(SomPaletteMod::SOURCE_RANDOM_LIGHT_VEC4, sandLineModPtr, SandLineMod::SINK_POINT_COLOR);
-//    clusterModPtr->addSink(ClusterMod::SOURCE_VEC2, sandLineModPtr, SandLineMod::SINK_POINTS);
-//    sandLineModPtr->receive(SandLineMod::SINK_FBO, rawPointsFboPtr);
-////    sandLineModPtr->receive(SandLineMod::SINK_FBO, fluidFboPtr);
-//
-////    auto fadeModPtr = addMod<FadeMod>(mods, "Fade Sand Lines", {
-////      {"Fade Amount", "0.00000005"}
-////    });
-////    sandLineModPtr->addSink(SandLineMod::SOURCE_FBO, fadeModPtr, FadeMod::SINK_FBO);
-////    sandLineModPtr->receive(SandLineMod::SINK_FBO, fboSandlinesPtr);
-//  }
+//    sandLineModPtr->addSink(SandLineMod::SOURCE_FBO, fadeModPtr, FadeMod::SINK_FBO);
+//    sandLineModPtr->receive(SandLineMod::SINK_FBO, fboSandlinesPtr);
+  }
   
 //  { // Cluster particles
 //    auto particleSetModPtr = addMod<ParticleSetMod>(mods, "Cluster Particles", {
