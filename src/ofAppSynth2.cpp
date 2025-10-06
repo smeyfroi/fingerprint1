@@ -56,9 +56,9 @@ ModPtrs ofApp::createMods2() {
       {"MixNew", "0.8"},
       {"AlphaMultiplier", "0.999"},
     });
-    drawPointsModPtr->connect(DrawPointsMod::SOURCE_FBO, smearModPtr, SmearMod::SINK_FBO);
 
-    drawPointsModPtr->receive(DrawPointsMod::SINK_FBO, rawPointsFboPtr);
+    drawPointsModPtr->receive(DrawPointsMod::SINK_FBOPTR, rawPointsFboPtr);
+    drawPointsModPtr->receive(SmearMod::SINK_FBOPTR, rawPointsFboPtr);
   }
 
   { // Collage layer from raw pitch/RMS and the raw points FBO
@@ -94,9 +94,9 @@ ModPtrs ofApp::createMods2() {
 //    auto fadeModPtr = addMod<FadeMod>(mods, "Fade Collage", {
 //      {"Fade Amount", "0.001"}
 //    });
-//    collageModPtr->addSink(CollageMod::SOURCE_FBO, fadeModPtr, FadeMod::SINK_FBO);
 //
 //    collageModPtr->receive(CollageMod::SINK_FBO, fboCollagePtr);
+//    fadeModPtr->receive(FadeMod::SINK_FBO, fboCollagePtr);
 
     // DividedArea
     auto dividedAreaModPtr = addMod<DividedAreaMod>(mods, "Divided Area", {});
@@ -104,8 +104,8 @@ ModPtrs ofApp::createMods2() {
 //    audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_POLAR_PITCH_RMS_POINTS, dividedAreaModPtr, DividedAreaMod::SINK_MINOR_ANCHORS);
     pathModPtr->connect(PathMod::SOURCE_PATH, dividedAreaModPtr, DividedAreaMod::SINK_MINOR_PATH);
 
-    dividedAreaModPtr->receive(DividedAreaMod::SINK_FBO_2, fboPtrMinorLinesPtr);
-    dividedAreaModPtr->receive(DividedAreaMod::SINK_FBO, fboPtrMajorLinesPtr);
+    dividedAreaModPtr->receive(DividedAreaMod::SINK_FBOPTR_2, fboPtrMinorLinesPtr);
+    dividedAreaModPtr->receive(DividedAreaMod::SINK_FBOPTR, fboPtrMajorLinesPtr);
   }
 
   { // Sandlines
@@ -118,7 +118,7 @@ ModPtrs ofApp::createMods2() {
     });
     audioPaletteModPtr->connect(SomPaletteMod::SOURCE_RANDOM_LIGHT_VEC4, sandLineModPtr, SandLineMod::SINK_POINT_COLOR);
     clusterModPtr->connect(ClusterMod::SOURCE_VEC2, sandLineModPtr, SandLineMod::SINK_POINTS);
-    sandLineModPtr->receive(SandLineMod::SINK_FBO, rawPointsFboPtr);
+    sandLineModPtr->receive(SandLineMod::SINK_FBOPTR, rawPointsFboPtr);
   }
   
   // Fluid simulation
@@ -149,7 +149,7 @@ ModPtrs ofApp::createMods2() {
     radiiModPtr->connect(RandomFloatSourceMod::SOURCE_FLOAT, drawPointsModPtr, SoftCircleMod::SINK_POINT_RADIUS);
     audioPaletteModPtr->connect(SomPaletteMod::SOURCE_RANDOM_VEC4, drawPointsModPtr, SoftCircleMod::SINK_POINT_COLOR);
     clusterModPtr->connect(ClusterMod::SOURCE_VEC2, drawPointsModPtr, SoftCircleMod::SINK_POINTS);
-    drawPointsModPtr->receive(SoftCircleMod::SINK_FBO, fluidFboPtr);
+    drawPointsModPtr->receive(SoftCircleMod::SINK_FBOPTR, fluidFboPtr);
   }
 
   { // Radial fluid impulses from clusters
@@ -158,7 +158,7 @@ ModPtrs ofApp::createMods2() {
       {"ImpulseStrength", "0.02"}
     });
     clusterModPtr->connect(ClusterMod::SOURCE_VEC2, fluidRadialImpulseModPtr, FluidRadialImpulseMod::SINK_POINTS);
-    fluidRadialImpulseModPtr->receive(FluidRadialImpulseMod::SINK_FBO, fluidVelocitiesFboPtr);
+    fluidRadialImpulseModPtr->receive(FluidRadialImpulseMod::SINK_FBOPTR, fluidVelocitiesFboPtr);
   }
 
   { // Raw data points into fluid
@@ -174,7 +174,7 @@ ModPtrs ofApp::createMods2() {
 //    audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_SPECTRAL_CREST_SCALAR, drawPointsModPtr, SoftCircleMod::SINK_POINT_RADIUS_VARIANCE);
 //    audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_PITCH_SCALAR, drawPointsModPtr, SoftCircleMod::SINK_POINT_COLOR_MULTIPLIER);
 //    audioDataSourceModPtr->addSink(AudioDataSourceMod::SOURCE_RMS_SCALAR, drawPointsModPtr, SoftCircleMod::SINK_POINT_SOFTNESS);
-    drawPointsModPtr->receive(SoftCircleMod::SINK_FBO, fluidFboPtr);
+    drawPointsModPtr->receive(SoftCircleMod::SINK_FBOPTR, fluidFboPtr);
     
     { // Radial fluid impulses from raw points
       auto fluidRadialImpulseModPtr = addMod<FluidRadialImpulseMod>(mods, "Raw Point Impulses", {
@@ -182,7 +182,7 @@ ModPtrs ofApp::createMods2() {
         {"ImpulseStrength", "0.06"}
       });
       audioDataSourceModPtr->connect(AudioDataSourceMod::SOURCE_POLAR_PITCH_RMS_POINTS, fluidRadialImpulseModPtr, FluidRadialImpulseMod::SINK_POINTS);
-      fluidRadialImpulseModPtr->receive(FluidRadialImpulseMod::SINK_FBO, fluidVelocitiesFboPtr);
+      fluidRadialImpulseModPtr->receive(FluidRadialImpulseMod::SINK_FBOPTR, fluidVelocitiesFboPtr);
     }
   }
   
@@ -204,7 +204,7 @@ ModPtrs ofApp::createMods2() {
     }, 0.0, 0.0, 500'000);
     videoFlowModPtr->connect(VideoFlowSourceMod::SOURCE_FLOW_FBO, particleFieldModPtr, ParticleFieldMod::SINK_FIELD_1_FBO);
     audioPaletteModPtr->connect(SomPaletteMod::SOURCE_FIELD, particleFieldModPtr, ParticleFieldMod::SINK_FIELD_2_FBO);
-    particleFieldModPtr->receive(ParticleFieldMod::SINK_FBO, fboMotionParticlesPtr);
+    particleFieldModPtr->receive(ParticleFieldMod::SINK_FBOPTR, fboMotionParticlesPtr);
   }
   
 //  { // Motion particles
