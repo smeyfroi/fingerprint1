@@ -10,6 +10,7 @@ void ofApp::configSynth1(glm::vec2 size) {
   auto somPaletteModPtr = findModPtrByName(mods, "Palette Creator");
   auto audioDataSourceModPtr = findModPtrByName(mods, "Audio Source");
   auto snapshotModPtr = findModPtrByName(mods, "Snapshot");
+  auto dividedAreaModPtr = findModPtrByName(mods, "Divided Area");
   
   // FIXME: make fluid more Mod-like
   auto fluidModPtr = findModPtrByName(mods, "Fluid");
@@ -27,6 +28,7 @@ void ofApp::configSynth1(glm::vec2 size) {
   particleFieldModPtr->receive(ParticleFieldMod::SINK_FIELD_2_FBO, fluidVelocitiesFboPtr->getSource());
   
   synth->connect(Synth::SOURCE_COMPOSITE_FBO, snapshotModPtr, PixelSnapshotMod::SINK_SNAPSHOT_SOURCE);
+  synth->connect(Synth::SOURCE_COMPOSITE_FBO, dividedAreaModPtr, DividedAreaMod::SINK_BACKGROUND_SOURCE);
 }
 
 void ofApp::configSynth2(glm::vec2 size) {
