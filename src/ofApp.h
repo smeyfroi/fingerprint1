@@ -21,6 +21,10 @@ const std::filesystem::path RECORDING_PATH { "/Users/steve/Documents/recordings"
 // ***********************************************
 
 
+std::shared_ptr<ofxMarkSynth::Synth> createSynth1(glm::vec2 size);
+std::shared_ptr<ofxMarkSynth::Synth> createSynth2(glm::vec2 size);
+
+
 class ofApp : public ofBaseApp{
   
 public:
@@ -45,23 +49,5 @@ public:
   void gotMessage(ofMessage msg) override;
   
 private:
-  void configSynth1(glm::vec2 size);
-  void configSynth2(glm::vec2 size);
-  ofxMarkSynth::ModPtrs createMods1();
-  ofxMarkSynth::FboConfigPtrs createFboConfigs1(glm::vec2 size);
-  ofxMarkSynth::ModPtrs createMods2();
-  ofxMarkSynth::FboConfigPtrs createFboConfigs2(glm::vec2 size);
-
-  std::shared_ptr<ofxMarkSynth::Synth> synth;
-  ofxMarkSynth::FboPtr fluidVelocitiesFboPtr = std::make_shared<PingPongFbo>();
-  ofxMarkSynth::FboPtr fluidFboPtr = std::make_shared<PingPongFbo>();
-  ofxMarkSynth::FboPtr rawPointsFboPtr = std::make_shared<PingPongFbo>();
-  ofxMarkSynth::FboPtr fboPtrMinorLinesPtr = std::make_shared<PingPongFbo>();
-  ofxMarkSynth::FboPtr fboPtrMajorLinesPtr = std::make_shared<PingPongFbo>();
-  ofxMarkSynth::FboPtr fboCollagePtr = std::make_shared<PingPongFbo>();
-  ofxMarkSynth::FboPtr fboCollageOutlinesPtr = std::make_shared<PingPongFbo>();
-  ofxMarkSynth::FboPtr fboSandlinesPtr = std::make_shared<PingPongFbo>();
-  ofxMarkSynth::FboPtr fboClusterParticlesPtr = std::make_shared<PingPongFbo>();
-  ofxMarkSynth::FboPtr fboMotionParticlesPtr = std::make_shared<PingPongFbo>();
-
+  std::shared_ptr<ofxMarkSynth::Synth> synthPtr;
 };
