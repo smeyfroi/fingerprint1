@@ -55,7 +55,8 @@ ModPtrs ofApp::createMods2() {
 
   auto pathModPtr = addMod<PathMod>(mods, "Collage Path", {
     {"MaxVertices", "7"},
-    {"VertexProximity", "0.05"},
+    {"MinVertexProximity", "0.01"},
+    {"MaxVertexProximity", "0.07"},
     {"Strategy", "1"} // 0=polypath; 1=bounds; 2=horizontals; 3=convex hull
   });
   
