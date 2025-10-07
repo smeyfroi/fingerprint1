@@ -15,7 +15,7 @@ ModPtrs ofApp::createMods1() {
   auto mods = ModPtrs {};
   
   // Audio source
-  auto audioDataSourceModPtr = addMod<AudioDataSourceMod>(mods, "Audio Source", {
+  std::shared_ptr<AudioDataSourceMod> audioDataSourceModPtr = std::static_pointer_cast<AudioDataSourceMod>(addMod<AudioDataSourceMod>(mods, "Audio Source", {
     {"MinPitch", "50.0"},
     {"MaxPitch", "1500.0"},
     {"MinRms", "0.0005"},
@@ -26,7 +26,10 @@ ModPtrs ofApp::createMods1() {
     {"MaxSpectralCrest", "350.0"},
     {"MinZeroCrossingRate", "5.0"},
     {"MaxZeroCrossingRate", "15.0"}
-  }, MIC_DEVICE_NAME, RECORD_AUDIO, RECORDING_PATH);
+  }, MIC_DEVICE_NAME, RECORD_AUDIO, RECORDING_PATH));
+//  audioDataSourceModPtr->registerAudioCallback([this](const float* audioBuffer, size_t bufferSize, int numChannels, int sampleRate) {
+//    ofLogNotice() << audioBuffer[0];
+//  });
   
   // Palette from raw spectral points
   auto audioPaletteModPtr = addMod<SomPaletteMod>(mods, "Palette Creator", {
@@ -217,8 +220,8 @@ ModPtrs ofApp::createMods1() {
   
   // Could be better expressed as: `connectFboPtr(fboPtr, { {Mod::SINK_FBOPTR, modPtr}, ... })` ?
   particleFieldModPtr->receive(ParticleFieldMod::SINK_FBOPTR, fboMotionParticlesPtr);
-  fluidModPtr->receive(FluidMod::SINK_VALUES_FBO, fluidFboPtr);
-  fluidModPtr->receive(FluidMod::SINK_VELOCITIES_FBO, fluidVelocitiesFboPtr);
+  fluidModPtr->receive(FluidMod::SINK_VALUES_FBOPTR, fluidFboPtr);
+  fluidModPtr->receive(FluidMod::SINK_VELOCITIES_FBOPTR, fluidVelocitiesFboPtr);
   drawPointsModPtr->receive(SoftCircleMod::SINK_FBOPTR, fluidFboPtr);
   fluidRadialImpulseModPtr->receive(FluidRadialImpulseMod::SINK_FBOPTR, fluidVelocitiesFboPtr);
   rawFluidPointsModPtr->receive(SoftCircleMod::SINK_FBOPTR, fluidFboPtr);
@@ -238,6 +241,8 @@ ModPtrs ofApp::createMods1() {
 }
 
 FboConfigPtrs ofApp::createFboConfigs1(glm::vec2 size) {
+
+  // FIXME: make this fit into the emit/receive framework
   // Used by fluid sim but not drawn
   allocateFbo(fluidVelocitiesFboPtr, size / 8.0, GL_RGB16F, GL_REPEAT);
   fluidVelocitiesFboPtr->clearFloat(0.0, 0.0, 0.0, 0.0);
