@@ -214,22 +214,39 @@ std::shared_ptr<Synth> createSynth2(glm::vec2 size) {
   //  addFboConfigPtr(fboConfigPtrs, "cluster particles", fboClusterParticlesPtr, size, GL_RGBA16F, GL_CLAMP_TO_EDGE, false, OF_BLENDMODE_ALPHA, false, 0);
   auto fboPtrMajorLinesPtr = synthPtr->addFboConfig("7major lines", synthPtr->getSize(), GL_RGBA16F, GL_CLAMP_TO_EDGE, true, OF_BLENDMODE_ALPHA, false, 0); // samples==4 is too much
   auto fboSandlinesPtr = synthPtr->addFboConfig("8sandlines", synthPtr->getSize(), GL_RGBA16F, GL_CLAMP_TO_EDGE, false, OF_BLENDMODE_ADD, false, 0);
-    
-  drawPointsModPtr->receive(DrawPointsMod::SINK_FBOPTR_1, rawPointsFboPtr);
-  smearModPtr->receive(SmearMod::SINK_FBOPTR_1, rawPointsFboPtr);
-  dividedAreaModPtr->receive(DividedAreaMod::SINK_FBOPTR_2, fboPtrMinorLinesPtr);
-  dividedAreaModPtr->receive(DividedAreaMod::SINK_FBOPTR_1, fboPtrMajorLinesPtr);
-  sandLineModPtr->receive(SandLineMod::SINK_FBOPTR_1, rawPointsFboPtr);
-  fluidModPtr->receive(FluidMod::SINK_VALUES_FBOPTR, fluidFboPtr);
-  fluidModPtr->receive(FluidMod::SINK_VELOCITIES_FBOPTR, fluidVelocitiesFboPtr);
-  pixelSnapshotModPtr->receive(PixelSnapshotMod::SINK_FBOPTR_1, fluidFboPtr);
-  collageModPtr->receive(CollageMod::SINK_FBOPTR_1, fboCollagePtr);
-  fadeModPtr->receive(FadeMod::SINK_FBOPTR_1, fboCollagePtr);
-  drawClusterPointsModPtr->receive(SoftCircleMod::SINK_FBOPTR_1, fluidFboPtr);
-  clusterRadialImpulseModPtr->receive(FluidRadialImpulseMod::SINK_FBOPTR_1, fluidVelocitiesFboPtr);
-  drawRawPointsModPtr->receive(SoftCircleMod::SINK_FBOPTR_1, fluidFboPtr);
-  rawRadialImpulseModPtr->receive(FluidRadialImpulseMod::SINK_FBOPTR_1, fluidVelocitiesFboPtr);
-  particleFieldModPtr->receive(ParticleFieldMod::SINK_FBOPTR_1, fboMotionParticlesPtr);
+  
+  // Assign drawing surfaces to the Mods
+  assignFboPtrToMods(fluidFboPtr, {
+    { fluidModPtr },
+    { drawClusterPointsModPtr },
+    { drawRawPointsModPtr },
+    { pixelSnapshotModPtr } // FIXME: this isn't quite right is it?
+  });
+  assignFboPtrToMods(fluidVelocitiesFboPtr, {
+    { fluidModPtr, FluidMod::VELOCITIES_FBOPTR_NAME },
+    { clusterRadialImpulseModPtr },
+    { rawRadialImpulseModPtr }
+  });
+  assignFboPtrToMods(rawPointsFboPtr, {
+    { drawPointsModPtr },
+    { smearModPtr },
+    { sandLineModPtr }
+  });
+  assignFboPtrToMods(fboCollagePtr, {
+    { collageModPtr },
+    { fadeModPtr }
+  });
+  assignFboPtrToMods(fboPtrMinorLinesPtr, {
+    { dividedAreaModPtr }
+  });
+  assignFboPtrToMods(fboPtrMajorLinesPtr, {
+    { dividedAreaModPtr, DividedAreaMod::MAJOR_LINES_FBOPTR_NAME }
+  });
+  assignFboPtrToMods(fboMotionParticlesPtr, {
+    { particleFieldModPtr }
+  });
+
+  // TODO: these aren't right are they?
   smearModPtr->receive(SmearMod::SINK_FIELD_2_FBO, fluidVelocitiesFboPtr->getSource());
   particleFieldModPtr->receive(ParticleFieldMod::SINK_FIELD_2_FBO, fluidVelocitiesFboPtr->getSource());
 
