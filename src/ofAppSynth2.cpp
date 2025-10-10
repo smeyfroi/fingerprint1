@@ -65,10 +65,14 @@ std::shared_ptr<Synth> createSynth2(glm::vec2 size) {
     {"Strategy", "1"}, // 0=tint; 1=add tinted pixels
   });
   
-  auto fadeModPtr = synthPtr->addMod<FadeMod>("Fade Collage", {
-    {"Fade Amount", "0.001"}
+  auto collageFadeModPtr = synthPtr->addMod<FadeMod>("Fade Collage", {
+    {"Fade Amount", "0.0005"}
   });
   
+  auto outlineFadeModPtr = synthPtr->addMod<FadeMod>("Fade Collage Outlines", {
+    {"Fade Amount", "0.01"}
+  });
+
   // DividedArea
   auto dividedAreaModPtr = synthPtr->addMod<DividedAreaMod>("Divided Area", {
     {"maxConstrainedLines", "1500"},
@@ -203,7 +207,9 @@ std::shared_ptr<Synth> createSynth2(glm::vec2 size) {
   audioPaletteModPtr->connect(SomPaletteMod::SOURCE_DARKEST_VEC4, synthPtr, Synth::SINK_BACKGROUND_COLOR);
   audioDataSourceModPtr->connect(AudioDataSourceMod::SOURCE_ONSET1, synthPtr, Synth::SINK_AUDIO_ONSET);
   audioDataSourceModPtr->connect(AudioDataSourceMod::SOURCE_TIMBRE_CHANGE, synthPtr, Synth::SINK_AUDIO_TIMBRE_CHANGE);
-  
+  synthPtr->connect(Synth::SOURCE_COMPOSITE_FBO, pixelSnapshotModPtr, PixelSnapshotMod::SINK_SNAPSHOT_SOURCE);
+  synthPtr->connect(Synth::SOURCE_COMPOSITE_FBO, dividedAreaModPtr, DividedAreaMod::SINK_BACKGROUND_SOURCE);
+
   auto fluidFboPtr = synthPtr->addFboConfig("1fluid", synthPtr->getSize() / 8.0, GL_RGBA16F, GL_REPEAT, false, OF_BLENDMODE_ALPHA, false, 0);
   auto fluidVelocitiesFboPtr = synthPtr->addFboConfig("fluidVelocities", synthPtr->getSize() / 8.0, GL_RGB16F, GL_REPEAT, false, OF_BLENDMODE_DISABLED, false, 0, false); // not drawn
   auto rawPointsFboPtr = synthPtr->addFboConfig("2raw points", synthPtr->getSize(), GL_RGBA16F, GL_REPEAT, false, OF_BLENDMODE_ADD, false, 0);
@@ -219,8 +225,7 @@ std::shared_ptr<Synth> createSynth2(glm::vec2 size) {
   assignFboPtrToMods(fluidFboPtr, {
     { fluidModPtr },
     { drawClusterPointsModPtr },
-    { drawRawPointsModPtr },
-    { pixelSnapshotModPtr } // FIXME: this isn't quite right is it?
+    { drawRawPointsModPtr }
   });
   assignFboPtrToMods(fluidVelocitiesFboPtr, {
     { fluidModPtr, FluidMod::VELOCITIES_FBOPTR_NAME },
@@ -234,7 +239,11 @@ std::shared_ptr<Synth> createSynth2(glm::vec2 size) {
   });
   assignFboPtrToMods(fboCollagePtr, {
     { collageModPtr },
-    { fadeModPtr }
+    { collageFadeModPtr }
+  });
+  assignFboPtrToMods(fboCollageOutlinesPtr, {
+    { collageModPtr, CollageMod::OUTLINE_FBOPTR_NAME },
+    { outlineFadeModPtr }
   });
   assignFboPtrToMods(fboPtrMinorLinesPtr, {
     { dividedAreaModPtr }
