@@ -254,54 +254,54 @@ std::shared_ptr<Synth> createSynth2(glm::vec2 size) {
     }
   });
 
-  auto fluidFboPtr = synthPtr->addFboConfig("1fluid", synthPtr->getSize() / 8.0, GL_RGBA16F, GL_REPEAT, false, OF_BLENDMODE_ALPHA, false, 0);
-  auto fluidVelocitiesFboPtr = synthPtr->addFboConfig("fluidVelocities", synthPtr->getSize() / 8.0, GL_RGB16F, GL_REPEAT, false, OF_BLENDMODE_DISABLED, false, 0, false); // not drawn
-  auto rawPointsFboPtr = synthPtr->addFboConfig("2raw points", synthPtr->getSize(), GL_RGBA16F, GL_REPEAT, false, OF_BLENDMODE_ADD, false, 0);
-  auto fboMotionParticlesPtr = synthPtr->addFboConfig("3motion particles", synthPtr->getSize()/2.0, GL_RGBA, GL_CLAMP_TO_EDGE, false, OF_BLENDMODE_ADD, false, 0);
-  auto fboPtrMinorLinesPtr = synthPtr->addFboConfig("4minor lines", synthPtr->getSize(), GL_RGBA8, GL_CLAMP_TO_EDGE, true, OF_BLENDMODE_ALPHA, false, 4);
-  auto fboCollagePtr = synthPtr->addFboConfig("5collage", synthPtr->getSize(), GL_RGBA16F, GL_CLAMP_TO_EDGE, false, OF_BLENDMODE_ADD, true, 0);
-  auto fboCollageOutlinesPtr = synthPtr->addFboConfig("6collage outlines", synthPtr->getSize(), GL_RGBA16F, GL_CLAMP_TO_EDGE, false, OF_BLENDMODE_ALPHA, false, 0);
+  auto fluidDrawingLayerPtr = synthPtr->addDrawingLayer("1fluid", synthPtr->getSize() / 8.0, GL_RGBA16F, GL_REPEAT, false, OF_BLENDMODE_ALPHA, false, 0);
+  auto fluidVelocitiesDrawingLayerPtr = synthPtr->addDrawingLayer("fluidVelocities", synthPtr->getSize() / 8.0, GL_RGB16F, GL_REPEAT, false, OF_BLENDMODE_DISABLED, false, 0, false); // not drawn
+  auto rawPointsDrawingLayerPtr = synthPtr->addDrawingLayer("2raw points", synthPtr->getSize(), GL_RGBA16F, GL_REPEAT, false, OF_BLENDMODE_ADD, false, 0);
+  auto motionParticlesDrawingLayerPtr = synthPtr->addDrawingLayer("3motion particles", synthPtr->getSize()/2.0, GL_RGBA, GL_CLAMP_TO_EDGE, false, OF_BLENDMODE_ADD, false, 0);
+  auto minorLinesDrawingLayerPtr = synthPtr->addDrawingLayer("4minor lines", synthPtr->getSize(), GL_RGBA8, GL_CLAMP_TO_EDGE, true, OF_BLENDMODE_ALPHA, false, 4);
+  auto collageDrawingLayerPtr = synthPtr->addDrawingLayer("5collage", synthPtr->getSize(), GL_RGBA16F, GL_CLAMP_TO_EDGE, false, OF_BLENDMODE_ADD, true, 0);
+  auto collageOutlinesDrawingLayerPtr = synthPtr->addDrawingLayer("6collage outlines", synthPtr->getSize(), GL_RGBA16F, GL_CLAMP_TO_EDGE, false, OF_BLENDMODE_ALPHA, false, 0);
   //  addFboConfigPtr(fboConfigPtrs, "cluster particles", fboClusterParticlesPtr, size, GL_RGBA16F, GL_CLAMP_TO_EDGE, false, OF_BLENDMODE_ALPHA, false, 0);
-  auto fboPtrMajorLinesPtr = synthPtr->addFboConfig("7major lines", synthPtr->getSize(), GL_RGBA16F, GL_CLAMP_TO_EDGE, true, OF_BLENDMODE_ALPHA, false, 0); // samples==4 is too much
-  auto fboSandlinesPtr = synthPtr->addFboConfig("8sandlines", synthPtr->getSize(), GL_RGBA16F, GL_CLAMP_TO_EDGE, false, OF_BLENDMODE_ADD, false, 0);
+  auto majorLinesDrawingLayerPtr = synthPtr->addDrawingLayer("7major lines", synthPtr->getSize(), GL_RGBA16F, GL_CLAMP_TO_EDGE, true, OF_BLENDMODE_ALPHA, false, 0); // samples==4 is too much
+  auto sandlinesDrawingLayerPtr = synthPtr->addDrawingLayer("8sandlines", synthPtr->getSize(), GL_RGBA16F, GL_CLAMP_TO_EDGE, false, OF_BLENDMODE_ADD, false, 0);
   
   // Assign drawing surfaces to the Mods
-  assignFboPtrToMods(fluidFboPtr, {
+  assignDrawingLayerPtrToMods(fluidDrawingLayerPtr, {
     { fluidModPtr },
     { drawClusterPointsModPtr },
     { drawRawPointsModPtr }
   });
-  assignFboPtrToMods(fluidVelocitiesFboPtr, {
-    { fluidModPtr, FluidMod::VELOCITIES_FBOPTR_NAME },
+  assignDrawingLayerPtrToMods(fluidVelocitiesDrawingLayerPtr, {
+    { fluidModPtr, FluidMod::VELOCITIES_LAYERPTR_NAME },
     { clusterRadialImpulseModPtr },
     { rawRadialImpulseModPtr }
   });
-  assignFboPtrToMods(rawPointsFboPtr, {
+  assignDrawingLayerPtrToMods(rawPointsDrawingLayerPtr, {
     { drawPointsModPtr },
     { smearModPtr },
     { sandLineModPtr }
   });
-  assignFboPtrToMods(fboCollagePtr, {
+  assignDrawingLayerPtrToMods(collageDrawingLayerPtr, {
     { collageModPtr },
     { collageFadeModPtr }
   });
-  assignFboPtrToMods(fboCollageOutlinesPtr, {
-    { collageModPtr, CollageMod::OUTLINE_FBOPTR_NAME },
+  assignDrawingLayerPtrToMods(collageOutlinesDrawingLayerPtr, {
+    { collageModPtr, CollageMod::OUTLINE_LAYERPTR_NAME },
     { outlineFadeModPtr }
   });
-  assignFboPtrToMods(fboPtrMinorLinesPtr, {
+  assignDrawingLayerPtrToMods(minorLinesDrawingLayerPtr, {
     { dividedAreaModPtr }
   });
-  assignFboPtrToMods(fboPtrMajorLinesPtr, {
-    { dividedAreaModPtr, DividedAreaMod::MAJOR_LINES_FBOPTR_NAME }
+  assignDrawingLayerPtrToMods(majorLinesDrawingLayerPtr, {
+    { dividedAreaModPtr, DividedAreaMod::MAJOR_LINES_LAYERPTR_NAME }
   });
-  assignFboPtrToMods(fboMotionParticlesPtr, {
+  assignDrawingLayerPtrToMods(motionParticlesDrawingLayerPtr, {
     { particleFieldModPtr }
   });
 
   // TODO: these aren't right are they?
-  smearModPtr->receive(SmearMod::SINK_FIELD_2_FBO, fluidVelocitiesFboPtr->getSource());
-  particleFieldModPtr->receive(ParticleFieldMod::SINK_FIELD_2_FBO, fluidVelocitiesFboPtr->getSource());
+  smearModPtr->receive(SmearMod::SINK_FIELD_2_FBO, fluidVelocitiesDrawingLayerPtr->fboPtr->getSource());
+  particleFieldModPtr->receive(ParticleFieldMod::SINK_FIELD_2_FBO, fluidVelocitiesDrawingLayerPtr->fboPtr->getSource());
 
   synthPtr->configureGui();
   return synthPtr;
