@@ -147,7 +147,7 @@ std::shared_ptr<Synth> createSynth2(glm::vec2 size) {
     {"forceMultiplier", "0.5"},
     {"maxVelocity", "0.0005"},
     {"particleSize", "3.0"}
-  }, 0.0, 0.0, 500'000);
+  }, 0.0, 0.0);
   
   //  { // Motion particles
   //    auto particleSetModPtr = addMod<ParticleSetMod>(mods, "Motion Particles", {

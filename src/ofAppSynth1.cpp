@@ -45,8 +45,10 @@ std::shared_ptr<Synth> createSynth1(glm::vec2 size) {
     {"velocityDamping", "0.994"},
     {"forceMultiplier", "0.2"},
     {"maxVelocity", "0.0001"},
-    {"particleSize", "1.0"}
-  }, 0.0, 0.0, 500'000);
+    {"particleSize", "12.0"},
+    {"jitterStrength", "0.3"},
+    {"ln2ParticleCount", "16.0"}
+  }, 0.0, 0.0);
   
   // Fluid simulation
   auto fluidModPtr = synthPtr->addMod<FluidMod>("Fluid", {
