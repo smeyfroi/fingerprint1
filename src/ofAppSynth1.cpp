@@ -272,7 +272,7 @@ std::shared_ptr<Synth> createSynth1(glm::vec2 size) {
   //  addFboConfigPtr(fboConfigPtrs, "sandlines", fboSandlinesPtr, size, GL_RGBA16F, GL_CLAMP_TO_EDGE, false, OF_BLENDMODE_ADD);
   auto motionParticlesDrawingLayerPtr = synthPtr->addDrawingLayer("3motion particles",
                                                       synthPtr->getSize()/2.0, GL_RGBA, GL_CLAMP_TO_EDGE,
-                                                      false, OF_BLENDMODE_ADD, false, 0);
+                                                      true, OF_BLENDMODE_ADD, false, 0);
   auto minorLinesDrawingLayerPtr = synthPtr->addDrawingLayer("4minor lines",
                                                     synthPtr->getSize(), GL_RGBA8, GL_CLAMP_TO_EDGE,
                                                     true, OF_BLENDMODE_ALPHA, false, 2);
