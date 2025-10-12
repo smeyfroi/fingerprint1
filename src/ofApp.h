@@ -35,6 +35,7 @@ public:
   void exit() override;
   void drawGui(ofEventArgs& args);
 
+  void keyPressedEvent(ofKeyEventArgs& e) { keyPressed(e.key); } // adapter for ofAddListener
   void keyPressed(int key) override;
   void keyReleased(int key) override;
   void mouseMoved(int x, int y ) override;
