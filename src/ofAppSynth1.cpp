@@ -42,12 +42,12 @@ std::shared_ptr<Synth> createSynth1(glm::vec2 size) {
   
   // Palette ParticleField
   auto particleFieldModPtr = synthPtr->addMod<ParticleFieldMod>("Particle Field", {
-    {"velocityDamping", "0.994"},
+    {"velocityDamping", "0.996"},
     {"forceMultiplier", "0.2"},
-    {"maxVelocity", "0.0001"},
+    {"maxVelocity", "0.0002"},
     {"particleSize", "12.0"},
     {"jitterStrength", "0.3"},
-    {"ln2ParticleCount", "16.0"}
+    {"ln2ParticleCount", "14.0"}
   }, 0.0, 0.0);
   
   // Fluid simulation
