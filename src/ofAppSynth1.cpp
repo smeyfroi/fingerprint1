@@ -212,9 +212,11 @@ std::shared_ptr<Synth> createSynth1(glm::vec2 size) {
     { SomPaletteMod::SOURCE_FIELD, {
       { particleFieldModPtr, ParticleFieldMod::SINK_FIELD_1_FBO },
       { smearModPtr, SmearMod::SINK_FIELD_1_FBO }}
+//      { particleFieldModPtr, ParticleFieldMod::SINK_COLOR_FIELD_FBO }}
     },
     { SomPaletteMod::SOURCE_RANDOM_VEC4, {
-      { drawPointsModPtr, SoftCircleMod::SINK_POINT_COLOR }}
+      { drawPointsModPtr, SoftCircleMod::SINK_POINT_COLOR },
+      { particleFieldModPtr, ParticleFieldMod::SINK_POINT_COLOR }}
     },
     { SomPaletteMod::SOURCE_RANDOM_DARK_VEC4, {
       { rawFluidPointsModPtr, SoftCircleMod::SINK_POINT_COLOR }}
@@ -295,7 +297,7 @@ std::shared_ptr<Synth> createSynth1(glm::vec2 size) {
     { fluidModPtr },
     { drawPointsModPtr },
     { rawFluidPointsModPtr },
-    { particleFieldModPtr } // ***************
+//    { particleFieldModPtr }
   });
   assignDrawingLayerPtrToMods(fluidVelocitiesDrawingLayerPtr, {
     { fluidModPtr, FluidMod::VELOCITIES_LAYERPTR_NAME },
@@ -305,7 +307,8 @@ std::shared_ptr<Synth> createSynth1(glm::vec2 size) {
   assignDrawingLayerPtrToMods(rawPointsDrawingLayerPtr, {
     { drawPointsModPtr },
     { smearModPtr },
-    { sandLineModPtr }
+    { sandLineModPtr },
+//    { particleFieldModPtr } // ***************
   });
   assignDrawingLayerPtrToMods(collageDrawingLayerPtr, {
     { collageModPtr },
