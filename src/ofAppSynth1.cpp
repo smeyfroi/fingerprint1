@@ -43,11 +43,11 @@ std::shared_ptr<Synth> createSynth1(glm::vec2 size) {
   // Palette ParticleField
   auto particleFieldModPtr = synthPtr->addMod<ParticleFieldMod>("Particle Field", {
     {"velocityDamping", "0.996"},
-    {"forceMultiplier", "0.2"},
-    {"maxVelocity", "0.0002"},
+    {"forceMultiplier", "0.15"},
+    {"maxVelocity", "0.00015"},
     {"particleSize", "12.0"},
-    {"jitterStrength", "0.3"},
-    {"ln2ParticleCount", "14.0"}
+    {"jitterStrength", "0.5"},
+    {"ln2ParticleCount", "13.0"}
   }, 0.0, 0.0);
   
   // Fluid simulation
@@ -125,7 +125,7 @@ std::shared_ptr<Synth> createSynth1(glm::vec2 size) {
   });
   
   auto collageModPtr = synthPtr->addMod<CollageMod>("Collage", {
-    {"Strength", "2.0"},
+    {"Strength", "1.0"},
     {"Strategy", "1"}, // 0=tint; 1=add tinted pixels; 2=add pixels
   });
   
@@ -264,15 +264,15 @@ std::shared_ptr<Synth> createSynth1(glm::vec2 size) {
   // Make some drawing layers
   auto fluidDrawingLayerPtr = synthPtr->addDrawingLayer("1fluid",
                                             synthPtr->getSize() / 8.0, GL_RGBA16F, GL_REPEAT,
-                                            false, OF_BLENDMODE_ALPHA, false, 0);
+                                            false, OF_BLENDMODE_ALPHA, true, 0);
   auto fluidVelocitiesDrawingLayerPtr = synthPtr->addDrawingLayer("fluidVelocities",
                                                       synthPtr->getSize() / 8.0, GL_RGB16F, GL_REPEAT,
                                                       false, OF_BLENDMODE_DISABLED, false, 0, false); // not drawn
-  auto rawPointsDrawingLayerPtr = synthPtr->addDrawingLayer("2raw points",
+  auto smearedDrawingLayerPtr = synthPtr->addDrawingLayer("2smear",
                                                 synthPtr->getSize(), GL_RGBA16F, GL_REPEAT,
-                                                false, OF_BLENDMODE_ADD, false, 0);
+                                                false, OF_BLENDMODE_ADD, true, 0);
   //  addFboConfigPtr(fboConfigPtrs, "sandlines", fboSandlinesPtr, size, GL_RGBA16F, GL_CLAMP_TO_EDGE, false, OF_BLENDMODE_ADD);
-  auto motionParticlesDrawingLayerPtr = synthPtr->addDrawingLayer("3motion particles",
+  auto particlesDrawingLayerPtr = synthPtr->addDrawingLayer("3particles",
                                                       synthPtr->getSize()/2.0, GL_RGBA, GL_CLAMP_TO_EDGE,
                                                       true, OF_BLENDMODE_ADD, false, 0);
   auto minorLinesDrawingLayerPtr = synthPtr->addDrawingLayer("4minor lines",
@@ -290,32 +290,37 @@ std::shared_ptr<Synth> createSynth1(glm::vec2 size) {
                                                     true, OF_BLENDMODE_ALPHA, false, 0); // samples==4 is too much; 2 seems to push over the edge as well
   
   // Assign drawing surfaces to the Mods
-  assignDrawingLayerPtrToMods(motionParticlesDrawingLayerPtr, {
+  assignDrawingLayerPtrToMods(particlesDrawingLayerPtr, {
     { particleFieldModPtr }
   });
   assignDrawingLayerPtrToMods(fluidDrawingLayerPtr, {
     { fluidModPtr },
     { drawPointsModPtr },
     { rawFluidPointsModPtr },
-//    { particleFieldModPtr }
+    { particleFieldModPtr },
+//    { collageModPtr }, // *********************
   });
   assignDrawingLayerPtrToMods(fluidVelocitiesDrawingLayerPtr, {
     { fluidModPtr, FluidMod::VELOCITIES_LAYERPTR_NAME },
     { fluidRadialImpulseModPtr },
     { rawFluidRadialImpulseModPtr }
   });
-  assignDrawingLayerPtrToMods(rawPointsDrawingLayerPtr, {
+  assignDrawingLayerPtrToMods(smearedDrawingLayerPtr, {
     { drawPointsModPtr },
+    { rawFluidPointsModPtr },
     { smearModPtr },
     { sandLineModPtr },
-//    { particleFieldModPtr } // ***************
+    { collageModPtr }, // *********************
+//    { collageModPtr, CollageMod::OUTLINE_LAYERPTR_NAME }, // *********************
+    { particleFieldModPtr }
   });
   assignDrawingLayerPtrToMods(collageDrawingLayerPtr, {
-    { collageModPtr },
+//    { collageModPtr }, // *********************
+    { drawPointsModPtr },
     { collageFadeModPtr }
   });
   assignDrawingLayerPtrToMods(collageOutlinesDrawingLayerPtr, {
-    { collageModPtr, CollageMod::OUTLINE_LAYERPTR_NAME },
+    { collageModPtr, CollageMod::OUTLINE_LAYERPTR_NAME }, // *********************
     { outlineFadeModPtr }
   });
   assignDrawingLayerPtrToMods(minorLinesDrawingLayerPtr, {
