@@ -6,7 +6,7 @@
 
 // ***********************************************
 // ***********************************************
-const std::filesystem::path rootSourceMaterialPath { "/Users/steve/Documents/music-source-material" };
+const std::filesystem::path ROOT_SOURCE_MATERIAL_PATH { "/Users/steve/Documents/music-source-material" };
 constexpr int VIDEO_DEVICE_ID = 0;
 constexpr bool RECORD_VIDEO = false;
 constexpr bool RECORD_AUDIO = false;
@@ -15,8 +15,9 @@ constexpr bool RECORD_AUDIO = false;
 const std::string MIC_DEVICE_NAME = "Apple Inc.: MacBook Pro Microphone";
 constexpr float FRAME_RATE = 30.0;
 const bool START_PAUSED = false; // false for dev
-const std::string MAX_RMS = "0.02"; // "0.11" more likely for live
+const std::string MAX_RMS = "0.02"; // "0.02"; // "0.11" more likely for live
 const std::filesystem::path RECORDING_PATH { "/Users/steve/Documents/recordings" };
+//constexpr int SOUND_OUT_DEVICE_ID = 1;
 // ***********************************************
 // ***********************************************
 

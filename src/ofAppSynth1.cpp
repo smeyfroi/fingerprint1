@@ -5,6 +5,24 @@
 //  Created by Steve Meyfroidt on 06/06/2025.
 //
 
+
+
+
+
+/**
+ TODO:
+ - allow Mods to draw on multiple layers
+ - recognise the difference between continuous parameter connections and events: is the auction idea relevant?
+ - configure event responses here
+ - genericise responding to a new continuous float for a parameter within some range
+ */
+
+
+
+
+
+
+
 #include "ofApp.h"
 
 using namespace ofxMarkSynth;
@@ -15,7 +33,7 @@ std::shared_ptr<Synth> createSynth1(glm::vec2 size) {
   // Audio source
   std::shared_ptr<AudioDataSourceMod> audioDataSourceModPtr = std::static_pointer_cast<AudioDataSourceMod>(synthPtr->addMod<AudioDataSourceMod>("Audio Source", {
     {"MinPitch", "50.0"},
-    {"MaxPitch", "1500.0"},
+    {"MaxPitch", "600.0"},//"1500.0"},
     {"MinRms", "0.0005"},
     {"MaxRms", MAX_RMS},
     {"MinComplexSpectralDifference", "200.0"},
@@ -24,7 +42,7 @@ std::shared_ptr<Synth> createSynth1(glm::vec2 size) {
     {"MaxSpectralCrest", "350.0"},
     {"MinZeroCrossingRate", "5.0"},
     {"MaxZeroCrossingRate", "15.0"}
-  }, MIC_DEVICE_NAME, RECORD_AUDIO, RECORDING_PATH));
+  }, MIC_DEVICE_NAME, RECORD_AUDIO, RECORDING_PATH, ROOT_SOURCE_MATERIAL_PATH));
   //  audioDataSourceModPtr->registerAudioCallback([this](const float* audioBuffer, size_t bufferSize, int numChannels, int sampleRate) {
   //    ofLogNotice() << audioBuffer[0];
   //  });
@@ -125,16 +143,8 @@ std::shared_ptr<Synth> createSynth1(glm::vec2 size) {
   });
   
   auto collageModPtr = synthPtr->addMod<CollageMod>("Collage", {
-    {"Strength", "1.0"},
+    {"Saturation", "1.5"},
     {"Strategy", "1"}, // 0=tint; 1=add tinted pixels; 2=add pixels
-  });
-  
-  auto collageFadeModPtr = synthPtr->addMod<FadeMod>("Fade Collage", {
-    {"Fade Amount", "0.0005"}
-  });
-  
-  auto outlineFadeModPtr = synthPtr->addMod<FadeMod>("Fade Collage Outlines", {
-    {"Fade Amount", "0.01"}
   });
   
   // DividedArea
@@ -152,12 +162,6 @@ std::shared_ptr<Synth> createSynth1(glm::vec2 size) {
     {"StdDevAlong", "0.5"},
     {"StdDevPerpendicular", "0.004"}
   });
-  
-  //    auto fadeModPtr = addMod<FadeMod>(mods, "Fade Sand Lines", {
-  //      {"Fade Amount", "0.00000005"}
-  //    });
-  //    sandLineModPtr->addSink(SandLineMod::SOURCE_FBO, fadeModPtr, FadeMod::SINK_FBO);
-  //    sandLineModPtr->receive(SandLineMod::SINK_FBO, fboSandlinesPtr);
   
   //  { // Cluster particles
   //    auto particleSetModPtr = addMod<ParticleSetMod>(mods, "Cluster Particles", {
@@ -206,6 +210,9 @@ std::shared_ptr<Synth> createSynth1(glm::vec2 size) {
     },
     { AudioDataSourceMod::SOURCE_TIMBRE_CHANGE, {
       { synthPtr, Synth::SINK_AUDIO_TIMBRE_CHANGE }}
+    },
+    { AudioDataSourceMod::SOURCE_PITCH_CHANGE, {
+      { synthPtr, Synth::SINK_AUDIO_PITCH_CHANGE }}
     }
   });
   connectSourceToSinks(audioPaletteModPtr, {
@@ -261,33 +268,37 @@ std::shared_ptr<Synth> createSynth1(glm::vec2 size) {
     }
   });
 
+  // ***************************************************************************
+  // TODO: need params for the layer fades
+  // ***************************************************************************
+  
   // Make some drawing layers
   auto fluidDrawingLayerPtr = synthPtr->addDrawingLayer("1fluid",
                                             synthPtr->getSize() / 8.0, GL_RGBA16F, GL_REPEAT,
-                                            false, OF_BLENDMODE_ALPHA, true, 0);
+                                            0.0f, OF_BLENDMODE_ALPHA, true, 0);
   auto fluidVelocitiesDrawingLayerPtr = synthPtr->addDrawingLayer("fluidVelocities",
                                                       synthPtr->getSize() / 8.0, GL_RGB16F, GL_REPEAT,
-                                                      false, OF_BLENDMODE_DISABLED, false, 0, false); // not drawn
+                                                      0.0f, OF_BLENDMODE_DISABLED, false, 0, false); // not drawn
   auto smearedDrawingLayerPtr = synthPtr->addDrawingLayer("2smear",
                                                 synthPtr->getSize(), GL_RGBA16F, GL_REPEAT,
-                                                false, OF_BLENDMODE_ADD, true, 0);
+                                                0.0f, OF_BLENDMODE_ADD, true, 0);
   //  addFboConfigPtr(fboConfigPtrs, "sandlines", fboSandlinesPtr, size, GL_RGBA16F, GL_CLAMP_TO_EDGE, false, OF_BLENDMODE_ADD);
   auto particlesDrawingLayerPtr = synthPtr->addDrawingLayer("3particles",
-                                                      synthPtr->getSize()/2.0, GL_RGBA, GL_CLAMP_TO_EDGE,
-                                                      true, OF_BLENDMODE_ADD, false, 0);
+                                              synthPtr->getSize()/2.0, GL_RGBA, GL_CLAMP_TO_EDGE,
+                                              1.0f, OF_BLENDMODE_ADD, false, 0);
   auto minorLinesDrawingLayerPtr = synthPtr->addDrawingLayer("4minor lines",
-                                                    synthPtr->getSize(), GL_RGBA8, GL_CLAMP_TO_EDGE,
-                                                    true, OF_BLENDMODE_ALPHA, false, 2);
+                                              synthPtr->getSize(), GL_RGBA8, GL_CLAMP_TO_EDGE,
+                                              1.0f, OF_BLENDMODE_ALPHA, false, 2);
   auto collageDrawingLayerPtr = synthPtr->addDrawingLayer("5collage",
-                                              synthPtr->getSize(), GL_RGBA16F, GL_CLAMP_TO_EDGE,
-                                              false, OF_BLENDMODE_ADD, true, 0);
+                                            synthPtr->getSize(), GL_RGBA16F, GL_CLAMP_TO_EDGE,
+                                            0.0005f, OF_BLENDMODE_ADD, true, 0);
   auto collageOutlinesDrawingLayerPtr = synthPtr->addDrawingLayer("6collage outlines",
-                                                      synthPtr->getSize(), GL_RGBA16F, GL_CLAMP_TO_EDGE,
-                                                      false, OF_BLENDMODE_ALPHA, false, 0);
+                                                    synthPtr->getSize(), GL_RGBA16F, GL_CLAMP_TO_EDGE,
+                                                    0.01f, OF_BLENDMODE_ALPHA, false, 0);
   //  addFboConfigPtr(fboConfigPtrs, "cluster particles", fboClusterParticlesPtr, size, GL_RGBA16F, GL_CLAMP_TO_EDGE, false, OF_BLENDMODE_ALPHA, false, 0);
   auto majorLinesDrawingLayerPtr = synthPtr->addDrawingLayer("7major lines",
-                                                    synthPtr->getSize(), GL_RGBA16F, GL_CLAMP_TO_EDGE,
-                                                    true, OF_BLENDMODE_ALPHA, false, 0); // samples==4 is too much; 2 seems to push over the edge as well
+                                              synthPtr->getSize(), GL_RGBA16F, GL_CLAMP_TO_EDGE,
+                                              1.0f, OF_BLENDMODE_ALPHA, false, 0); // samples==4 is too much; 2 seems to push over the edge as well
   
   // Assign drawing surfaces to the Mods
   assignDrawingLayerPtrToMods(particlesDrawingLayerPtr, {
@@ -298,11 +309,12 @@ std::shared_ptr<Synth> createSynth1(glm::vec2 size) {
     { drawPointsModPtr },
     { rawFluidPointsModPtr },
     { particleFieldModPtr },
-//    { collageModPtr }, // *********************
+//    { collageModPtr },
   });
   assignDrawingLayerPtrToMods(fluidVelocitiesDrawingLayerPtr, {
     { fluidModPtr, FluidMod::VELOCITIES_LAYERPTR_NAME },
     { fluidRadialImpulseModPtr },
+    { particleFieldModPtr },
     { rawFluidRadialImpulseModPtr }
   });
   assignDrawingLayerPtrToMods(smearedDrawingLayerPtr, {
@@ -310,18 +322,16 @@ std::shared_ptr<Synth> createSynth1(glm::vec2 size) {
     { rawFluidPointsModPtr },
     { smearModPtr },
     { sandLineModPtr },
-    { collageModPtr }, // *********************
-//    { collageModPtr, CollageMod::OUTLINE_LAYERPTR_NAME }, // *********************
+//    { collageModPtr },
+//    { collageModPtr, CollageMod::OUTLINE_LAYERPTR_NAME },
     { particleFieldModPtr }
   });
   assignDrawingLayerPtrToMods(collageDrawingLayerPtr, {
-//    { collageModPtr }, // *********************
-    { drawPointsModPtr },
-    { collageFadeModPtr }
+    { collageModPtr },
+    { drawPointsModPtr }
   });
   assignDrawingLayerPtrToMods(collageOutlinesDrawingLayerPtr, {
-    { collageModPtr, CollageMod::OUTLINE_LAYERPTR_NAME }, // *********************
-    { outlineFadeModPtr }
+    { collageModPtr, CollageMod::OUTLINE_LAYERPTR_NAME }
   });
   assignDrawingLayerPtrToMods(minorLinesDrawingLayerPtr, {
     { dividedAreaModPtr }
@@ -330,7 +340,7 @@ std::shared_ptr<Synth> createSynth1(glm::vec2 size) {
     { dividedAreaModPtr, DividedAreaMod::MAJOR_LINES_LAYERPTR_NAME }
   });
 
-  // TODO: these aren't right are they?
+  // TODO: set up as DrawingLayers?
   smearModPtr->receive(SmearMod::SINK_FIELD_2_FBO, fluidVelocitiesDrawingLayerPtr->fboPtr->getSource());
   particleFieldModPtr->receive(ParticleFieldMod::SINK_FIELD_2_FBO, fluidVelocitiesDrawingLayerPtr->fboPtr->getSource());
   

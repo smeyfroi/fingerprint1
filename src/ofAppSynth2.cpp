@@ -24,7 +24,7 @@ std::shared_ptr<Synth> createSynth2(glm::vec2 size) {
     {"MaxSpectralCrest", "350.0"},
     {"MinZeroCrossingRate", "5.0"},
     {"MaxZeroCrossingRate", "15.0"}
-  }, MIC_DEVICE_NAME, RECORD_AUDIO, RECORDING_PATH);
+  }, MIC_DEVICE_NAME, RECORD_AUDIO, RECORDING_PATH, ROOT_SOURCE_MATERIAL_PATH);
   
   // Palette from raw spectral points
   auto audioPaletteModPtr = synthPtr->addMod<SomPaletteMod>("Palette Creator", {
@@ -61,18 +61,10 @@ std::shared_ptr<Synth> createSynth2(glm::vec2 size) {
   });
   
   auto collageModPtr = synthPtr->addMod<CollageMod>("Collage", {
-    {"Strength", "1.0"},
+    {"Saturation", "1.5"},
     {"Strategy", "1"}, // 0=tint; 1=add tinted pixels
   });
   
-  auto collageFadeModPtr = synthPtr->addMod<FadeMod>("Fade Collage", {
-    {"Fade Amount", "0.0005"}
-  });
-  
-  auto outlineFadeModPtr = synthPtr->addMod<FadeMod>("Fade Collage Outlines", {
-    {"Fade Amount", "0.01"}
-  });
-
   // DividedArea
   auto dividedAreaModPtr = synthPtr->addMod<DividedAreaMod>("Divided Area", {
     {"maxConstrainedLines", "1500"},
@@ -254,16 +246,34 @@ std::shared_ptr<Synth> createSynth2(glm::vec2 size) {
     }
   });
 
-  auto fluidDrawingLayerPtr = synthPtr->addDrawingLayer("1fluid", synthPtr->getSize() / 8.0, GL_RGBA16F, GL_REPEAT, false, OF_BLENDMODE_ALPHA, false, 0);
-  auto fluidVelocitiesDrawingLayerPtr = synthPtr->addDrawingLayer("fluidVelocities", synthPtr->getSize() / 8.0, GL_RGB16F, GL_REPEAT, false, OF_BLENDMODE_DISABLED, false, 0, false); // not drawn
-  auto rawPointsDrawingLayerPtr = synthPtr->addDrawingLayer("2raw points", synthPtr->getSize(), GL_RGBA16F, GL_REPEAT, false, OF_BLENDMODE_ADD, false, 0);
-  auto motionParticlesDrawingLayerPtr = synthPtr->addDrawingLayer("3motion particles", synthPtr->getSize()/2.0, GL_RGBA, GL_CLAMP_TO_EDGE, false, OF_BLENDMODE_ADD, false, 0);
-  auto minorLinesDrawingLayerPtr = synthPtr->addDrawingLayer("4minor lines", synthPtr->getSize(), GL_RGBA8, GL_CLAMP_TO_EDGE, true, OF_BLENDMODE_ALPHA, false, 4);
-  auto collageDrawingLayerPtr = synthPtr->addDrawingLayer("5collage", synthPtr->getSize(), GL_RGBA16F, GL_CLAMP_TO_EDGE, false, OF_BLENDMODE_ADD, true, 0);
-  auto collageOutlinesDrawingLayerPtr = synthPtr->addDrawingLayer("6collage outlines", synthPtr->getSize(), GL_RGBA16F, GL_CLAMP_TO_EDGE, false, OF_BLENDMODE_ALPHA, false, 0);
+  auto fluidDrawingLayerPtr = synthPtr->addDrawingLayer("1fluid",
+                                          synthPtr->getSize() / 8.0, GL_RGBA16F, GL_REPEAT,
+                                          0.0f, OF_BLENDMODE_ALPHA, false, 0);
+  auto fluidVelocitiesDrawingLayerPtr = synthPtr->addDrawingLayer("fluidVelocities",
+                                                    synthPtr->getSize() / 8.0, GL_RGB16F, GL_REPEAT,
+                                                    0.0f, OF_BLENDMODE_DISABLED, false, 0, false); // not drawn
+  auto smearedDrawingLayerPtr = synthPtr->addDrawingLayer("2smear",
+                                              synthPtr->getSize(), GL_RGBA16F, GL_REPEAT,
+                                              0.0f, OF_BLENDMODE_ADD, false, 0);
+  auto motionParticlesDrawingLayerPtr = synthPtr->addDrawingLayer("3motion particles",
+                                                    synthPtr->getSize()/2.0, GL_RGBA, GL_CLAMP_TO_EDGE,
+                                                    0.0f, OF_BLENDMODE_ADD, false, 0);
+  auto minorLinesDrawingLayerPtr = synthPtr->addDrawingLayer("4minor lines",
+                                                synthPtr->getSize(), GL_RGBA8, GL_CLAMP_TO_EDGE,
+                                                1.0f, OF_BLENDMODE_ALPHA, false, 4);
+  auto collageDrawingLayerPtr = synthPtr->addDrawingLayer("5collage",
+                                            synthPtr->getSize(), GL_RGBA16F, GL_CLAMP_TO_EDGE,
+                                            0.0005f, OF_BLENDMODE_ADD, true, 0);
+  auto collageOutlinesDrawingLayerPtr = synthPtr->addDrawingLayer("6collage outlines",
+                                                    synthPtr->getSize(), GL_RGBA16F, GL_CLAMP_TO_EDGE,
+                                                    0.01f, OF_BLENDMODE_ALPHA, false, 0);
   //  addFboConfigPtr(fboConfigPtrs, "cluster particles", fboClusterParticlesPtr, size, GL_RGBA16F, GL_CLAMP_TO_EDGE, false, OF_BLENDMODE_ALPHA, false, 0);
-  auto majorLinesDrawingLayerPtr = synthPtr->addDrawingLayer("7major lines", synthPtr->getSize(), GL_RGBA16F, GL_CLAMP_TO_EDGE, true, OF_BLENDMODE_ALPHA, false, 0); // samples==4 is too much
-  auto sandlinesDrawingLayerPtr = synthPtr->addDrawingLayer("8sandlines", synthPtr->getSize(), GL_RGBA16F, GL_CLAMP_TO_EDGE, false, OF_BLENDMODE_ADD, false, 0);
+  auto majorLinesDrawingLayerPtr = synthPtr->addDrawingLayer("7major lines",
+                                              synthPtr->getSize(), GL_RGBA16F, GL_CLAMP_TO_EDGE,
+                                              1.0f, OF_BLENDMODE_ALPHA, false, 0); // samples==4 is too much; 2 seems to push over the edge as well
+  auto sandlinesDrawingLayerPtr = synthPtr->addDrawingLayer("8sandlines",
+                                              synthPtr->getSize(), GL_RGBA16F, GL_CLAMP_TO_EDGE,
+                                              false, OF_BLENDMODE_ADD, false, 0);
   
   // Assign drawing surfaces to the Mods
   assignDrawingLayerPtrToMods(fluidDrawingLayerPtr, {
@@ -276,18 +286,16 @@ std::shared_ptr<Synth> createSynth2(glm::vec2 size) {
     { clusterRadialImpulseModPtr },
     { rawRadialImpulseModPtr }
   });
-  assignDrawingLayerPtrToMods(rawPointsDrawingLayerPtr, {
+  assignDrawingLayerPtrToMods(smearedDrawingLayerPtr, {
     { drawPointsModPtr },
     { smearModPtr },
     { sandLineModPtr }
   });
   assignDrawingLayerPtrToMods(collageDrawingLayerPtr, {
-    { collageModPtr },
-    { collageFadeModPtr }
+    { collageModPtr }
   });
   assignDrawingLayerPtrToMods(collageOutlinesDrawingLayerPtr, {
-    { collageModPtr, CollageMod::OUTLINE_LAYERPTR_NAME },
-    { outlineFadeModPtr }
+    { collageModPtr, CollageMod::OUTLINE_LAYERPTR_NAME }
   });
   assignDrawingLayerPtrToMods(minorLinesDrawingLayerPtr, {
     { dividedAreaModPtr }
