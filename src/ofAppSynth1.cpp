@@ -86,7 +86,7 @@ std::shared_ptr<Synth> createSynth1(glm::vec2 size) {
     {"Max", "0.02"}
   }, std::pair<float, float>{0.0, 0.1}, std::pair<float, float>{0.0, 0.1});
   
-  auto drawPointsModPtr = synthPtr->addMod<SoftCircleMod>("Fluid Clusters", {
+  auto clusterPointsModPtr = synthPtr->addMod<SoftCircleMod>("Fluid Clusters", {
     {"ColorMultiplier", "0.5"},
     {"AlphaMultiplier", "0.3"},
     {"Softness", "0.3"}
@@ -99,7 +99,7 @@ std::shared_ptr<Synth> createSynth1(glm::vec2 size) {
   });
   
   // Raw data points into fluid
-  auto rawFluidPointsModPtr = synthPtr->addMod<SoftCircleMod>("Fluid Raw Points", {
+  auto pitchRmsPointsModPtr = synthPtr->addMod<SoftCircleMod>("Fluid Raw Points", {
     {"Radius", "0.01"},
     {"ColorMultiplier", "0.4"},
     {"AlphaMultiplier", "0.6"},
@@ -113,7 +113,7 @@ std::shared_ptr<Synth> createSynth1(glm::vec2 size) {
   });
   
   // Smeared raw data points
-  auto smearedPointsModPtr = synthPtr->addMod<SoftCircleMod>("Raw Points", {
+  auto polarPitchRmsPointsModPtr = synthPtr->addMod<SoftCircleMod>("Raw Points", {
     {"Radius", "0.005"}, // min
     {"RadiusVarianceScale", "0.01"}, // scale the variance to some to the min
     {"Softness", "0.5"},
@@ -187,85 +187,88 @@ std::shared_ptr<Synth> createSynth1(glm::vec2 size) {
   
   connectSourceToSinks(audioDataSourceModPtr, {
     { AudioDataSourceMod::SOURCE_SPECTRAL_CREST_SCALAR, {
-      { smearedPointsModPtr, SoftCircleMod::SINK_POINT_RADIUS_VARIANCE }}
-    },
+      { polarPitchRmsPointsModPtr, SoftCircleMod::SINK_POINT_RADIUS_VARIANCE }
+    }},
     { AudioDataSourceMod::SOURCE_SPECTRAL_POINTS, {
-      { audioPaletteModPtr, SomPaletteMod::SINK_VEC3 }}
-    },
+      { audioPaletteModPtr, SomPaletteMod::SINK_VEC3 }
+    }},
     { AudioDataSourceMod::SOURCE_PITCH_SCALAR, {
-      { smearedPointsModPtr, SoftCircleMod::SINK_POINT_COLOR_MULTIPLIER }}
-    },
+      { polarPitchRmsPointsModPtr, SoftCircleMod::SINK_POINT_COLOR_MULTIPLIER }
+    }},
     { AudioDataSourceMod::SOURCE_POLAR_PITCH_RMS_POINTS, {
       { clusterModPtr, ClusterMod::SINK_VEC2 },
-      { smearedPointsModPtr, SoftCircleMod::SINK_POINTS },
+      { polarPitchRmsPointsModPtr, SoftCircleMod::SINK_POINTS },
       { pathModPtr, PathMod::SINK_VEC2 },
-      { dividedAreaModPtr, DividedAreaMod::SINK_MINOR_ANCHORS }}
-    },
+      { dividedAreaModPtr, DividedAreaMod::SINK_MINOR_ANCHORS }
+    }},
     { AudioDataSourceMod::SOURCE_PITCH_RMS_POINTS, {
-      { rawFluidPointsModPtr, SoftCircleMod::SINK_POINTS },
-      { rawFluidRadialImpulseModPtr, FluidRadialImpulseMod::SINK_POINTS }}
-    },
+      { pitchRmsPointsModPtr, SoftCircleMod::SINK_POINTS },
+      { rawFluidRadialImpulseModPtr, FluidRadialImpulseMod::SINK_POINTS }
+    }},
     { AudioDataSourceMod::SOURCE_ONSET1, {
-      { synthPtr, Synth::SINK_AUDIO_ONSET }}
-    },
+      { clusterModPtr, ClusterMod::SINK_CHANGE_CLUSTER_NUM },
+      { smearModPtr, SmearMod::SINK_CHANGE_LAYER },
+      { polarPitchRmsPointsModPtr, SoftCircleMod::SINK_CHANGE_LAYER },
+      { clusterPointsModPtr, SoftCircleMod::SINK_CHANGE_LAYER },
+      { pitchRmsPointsModPtr, SoftCircleMod::SINK_CHANGE_LAYER },
+      { particleFieldModPtr, ParticleFieldMod::SINK_CHANGE_LAYER }
+    }},
     { AudioDataSourceMod::SOURCE_TIMBRE_CHANGE, {
-      { synthPtr, Synth::SINK_AUDIO_TIMBRE_CHANGE }}
-    },
+      { audioPaletteModPtr, SomPaletteMod::SINK_SWITCH_PALETTE }
+    }},
     { AudioDataSourceMod::SOURCE_PITCH_CHANGE, {
-      { synthPtr, Synth::SINK_AUDIO_PITCH_CHANGE }}
-    }
+    }},
   });
   connectSourceToSinks(audioPaletteModPtr, {
     { SomPaletteMod::SOURCE_FIELD, {
       { particleFieldModPtr, ParticleFieldMod::SINK_FIELD_1_FBO },
-      { smearModPtr, SmearMod::SINK_FIELD_1_FBO }}
-//      { particleFieldModPtr, ParticleFieldMod::SINK_COLOR_FIELD_FBO }}
-    },
+      { smearModPtr, SmearMod::SINK_FIELD_1_FBO }
+    }},
     { SomPaletteMod::SOURCE_RANDOM_VEC4, {
-      { drawPointsModPtr, SoftCircleMod::SINK_POINT_COLOR },
-      { particleFieldModPtr, ParticleFieldMod::SINK_POINT_COLOR }}
-    },
+      { clusterPointsModPtr, SoftCircleMod::SINK_POINT_COLOR },
+      { particleFieldModPtr, ParticleFieldMod::SINK_POINT_COLOR }
+    }},
     { SomPaletteMod::SOURCE_RANDOM_DARK_VEC4, {
-      { rawFluidPointsModPtr, SoftCircleMod::SINK_POINT_COLOR }}
-    },
+      { pitchRmsPointsModPtr, SoftCircleMod::SINK_POINT_COLOR }
+    }},
     { SomPaletteMod::SOURCE_DARKEST_VEC4, {
-      { synthPtr, Synth::SINK_BACKGROUND_COLOR }}
-    },
+      { synthPtr, Synth::SINK_BACKGROUND_COLOR }
+    }},
     { SomPaletteMod::SOURCE_RANDOM_LIGHT_VEC4, {
-      { smearedPointsModPtr, SoftCircleMod::SINK_POINT_COLOR },
+      { polarPitchRmsPointsModPtr, SoftCircleMod::SINK_POINT_COLOR },
       { collageModPtr, CollageMod::SINK_COLOR },
-      { sandLineModPtr, SandLineMod::SINK_POINT_COLOR }}
-    }
+      { sandLineModPtr, SandLineMod::SINK_POINT_COLOR }
+    }}
   });
   connectSourceToSinks(radiiModPtr, {
     { RandomFloatSourceMod::SOURCE_FLOAT, {
-      { drawPointsModPtr, SoftCircleMod::SINK_POINT_RADIUS }}
-    }
+      { clusterPointsModPtr, SoftCircleMod::SINK_POINT_RADIUS }
+    }}
   });
   connectSourceToSinks(clusterModPtr, {
     { ClusterMod::SOURCE_VEC2, {
-      { drawPointsModPtr, SoftCircleMod::SINK_POINTS },
+      { clusterPointsModPtr, SoftCircleMod::SINK_POINTS },
       { fluidRadialImpulseModPtr, FluidRadialImpulseMod::SINK_POINTS },
       { dividedAreaModPtr, DividedAreaMod::SINK_MAJOR_ANCHORS },
-      { sandLineModPtr, SandLineMod::SINK_POINTS }}
-    }
+      { sandLineModPtr, SandLineMod::SINK_POINTS }
+    }}
   });
   connectSourceToSinks(snapshotModPtr, {
     { PixelSnapshotMod::SOURCE_SNAPSHOT, {
-      { collageModPtr, CollageMod::SINK_SNAPSHOT_FBO }}
-    }
+      { collageModPtr, CollageMod::SINK_SNAPSHOT_FBO }
+    }}
   });
   connectSourceToSinks(pathModPtr, {
     { PathMod::SOURCE_PATH, {
       { collageModPtr, CollageMod::SINK_PATH },
-      { dividedAreaModPtr, DividedAreaMod::SINK_MINOR_PATH }}
-    }
+      { dividedAreaModPtr, DividedAreaMod::SINK_MINOR_PATH }
+    }}
   });
   connectSourceToSinks(synthPtr, {
     { Synth::SOURCE_COMPOSITE_FBO, {
       { snapshotModPtr, PixelSnapshotMod::SINK_SNAPSHOT_SOURCE },
-      { dividedAreaModPtr, DividedAreaMod::SINK_BACKGROUND_SOURCE }}
-    }
+      { dividedAreaModPtr, DividedAreaMod::SINK_BACKGROUND_SOURCE }
+    }}
   });
 
   // ***************************************************************************
@@ -302,12 +305,13 @@ std::shared_ptr<Synth> createSynth1(glm::vec2 size) {
   
   // Assign drawing surfaces to the Mods
   assignDrawingLayerPtrToMods(particlesDrawingLayerPtr, {
-    { particleFieldModPtr }
+    { particleFieldModPtr },
+    { sandLineModPtr }
   });
   assignDrawingLayerPtrToMods(fluidDrawingLayerPtr, {
     { fluidModPtr },
-    { drawPointsModPtr },
-    { rawFluidPointsModPtr },
+    { clusterPointsModPtr },
+    { pitchRmsPointsModPtr },
     { particleFieldModPtr },
 //    { collageModPtr },
   });
@@ -318,8 +322,8 @@ std::shared_ptr<Synth> createSynth1(glm::vec2 size) {
     { rawFluidRadialImpulseModPtr }
   });
   assignDrawingLayerPtrToMods(smearedDrawingLayerPtr, {
-    { drawPointsModPtr },
-    { rawFluidPointsModPtr },
+    { clusterPointsModPtr },
+    { pitchRmsPointsModPtr },
     { smearModPtr },
     { sandLineModPtr },
 //    { collageModPtr },
@@ -328,7 +332,8 @@ std::shared_ptr<Synth> createSynth1(glm::vec2 size) {
   });
   assignDrawingLayerPtrToMods(collageDrawingLayerPtr, {
     { collageModPtr },
-    { drawPointsModPtr }
+    { sandLineModPtr },
+    { clusterPointsModPtr }
   });
   assignDrawingLayerPtrToMods(collageOutlinesDrawingLayerPtr, {
     { collageModPtr, CollageMod::OUTLINE_LAYERPTR_NAME }

@@ -185,11 +185,11 @@ std::shared_ptr<Synth> createSynth2(glm::vec2 size) {
       { rawRadialImpulseModPtr, FluidRadialImpulseMod::SINK_POINTS }}
     },
     { AudioDataSourceMod::SOURCE_ONSET1, {
-      { synthPtr, Synth::SINK_AUDIO_ONSET }}
-    },
+      //      { synthPtr, Synth::SINK_AUDIO_ONSET }
+    }},
     { AudioDataSourceMod::SOURCE_TIMBRE_CHANGE, {
-      { synthPtr, Synth::SINK_AUDIO_TIMBRE_CHANGE }}
-    }
+      //      { synthPtr, Synth::SINK_AUDIO_TIMBRE_CHANGE }
+    }}
   });
   connectSourceToSinks(audioPaletteModPtr, {
     { SomPaletteMod::SOURCE_RANDOM_LIGHT_VEC4, {

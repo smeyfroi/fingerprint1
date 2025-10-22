@@ -3,51 +3,6 @@
 <plist version="1.0">
 <dict>
 	<key>top-level-items</key>
-	<array>
-		<dict>
-			<key>destination</key>
-			<dict>
-				<key>location-parameters</key>
-				<dict>
-					<key>EndingColumnNumber</key>
-					<string>2</string>
-					<key>EndingLineNumber</key>
-					<string>84</string>
-					<key>StartingColumnNumber</key>
-					<string>0</string>
-					<key>StartingLineNumber</key>
-					<string>84</string>
-					<key>Timestamp</key>
-					<string>771753141.311776</string>
-				</dict>
-				<key>rebasable-url</key>
-				<dict>
-					<key>base</key>
-					<string>home-directory</string>
-					<key>payload</key>
-					<dict>
-						<key>relative-path</key>
-						<string>Development/openframeworks/of_v0.12.1_osx_release/addons/ofxMotionFromVideo/src/ofxMotionFromVideo.cpp</string>
-					</dict>
-				</dict>
-			</dict>
-			<key>text-context</key>
-			<dict>
-				<key>focused</key>
-				<string>  </string>
-				<key>leading</key>
-				<string>
-  opticalFlowFbo.readToPixels(opticalFlowPixels);
-</string>
-				<key>trailing</key>
-				<string>if (isGrabbing) opticalFlowPixels.mirror(false, true); // ************************
-}
-
-</string>
-			</dict>
-			<key>type</key>
-			<string>bookmark</string>
-		</dict>
-	</array>
+	<array/>
 </dict>
 </plist>

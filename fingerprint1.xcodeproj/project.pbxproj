@@ -43,7 +43,6 @@
 		"4FC9F999-E5E2-4B67-A99E-99C04C19F895" /* ofxSlidersGrid.cpp in Sources */ = {isa = PBXBuildFile; fileRef = "69CFF6F6-3946-431E-BA6C-8DEC3D421240" /* ofxSlidersGrid.cpp */; };
 		"53264437-6E64-41BD-8DA5-7EDF7C65B83E" /* OscTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = "D95758C3-599E-401A-AFD7-9EAF5B64F429" /* OscTypes.cpp */; };
 		"58EFE777-A66B-4473-A8EC-68D860360523" /* RandomVecSourceMod.cpp in Sources */ = {isa = PBXBuildFile; fileRef = "53662AC4-3D8F-4A01-B92E-26AC781628CA" /* RandomVecSourceMod.cpp */; };
-		"5977FBCB-01F7-4D7E-B0A2-C63F7A9C7292" /* DrawPointsMod.cpp in Sources */ = {isa = PBXBuildFile; fileRef = "361C3B6F-C0D2-4EB7-8466-C0C1651C5AE0" /* DrawPointsMod.cpp */; };
 		"5C53F886-BEC4-4DF8-B453-928B12F28137" /* CollageMod.cpp in Sources */ = {isa = PBXBuildFile; fileRef = "196D92D5-ECA1-4014-A758-ABB7BA45AEB7" /* CollageMod.cpp */; };
 		"61F3CFE8-B103-4787-9FB3-3F8F2F69DD8D" /* ofxInputField.cpp in Sources */ = {isa = PBXBuildFile; fileRef = "32B37070-CB56-49F5-95F0-25F5BA81F937" /* ofxInputField.cpp */; };
 		"64C1E875-843E-4929-84CE-9DF5B12D0190" /* ofxSoundRecorderObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = "C701B64E-A0A7-4F93-B780-415AC4F185F6" /* ofxSoundRecorderObject.cpp */; };
@@ -189,7 +188,6 @@
 		"1AA3C13E-C177-4C44-9F58-141C879EAEC3" /* ofxSoundFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ofxSoundFile.h; sourceTree = "<group>"; };
 		"1B336542-0F12-4499-8591-1CBAB989A19A" /* RandomHslColorMod.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RandomHslColorMod.cpp; sourceTree = "<group>"; };
 		"1BA274F1-5FA5-49E9-B95D-48D477A065EE" /* ofxPointClusters.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ofxPointClusters.h; sourceTree = "<group>"; };
-		"1CF9D59F-75BB-4022-8454-3BC6A4185BA3" /* DrawPointsMod.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = DrawPointsMod.hpp; sourceTree = "<group>"; };
 		"1E0BF61E-18F6-490F-98BA-93F15DB21E41" /* ofxOscMessage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxOscMessage.cpp; sourceTree = "<group>"; };
 		"1FB6868E-78EF-43AB-8D90-27063DAB3DD0" /* ApplyVorticityForceShader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ApplyVorticityForceShader.h; sourceTree = "<group>"; };
 		"210AB336-636E-4CB1-BA77-54F01E5A8C02" /* DivergenceRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = DivergenceRenderer.h; sourceTree = "<group>"; };
@@ -215,7 +213,6 @@
 		"34D0CE16-BC8C-4A1C-B537-2C142A5D122D" /* NullOutput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = NullOutput.h; sourceTree = "<group>"; };
 		"35DBAA3A-52B3-4E9B-9CAD-19C320363216" /* PixelSnapshotMod.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PixelSnapshotMod.cpp; sourceTree = "<group>"; };
 		"35F0BBEB-1296-4B18-9988-5B3DA5203021" /* ofxFatLine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ofxFatLine.h; sourceTree = "<group>"; };
-		"361C3B6F-C0D2-4EB7-8466-C0C1651C5AE0" /* DrawPointsMod.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DrawPointsMod.cpp; sourceTree = "<group>"; };
 		"3635BFCB-1F63-4E26-8ACE-EF531DB29397" /* ofxContinuousSomPalette.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ofxContinuousSomPalette.hpp; sourceTree = "<group>"; };
 		"37A06EBE-5BCF-4CBF-897F-AF153C8DFBCE" /* Mod.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Mod.hpp; sourceTree = "<group>"; };
 		"37E3873F-AEF4-41DC-883C-AFE9A39BEF80" /* ofxLabel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxLabel.cpp; sourceTree = "<group>"; };
@@ -827,8 +824,6 @@
 				"31D6D9B8-D8B5-4749-88C4-FBDED6F8D8C7" /* CollageMod.hpp */,
 				"D8EDD1D7-7DF3-4F27-8AD7-C266A752D16F" /* DividedAreaMod.cpp */,
 				"CBA1D824-F482-401F-B7A3-99DE023C86FF" /* DividedAreaMod.hpp */,
-				"361C3B6F-C0D2-4EB7-8466-C0C1651C5AE0" /* DrawPointsMod.cpp */,
-				"1CF9D59F-75BB-4022-8454-3BC6A4185BA3" /* DrawPointsMod.hpp */,
 				"8D4581CE-A890-4005-AE68-9C76196F710C" /* FluidRadialImpulseMod.cpp */,
 				"CA28E68B-3570-4027-B985-551E98339222" /* FluidRadialImpulseMod.hpp */,
 				"BC914DF3-0924-4BBD-9F4F-8B368542EFD9" /* IntrospectorMod.cpp */,
@@ -1681,7 +1676,6 @@
 				"D610C21A-8566-4A87-BE54-8E658E69B629" /* TranslateMod.cpp in Sources */,
 				"5C53F886-BEC4-4DF8-B453-928B12F28137" /* CollageMod.cpp in Sources */,
 				"DBE17F5B-A664-4307-8818-4ACA0F06AFE1" /* DividedAreaMod.cpp in Sources */,
-				"5977FBCB-01F7-4D7E-B0A2-C63F7A9C7292" /* DrawPointsMod.cpp in Sources */,
 				"1AE61F28-D6B4-4FBB-9EA8-191F9116814D" /* FluidRadialImpulseMod.cpp in Sources */,
 				"3D6FD02E-B761-4B97-B8E6-6E2339298DD6" /* IntrospectorMod.cpp in Sources */,
 				"963D63BD-E9BE-4BDE-BEA2-3D8A3032596F" /* ParticleFieldMod.cpp in Sources */,
