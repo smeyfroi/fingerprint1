@@ -79,6 +79,7 @@
 		"A6E99638-D3EF-4AB9-995F-8A93159A0001" /* ofxTCPServer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = "FBB3F21B-3096-4E5C-9F46-649D4217A6F0" /* ofxTCPServer.cpp */; };
 		"A852BB73-B116-4A4A-8DA2-E8F161A492E0" /* PixelSnapshotMod.cpp in Sources */ = {isa = PBXBuildFile; fileRef = "35DBAA3A-52B3-4E9B-9CAD-19C320363216" /* PixelSnapshotMod.cpp */; };
 		AA0F34702E956C5700E10261 /* GuiUtil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA0F346F2E956C5700E10261 /* GuiUtil.cpp */; };
+		AA9728FE2EABAEA80013293A /* synthSoftCircle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA9728FD2EABAEA80013293A /* synthSoftCircle.cpp */; };
 		"ABC8CFC5-A683-4262-8103-6368CC4084F9" /* ofxTinyEXR.cpp in Sources */ = {isa = PBXBuildFile; fileRef = "C1495394-7115-45F2-B4DC-EA0EF870F027" /* ofxTinyEXR.cpp */; };
 		"AC6DCCA4-6496-4C63-BD61-08EA13FD2519" /* SpectrumPlots.cpp in Sources */ = {isa = PBXBuildFile; fileRef = "B4278BB4-DEEA-485C-8D59-2E65DCA2D99C" /* SpectrumPlots.cpp */; };
 		"AEDCEB23-73DC-4A09-B031-4F56B23ACC00" /* ofAppSynth1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = "E95AEC3E-D774-4A04-93D6-B84643B1DB49" /* ofAppSynth1.cpp */; };
@@ -331,6 +332,7 @@
 		"A9E47E0E-08E4-46F4-B7DB-BF07E8F05B76" /* ofxOscSender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ofxOscSender.h; sourceTree = "<group>"; };
 		AA0F346E2E956C5700E10261 /* GuiUtil.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = GuiUtil.hpp; sourceTree = "<group>"; };
 		AA0F346F2E956C5700E10261 /* GuiUtil.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = GuiUtil.cpp; sourceTree = "<group>"; };
+		AA9728FD2EABAEA80013293A /* synthSoftCircle.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = synthSoftCircle.cpp; sourceTree = "<group>"; };
 		"AAE81BA8-365E-4001-9D15-98322CBCE5EB" /* MFCC.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MFCC.cpp; sourceTree = "<group>"; };
 		"AB6EE587-0432-426E-A128-17823F8B15CD" /* TimerListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TimerListener.h; sourceTree = "<group>"; };
 		"AD991C11-E582-421D-B2AD-E9DA3A1B61A9" /* ofxBaseGui.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxBaseGui.cpp; sourceTree = "<group>"; };
@@ -1368,6 +1370,7 @@
 				E4B69E1F0A3A1BDC003C02F2 /* ofApp.h */,
 				"E95AEC3E-D774-4A04-93D6-B84643B1DB49" /* ofAppSynth1.cpp */,
 				"A9089EB7-C72E-4530-83DF-5EA1481A6B2F" /* ofAppSynth2.cpp */,
+				AA9728FD2EABAEA80013293A /* synthSoftCircle.cpp */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -1603,6 +1606,7 @@
 				"B769EFD3-440F-4C03-B584-E564CAF33C39" /* ofxHistoryPlot.cpp in Sources */,
 				"FB8F411B-0DE7-4B85-9F5A-6795C337035C" /* CoreFrequencyDomainFeatures.cpp in Sources */,
 				"9167125D-DEEF-4083-B627-EA583C2624C9" /* CoreTimeDomainFeatures.cpp in Sources */,
+				AA9728FE2EABAEA80013293A /* synthSoftCircle.cpp in Sources */,
 				"B8EC0CF8-DA90-4430-99C1-BDCB076505E8" /* MFCC.cpp in Sources */,
 				"135DAD3F-356E-4CD4-B3F6-9ACD00DDE61E" /* OnsetDetectionFunction.cpp in Sources */,
 				"024CBE2C-A90E-413F-A46B-5C7160C51803" /* Yin.cpp in Sources */,

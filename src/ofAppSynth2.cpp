@@ -211,7 +211,7 @@ std::shared_ptr<Synth> createSynth2(glm::vec2 size) {
     }
    });
   connectSourceToSinks(clusterModPtr, {
-    { ClusterMod::SOURCE_VEC2, {
+    { ClusterMod::SOURCE_CLUSTER_CENTRE_VEC2, {
       { dividedAreaModPtr, DividedAreaMod::SINK_MAJOR_ANCHORS },
       { sandLineModPtr, SandLineMod::SINK_POINTS },
       { drawClusterPointsModPtr, SoftCircleMod::SINK_POINTS },
@@ -231,7 +231,7 @@ std::shared_ptr<Synth> createSynth2(glm::vec2 size) {
   });
   connectSourceToSinks(fluidPointRadiusModPtr, {
     { RandomFloatSourceMod::SOURCE_FLOAT, {
-      { drawClusterPointsModPtr, SoftCircleMod::SINK_POINT_RADIUS }}
+      { drawClusterPointsModPtr, SoftCircleMod::SINK_POINT_RADIUS_MEAN }}
     }
   });
   connectSourceToSinks(videoFlowModPtr, {

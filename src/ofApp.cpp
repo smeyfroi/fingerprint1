@@ -17,7 +17,8 @@ void ofApp::setup(){
   TIME_SAMPLE_DISABLE(); // ************************************************************************
 
   glm::vec2 size = { 7200, 7200 };
-  synthPtr = createSynth1(size);
+  synthPtr = createSynthSoftCircle(size);
+//  synthPtr = createSynth1(size);
 //  synthPtr = createSynth2(size);
   
 //  ofLogNotice() << "ofApp::setup synth configured"; // error happens between this and update()

@@ -22,6 +22,7 @@ const std::filesystem::path RECORDING_PATH { "/Users/steve/Documents/recordings"
 // ***********************************************
 
 
+std::shared_ptr<ofxMarkSynth::Synth> createSynthSoftCircle(glm::vec2 size);
 std::shared_ptr<ofxMarkSynth::Synth> createSynth1(glm::vec2 size);
 std::shared_ptr<ofxMarkSynth::Synth> createSynth2(glm::vec2 size);
 

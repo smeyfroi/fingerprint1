@@ -87,9 +87,13 @@ std::shared_ptr<Synth> createSynth1(glm::vec2 size) {
   }, std::pair<float, float>{0.0, 0.1}, std::pair<float, float>{0.0, 0.1});
   
   auto clusterPointsModPtr = synthPtr->addMod<SoftCircleMod>("Fluid Clusters", {
+    {"Radius Mean", "0.01"},
+    {"Radius Variance", "1.0"},
+    {"Radius Min", "0.0"},
+    {"Radius Max", "0.07"},
     {"ColorMultiplier", "0.5"},
     {"AlphaMultiplier", "0.3"},
-    {"Softness", "0.3"}
+    {"Softness", "0.8"}
   });
   
   // Radial fluid impulses from clusters
@@ -100,10 +104,13 @@ std::shared_ptr<Synth> createSynth1(glm::vec2 size) {
   
   // Raw data points into fluid
   auto pitchRmsPointsModPtr = synthPtr->addMod<SoftCircleMod>("Fluid Raw Points", {
-    {"Radius", "0.01"},
+    {"Radius Mean", "0.003"},
+    {"Radius Variance", "1.0"},
+    {"Radius Min", "0.0"},
+    {"Radius Max", "0.02"},
     {"ColorMultiplier", "0.4"},
     {"AlphaMultiplier", "0.6"},
-    {"Softness", "0.5"}
+    {"Softness", "0.6"}
   });
   
   // Radial fluid impulses from raw points
@@ -114,17 +121,19 @@ std::shared_ptr<Synth> createSynth1(glm::vec2 size) {
   
   // Smeared raw data points
   auto polarPitchRmsPointsModPtr = synthPtr->addMod<SoftCircleMod>("Raw Points", {
-    {"Radius", "0.005"}, // min
-    {"RadiusVarianceScale", "0.01"}, // scale the variance to some to the min
+    {"Radius Mean", "0.003"},
+    {"Radius Variance", "0.2"},
+    {"Radius Min", "0.0"},
+    {"Radius Max", "0.01"},
     {"Softness", "0.5"},
     {"AlphaMultiplier", "0.9"},
-    {"ColorMultiplier", "0.8"}
+    {"ColorMultiplier", "0.4"}
   });
   
   auto smearModPtr = synthPtr->addMod<SmearMod>("Smear Raw Points", {
     {"Translation", "0.0, 0.0"},
     {"MixNew", "0.7"},
-    {"AlphaMultiplier", "0.999"},
+    {"AlphaMultiplier", "0.997"},
     {"Field1Multiplier", "0.02"},
     {"Field1Bias", "0, 0"},
     {"Field2Multiplier", "0.01"},
@@ -242,11 +251,11 @@ std::shared_ptr<Synth> createSynth1(glm::vec2 size) {
   });
   connectSourceToSinks(radiiModPtr, {
     { RandomFloatSourceMod::SOURCE_FLOAT, {
-      { clusterPointsModPtr, SoftCircleMod::SINK_POINT_RADIUS }
+      { clusterPointsModPtr, SoftCircleMod::SINK_POINT_RADIUS_MEAN }
     }}
   });
   connectSourceToSinks(clusterModPtr, {
-    { ClusterMod::SOURCE_VEC2, {
+    { ClusterMod::SOURCE_CLUSTER_CENTRE_VEC2, {
       { clusterPointsModPtr, SoftCircleMod::SINK_POINTS },
       { fluidRadialImpulseModPtr, FluidRadialImpulseMod::SINK_POINTS },
       { dividedAreaModPtr, DividedAreaMod::SINK_MAJOR_ANCHORS },
@@ -311,7 +320,7 @@ std::shared_ptr<Synth> createSynth1(glm::vec2 size) {
   assignDrawingLayerPtrToMods(fluidDrawingLayerPtr, {
     { fluidModPtr },
     { clusterPointsModPtr },
-    { pitchRmsPointsModPtr },
+//    { pitchRmsPointsModPtr },
     { particleFieldModPtr },
 //    { collageModPtr },
   });
