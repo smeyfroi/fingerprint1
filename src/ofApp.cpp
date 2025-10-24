@@ -7,6 +7,8 @@ using namespace ofxMarkSynth;
 
 
 void ofApp::setup(){
+//  ofSetLogLevel(OF_LOG_VERBOSE);
+  
   ofSetBackgroundColor(0);
   ofDisableArbTex();
   ofSetFrameRate(FRAME_RATE);
@@ -21,6 +23,21 @@ void ofApp::setup(){
 //  synthPtr = createSynth1(size);
 //  synthPtr = createSynth2(size);
   
+  // >>> TODO: refactor the MIDI controller setup into a separate class when we know more about it
+  lc.listDevices();
+  //lc.setup(1);
+  if (lc.setup()) { // setup with automatic id finding
+
+    // Bind faders to layer alpha parameters
+    auto layer1ParameterOpt = synthPtr->findParameterByNamePrefix("Layers");
+    ofParameterGroup& layerParameters = layer1ParameterOpt->get().castGroup();
+    for (size_t i = 0; i < layerParameters.size(); ++i) {
+      ofParameter<float>& layerParameter = layerParameters.getFloat(i);
+      lc.fader(i, layerParameter);
+    };
+  }
+  // <<<
+
 //  ofLogNotice() << "ofApp::setup synth configured"; // error happens between this and update()
 }
 
@@ -48,6 +65,7 @@ void ofApp::drawGui(ofEventArgs& args){
 //--------------------------------------------------------------
 void ofApp::exit(){
   synthPtr->shutdown();
+  lc.close(); // close midi ports
 }
 
 //--------------------------------------------------------------

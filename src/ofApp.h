@@ -2,6 +2,7 @@
 
 #include "ofMain.h"
 #include "ofxMarkSynth.h"
+#include "ofxLaunchControllers.h"
 
 
 // ***********************************************
@@ -53,4 +54,6 @@ public:
   
 private:
   std::shared_ptr<ofxMarkSynth::Synth> synthPtr;
+  
+  ofxLaunchControlXL lc;
 };

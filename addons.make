@@ -13,6 +13,8 @@ ofxDividedArea
 ofxFFmpegRecorder
 ofxFatLines
 ofxIntrospector
+ofxMidi
+ofxLaunchControllers
 ofxMotionFromVideo
 ofxSpatialHash
 ofxParticleSet
