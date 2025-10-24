@@ -15,87 +15,87 @@ std::shared_ptr<Synth> createSynthSoftCircle(glm::vec2 size) {
   auto synthPtr = std::make_shared<Synth>("SynthSoftCircle", ModConfig {}, START_PAUSED, size);
 
   std::shared_ptr<AudioDataSourceMod> audioDataSourceModPtr = std::static_pointer_cast<AudioDataSourceMod>(synthPtr->addMod<AudioDataSourceMod>("Audio Source", {
-    {"MinPitch", "50.0"},
-    {"MaxPitch", "600.0"},//"1500.0"},
-    {"MinRms", "0.0005"},
-    {"MaxRms", MAX_RMS},
-    {"MinComplexSpectralDifference", "200.0"},
-    {"MaxComplexSpectralDifference", "1000.0"},
-    {"MinSpectralCrest", "20.0"},
-    {"MaxSpectralCrest", "350.0"},
-    {"MinZeroCrossingRate", "5.0"},
-    {"MaxZeroCrossingRate", "15.0"},
+    {"MinPitch", "50.0"}, // manual variable
+    {"MaxPitch", "600.0"},//"1500.0"}, // manual variable
+    {"MinRms", "0.0005"}, // manual variable
+    {"MaxRms", MAX_RMS}, // manual variable
+    {"MinComplexSpectralDifference", "200.0"}, // how this get set? pre-performance tuning?
+    {"MaxComplexSpectralDifference", "1000.0"}, // how this get set? pre-performance tuning?
+    {"MinSpectralCrest", "20.0"}, // how this get set? pre-performance tuning?
+    {"MaxSpectralCrest", "350.0"}, // how this get set? pre-performance tuning?
+    {"MinZeroCrossingRate", "5.0"}, // how this get set? pre-performance tuning?
+    {"MaxZeroCrossingRate", "15.0"}, // how this get set? pre-performance tuning?
   }, MIC_DEVICE_NAME, RECORD_AUDIO, RECORDING_PATH, ROOT_SOURCE_MATERIAL_PATH));
   
-  auto smearModPtr = synthPtr->addMod<SmearMod>("Smear Raw Points", {
-    {"Translation", "0.0, 0.0"},
-    {"MixNew", "0.7"},
-    {"AlphaMultiplier", "0.997"},
-    {"Field1Multiplier", "0.02"},
-    {"Field1Bias", "0, 0"},
-    {"Field2Multiplier", "0.01"},
-    {"Field2Bias", "0, 0"},
+  auto smearModPtr = synthPtr->addMod<SmearMod>("Smear", {
+    {"Translation", "0.0, 0.0"}, // could be variable but unlikely to be useful
+    {"MixNew", "0.7"}, // 0.3 (slow) -> 0.9 (fast); could be variable
+    {"AlphaMultiplier", "0.997"}, // fades fast when lower; could be variable with limits
+    {"Field1Multiplier", "0.02"}, // speed up smear effect; could be variable with limits
+    {"Field1Bias", "0, 0"}, // not variable: depends on field
+    {"Field2Multiplier", "0.01"}, // speed up smear effect; could be variable with limits
+    {"Field2Bias", "0, 0"}, // not variable: depends on field
   });
 
   auto audioPaletteModPtr = synthPtr->addMod<SomPaletteMod>("Palette Creator", {
-    {"Iterations", "4000"},
+    {"Iterations", "4000"}, // not variable: set per performance
   });
   
   auto clusterModPtr = synthPtr->addMod<ClusterMod>("Clusters", {
-    {"maxSourcePoints", "600"},
-    {"clusters", "7"},
+    {"maxSourcePoints", "600"}, // not variable: set per performance (?)
+    {"clusters", "7"}, // could be a manual variable (or a cumulative event trigger)
   });
   
   auto polarClusterModPtr = synthPtr->addMod<ClusterMod>("Polar Clusters", {
-    {"maxSourcePoints", "600"},
-    {"clusters", "5"},
+    {"maxSourcePoints", "600"}, // not variable: set per performance (?)
+    {"clusters", "5"}, // large impact: could be a manual variable (or a cumulative event trigger)
   });
   
   auto fluidModPtr = synthPtr->addMod<FluidMod>("Fluid", {
-    {"dt", "0.008"},
-    {"value:dissipation", "0.999"},
-    {"velocity:dissipation", "0.998"},
-    {"vorticity", "50.0"},
-    {"value:iterations", "0.0"},
-    {"velocity:iterations", "0.0"},
-    {"pressure:iterations", "25.0"},
+    {"dt", "0.008"}, // could be a manual variable but changes need to be small for stability
+    {"value:dissipation", "0.999"}, // could be a manual variable but changes need to be small for stability
+    {"velocity:dissipation", "0.998"}, // could be a manual variable but changes need to be small for stability
+    {"vorticity", "50.0"}, // not an obvious visible effect so perhaps set per performance
+    {"value:iterations", "0.0"}, // could be variable to 1.0 or 2.0, which smooths things out noticeably
+    {"velocity:iterations", "0.0"}, // could tie it to above to smooth things out?
+    {"pressure:iterations", "25.0"}, // not variable
   });
   
   auto fluidRadialImpulseModPtr = synthPtr->addMod<FluidRadialImpulseMod>("Cluster Impulses", {
-    {"ImpulseRadius", "0.05"},
-    {"ImpulseStrength", "0.02"},
+    {"ImpulseRadius", "0.15"}, // could be variable
+    {"ImpulseStrength", "0.015"}, // could be variable
   });
   
   auto polarFluidRadialImpulseModPtr = synthPtr->addMod<FluidRadialImpulseMod>("Polar Cluster Impulses", {
-    {"ImpulseRadius", "0.03"},
-    {"ImpulseStrength", "0.01"},
+    {"ImpulseRadius", "0.1"}, // as above
+    {"ImpulseStrength", "0.03"}, // as above
   });
   
   auto clusterPointsModPtr = synthPtr->addMod<SoftCircleMod>("Cluster Points", {
-    {"Radius Mean", "0.01"},
-    {"Radius Variance", "1.0"},
-    {"Radius Min", "0.0"},
-    {"Radius Max", "0.07"},
-    {"ColorMultiplier", "0.5"},
-    {"AlphaMultiplier", "0.3"},
-    {"Softness", "0.8"},
+    {"Radius Mean", "0.01"}, // could be variable
+    {"Radius Variance", "1.0"}, // could be variable
+    {"Radius Min", "0.0"}, // not variable
+    {"Radius Max", "0.05"}, // not variable
+    {"ColorMultiplier", "0.5"}, // could be variable
+    {"AlphaMultiplier", "0.3"}, // could be variable
+    {"Softness", "0.8"}, // could be variable
   });
   
   auto pitchRmsPointsModPtr = synthPtr->addMod<SoftCircleMod>("Raw Points", {
-    {"Radius Mean", "0.003"},
+    {"Radius Mean", "0.005"},
     {"Radius Variance", "1.0"},
     {"Radius Min", "0.0"},
-    {"Radius Max", "0.02"},
+    {"Radius Max", "0.05"},
     {"ColorMultiplier", "0.4"},
     {"AlphaMultiplier", "0.6"},
     {"Softness", "0.6"},
   });
   
   auto polarPitchRmsPointsModPtr = synthPtr->addMod<SoftCircleMod>("Polar Raw Points", {
-    {"Radius Mean", "0.003"},
+    {"Radius Mean", "0.004"},
     {"Radius Variance", "0.5"},
     {"Radius Min", "0.0"},
-    {"Radius Max", "0.01"},
+    {"Radius Max", "0.05"},
     {"Softness", "0.5"},
     {"AlphaMultiplier", "0.9"},
     {"ColorMultiplier", "0.4"},
