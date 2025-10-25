@@ -167,7 +167,7 @@ std::shared_ptr<Synth> createSynth2(glm::vec2 size) {
   //  }
   
   connectSourceToSinks(audioDataSourceModPtr, {
-    { AudioDataSourceMod::SOURCE_SPECTRAL_POINTS, {
+    { AudioDataSourceMod::SOURCE_SPECTRAL_3D_POINTS, {
       { audioPaletteModPtr, SomPaletteMod::SINK_VEC3 }}
     },
     { AudioDataSourceMod::SOURCE_SPECTRAL_CREST_SCALAR, {

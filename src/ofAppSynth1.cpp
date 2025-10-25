@@ -198,7 +198,7 @@ std::shared_ptr<Synth> createSynth1(glm::vec2 size) {
     { AudioDataSourceMod::SOURCE_SPECTRAL_CREST_SCALAR, {
       { polarPitchRmsPointsModPtr, SoftCircleMod::SINK_POINT_RADIUS_VARIANCE }
     }},
-    { AudioDataSourceMod::SOURCE_SPECTRAL_POINTS, {
+    { AudioDataSourceMod::SOURCE_SPECTRAL_3D_POINTS, {
       { audioPaletteModPtr, SomPaletteMod::SINK_VEC3 }
     }},
     { AudioDataSourceMod::SOURCE_PITCH_SCALAR, {

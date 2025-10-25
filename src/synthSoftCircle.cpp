@@ -15,34 +15,34 @@ std::shared_ptr<Synth> createSynthSoftCircle(glm::vec2 size) {
   auto synthPtr = std::make_shared<Synth>("SynthSoftCircle", ModConfig {}, START_PAUSED, size);
 
   std::shared_ptr<AudioDataSourceMod> audioDataSourceModPtr = std::static_pointer_cast<AudioDataSourceMod>(synthPtr->addMod<AudioDataSourceMod>("Audio Source", {
-    {"MinPitch", "50.0"}, // manual variable
-    {"MaxPitch", "600.0"},//"1500.0"}, // manual variable
-    {"MinRms", "0.0005"}, // manual variable
-    {"MaxRms", MAX_RMS}, // manual variable
-    {"MinComplexSpectralDifference", "200.0"}, // how this get set? pre-performance tuning?
-    {"MaxComplexSpectralDifference", "1000.0"}, // how this get set? pre-performance tuning?
-    {"MinSpectralCrest", "20.0"}, // how this get set? pre-performance tuning?
-    {"MaxSpectralCrest", "350.0"}, // how this get set? pre-performance tuning?
-    {"MinZeroCrossingRate", "5.0"}, // how this get set? pre-performance tuning?
-    {"MaxZeroCrossingRate", "15.0"}, // how this get set? pre-performance tuning?
+    {"MinPitch", "50.0"}, // Tuning: manual variable. Has large effect on point positions etc
+    {"MaxPitch", "800.0"},//"1500.0"}, // Tuning: manual variable. Has large effect on point positions etc
+    {"MinRms", "0.0005"}, // Tuning: manual variable. Has large effect on point positions etc
+    {"MaxRms", MAX_RMS}, // Tuning: manual variable. Has large effect on point positions etc
+    {"MinComplexSpectralDifference", "200.0"}, // how this get set? pre-performance tuning?. Has large effect on palette etc
+    {"MaxComplexSpectralDifference", "500.0"}, // how this get set? pre-performance tuning?. Has large effect on palette etc
+    {"MinSpectralCrest", "20.0"}, // how this get set? pre-performance tuning?. Has large effect on palette etc
+    {"MaxSpectralCrest", "100.0"}, // how this get set? pre-performance tuning?. Has large effect on palette etc
+    {"MinZeroCrossingRate", "5.0"}, // how this get set? pre-performance tuning?. Has large effect on palette etc
+    {"MaxZeroCrossingRate", "15.0"}, // how this get set? pre-performance tuning?. Has large effect on palette etc
   }, MIC_DEVICE_NAME, RECORD_AUDIO, RECORDING_PATH, ROOT_SOURCE_MATERIAL_PATH));
   
   auto smearModPtr = synthPtr->addMod<SmearMod>("Smear", {
     {"Translation", "0.0, 0.0"}, // could be variable but unlikely to be useful
-    {"MixNew", "0.7"}, // 0.3 (slow) -> 0.9 (fast); could be variable
+    {"MixNew", "0.7"}, // 0.3 (slow) -> 0.9 (fast); could be variable. When this slows down, the multipliers become useful so they are coupled to some extent
     {"AlphaMultiplier", "0.997"}, // fades fast when lower; could be variable with limits
     {"Field1Multiplier", "0.02"}, // speed up smear effect; could be variable with limits
-    {"Field1Bias", "0, 0"}, // not variable: depends on field
+    {"Field1Bias", "0, 0"}, // not variable: depends on field. Do we have any 0-1 fields that would need this?
     {"Field2Multiplier", "0.01"}, // speed up smear effect; could be variable with limits
-    {"Field2Bias", "0, 0"}, // not variable: depends on field
+    {"Field2Bias", "0, 0"}, // not variable: depends on field. Do we have any 0-1 fields that would need this?
   });
 
   auto audioPaletteModPtr = synthPtr->addMod<SomPaletteMod>("Palette Creator", {
-    {"Iterations", "4000"}, // not variable: set per performance
+    {"Iterations", "2000"}, // not variable: set per performance? Lower settles quickly, which is useful for simple music
   });
   
   auto clusterModPtr = synthPtr->addMod<ClusterMod>("Clusters", {
-    {"maxSourcePoints", "600"}, // not variable: set per performance (?)
+    {"maxSourcePoints", "600"}, // not variable: set per performance?
     {"clusters", "7"}, // could be a manual variable (or a cumulative event trigger)
   });
   
@@ -81,7 +81,7 @@ std::shared_ptr<Synth> createSynthSoftCircle(glm::vec2 size) {
     {"Softness", "0.8"}, // could be variable
   });
   
-  auto pitchRmsPointsModPtr = synthPtr->addMod<SoftCircleMod>("Raw Points", {
+  auto pitchRmsPointsModPtr = synthPtr->addMod<SoftCircleMod>("Pitch RMS Points", {
     {"Radius Mean", "0.005"},
     {"Radius Variance", "1.0"},
     {"Radius Min", "0.0"},
@@ -91,7 +91,7 @@ std::shared_ptr<Synth> createSynthSoftCircle(glm::vec2 size) {
     {"Softness", "0.6"},
   });
   
-  auto polarPitchRmsPointsModPtr = synthPtr->addMod<SoftCircleMod>("Polar Raw Points", {
+  auto polarPitchRmsPointsModPtr = synthPtr->addMod<SoftCircleMod>("Polar Pitch RMS Points", {
     {"Radius Mean", "0.004"},
     {"Radius Variance", "0.5"},
     {"Radius Min", "0.0"},
@@ -101,9 +101,22 @@ std::shared_ptr<Synth> createSynthSoftCircle(glm::vec2 size) {
     {"ColorMultiplier", "0.4"},
   });
   
+  auto polarSpectralPointsModPtr = synthPtr->addMod<SoftCircleMod>("Polar Spectral Points", {
+    {"Radius Mean", "0.01"},
+    {"Radius Variance", "0.5"},
+    {"Radius Min", "0.0"},
+    {"Radius Max", "0.02"},
+    {"Softness", "1.0"},
+    {"AlphaMultiplier", "0.2"},
+    {"ColorMultiplier", "1.0"},
+  });
+  
   connectSourceToSinks(audioDataSourceModPtr, {
-    { AudioDataSourceMod::SOURCE_SPECTRAL_POINTS, {
+    { AudioDataSourceMod::SOURCE_SPECTRAL_3D_POINTS, {
       { audioPaletteModPtr, SomPaletteMod::SINK_VEC3 },
+    }},
+    { AudioDataSourceMod::SOURCE_SPECTRAL_2D_POINTS, {
+      { polarSpectralPointsModPtr, SoftCircleMod::SINK_POINTS },
     }},
     { AudioDataSourceMod::SOURCE_PITCH_RMS_POINTS, {
       { clusterModPtr, ClusterMod::SINK_VEC2 },
@@ -193,6 +206,7 @@ std::shared_ptr<Synth> createSynthSoftCircle(glm::vec2 size) {
 //    { clusterPointsModPtr },
 //    { fluidRadialImpulseModPtr },
     { pitchRmsPointsModPtr },
+    { polarSpectralPointsModPtr },
   });
   assignDrawingLayerPtrToMods(fadeDrawingLayerPtr, {
     { polarPitchRmsPointsModPtr },

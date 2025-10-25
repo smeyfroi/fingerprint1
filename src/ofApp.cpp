@@ -29,12 +29,24 @@ void ofApp::setup(){
   if (lc.setup()) { // setup with automatic id finding
 
     // Bind faders to layer alpha parameters
-    auto layer1ParameterOpt = synthPtr->findParameterByNamePrefix("Layers");
-    ofParameterGroup& layerParameters = layer1ParameterOpt->get().castGroup();
+    auto layersParameterGroupOpt = synthPtr->findParameterByNamePrefix("Layers");
+    ofParameterGroup& layerParameters = layersParameterGroupOpt->get().castGroup();
     for (size_t i = 0; i < layerParameters.size(); ++i) {
       ofParameter<float>& layerParameter = layerParameters.getFloat(i);
       lc.fader(i, layerParameter);
     };
+
+    // Bind knobs to audio analysis parameters
+    lc.knob(4, synthPtr->findParameterByNamePrefix("MinPitch")->get().cast<float>());
+    lc.knob(5, synthPtr->findParameterByNamePrefix("MaxPitch")->get().cast<float>());
+    lc.knob(12, synthPtr->findParameterByNamePrefix("MinRms")->get().cast<float>());
+    lc.knob(13, synthPtr->findParameterByNamePrefix("MaxRms")->get().cast<float>());
+    lc.knob(6, synthPtr->findParameterByNamePrefix("MinComplexSpectralDifference")->get().cast<float>());
+    lc.knob(7, synthPtr->findParameterByNamePrefix("MaxComplexSpectralDifference")->get().cast<float>());
+    lc.knob(14, synthPtr->findParameterByNamePrefix("MinSpectralCrest")->get().cast<float>());
+    lc.knob(15, synthPtr->findParameterByNamePrefix("MaxSpectralCrest")->get().cast<float>());
+    lc.knob(22, synthPtr->findParameterByNamePrefix("MinZeroCrossingRate")->get().cast<float>());
+    lc.knob(23, synthPtr->findParameterByNamePrefix("MaxZeroCrossingRate")->get().cast<float>());
   }
   // <<<
 
