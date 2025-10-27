@@ -130,7 +130,8 @@ std::shared_ptr<Synth> createSynthSoftCircle(glm::vec2 size) {
       { radius1ModPtr, VaryingValueMod::SINK_MEAN },
     }},
     { AudioDataSourceMod::SOURCE_SPECTRAL_CREST_SCALAR, {
-      { radius2ModPtr, VaryingValueMod::SINK_MEAN },
+      { polarPitchRmsPointsModPtr, SoftCircleMod::SINK_POINT_RADIUS },
+      { polarSpectralPointsModPtr, SoftCircleMod::SINK_POINT_RADIUS },
     }},
     { AudioDataSourceMod::SOURCE_ONSET1, {
 //      { clusterModPtr, ClusterMod::SINK_CHANGE_CLUSTER_NUM },
@@ -148,14 +149,7 @@ std::shared_ptr<Synth> createSynthSoftCircle(glm::vec2 size) {
   connectSourceToSinks(radius1ModPtr, {
     { VaryingValueMod::SOURCE_FLOAT, {
       { clusterPointsModPtr, SoftCircleMod::SINK_POINT_RADIUS },
-      { polarPitchRmsPointsModPtr, SoftCircleMod::SINK_POINT_RADIUS },
       { fluidRadialImpulseModPtr, FluidRadialImpulseMod::SINK_IMPULSE_RADIUS },
-    }}
-  });
-  connectSourceToSinks(radius2ModPtr, {
-    { VaryingValueMod::SOURCE_FLOAT, {
-      { polarPitchRmsPointsModPtr, SoftCircleMod::SINK_POINT_RADIUS },
-      { polarSpectralPointsModPtr, SoftCircleMod::SINK_POINT_RADIUS },
     }}
   });
   connectSourceToSinks(audioPaletteModPtr, {
