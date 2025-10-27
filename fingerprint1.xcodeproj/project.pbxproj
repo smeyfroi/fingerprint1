@@ -88,6 +88,7 @@
 		"A682F9F3-908A-4CB1-8314-77E251629DF2" /* ofxPointClusters.cpp in Sources */ = {isa = PBXBuildFile; fileRef = "034E7224-AC67-460A-85FE-EB9D06CC01FD" /* ofxPointClusters.cpp */; };
 		"A8B02D10-7B74-4D1F-B5C1-C76E8EDFBA18" /* ofxLabel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = "6C479D0B-F6B0-4D3E-9685-70BB4C91C1A5" /* ofxLabel.cpp */; };
 		"A9F5101B-536F-4B14-91EA-7A8ACE742321" /* OscOutboundPacketStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = "63B6ECED-C7CB-4258-9D6B-277109C3A988" /* OscOutboundPacketStream.cpp */; };
+		AA9729012EAF80180013293A /* VaryingValueMod.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA9729002EAF80180013293A /* VaryingValueMod.cpp */; };
 		"AD0D6174-D567-4889-AA34-940E5AF8AE27" /* ofxConvexHull.cpp in Sources */ = {isa = PBXBuildFile; fileRef = "78975A6C-7277-4A60-AC7C-31F3AC652EC2" /* ofxConvexHull.cpp */; };
 		"AD70CC9B-2118-4BB1-B3E9-CA427CC0DFFB" /* ofxContinuousSomPalette.cpp in Sources */ = {isa = PBXBuildFile; fileRef = "A44B6993-7709-44A2-8879-1D6395F8B217" /* ofxContinuousSomPalette.cpp */; };
 		"B1C46DAD-9D79-4491-A59C-8915DB14B027" /* ParticleSetMod.cpp in Sources */ = {isa = PBXBuildFile; fileRef = "898831D2-5D9F-4B11-84A6-B481F52BE280" /* ParticleSetMod.cpp */; };
@@ -401,6 +402,8 @@
 		"A78E9ECF-C94A-4F97-BB41-9C772FD9F73B" /* AdvectShader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = AdvectShader.h; sourceTree = "<group>"; };
 		"A8412078-24E2-4B91-ABD3-703F6835143E" /* ofxFatLine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxFatLine.cpp; sourceTree = "<group>"; };
 		"A8B54C5D-A971-41F9-966B-FBEED09EEC65" /* FluidMod.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FluidMod.hpp; sourceTree = "<group>"; };
+		AA9728FF2EAF80180013293A /* VaryingValueMod.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = VaryingValueMod.hpp; sourceTree = "<group>"; };
+		AA9729002EAF80180013293A /* VaryingValueMod.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = VaryingValueMod.cpp; sourceTree = "<group>"; };
 		"AAF6C1FC-278E-41C1-BB44-A196DDBE3C11" /* kiss_fft.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = kiss_fft.h; sourceTree = "<group>"; };
 		"AC1B651A-51BE-4019-9D17-E648910BCB65" /* RefractiveRectangleShader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RefractiveRectangleShader.h; sourceTree = "<group>"; };
 		"AC56BFB0-256A-4E06-AB56-770DCAE6402A" /* ofxTimeMeasurements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ofxTimeMeasurements.h; sourceTree = "<group>"; };
@@ -734,6 +737,8 @@
 				"C65CA5E8-BDD3-4D81-A99A-F54B8790CA00" /* PixelSnapshotMod.hpp */,
 				"513189FC-B1B2-4FDE-AF36-AFD0BC2341A1" /* SomPaletteMod.cpp */,
 				"C878F5EA-BB72-4FAC-9F81-3853C427F4A1" /* SomPaletteMod.hpp */,
+				AA9728FF2EAF80180013293A /* VaryingValueMod.hpp */,
+				AA9729002EAF80180013293A /* VaryingValueMod.cpp */,
 			);
 			path = processMods;
 			sourceTree = "<group>";
@@ -1830,6 +1835,7 @@
 				"6E549B5C-EB98-4F9F-A6FD-FE606F2D2956" /* Mod.cpp in Sources */,
 				"D7C89D09-E04C-4B29-A0E8-CEE36D8C0681" /* Synth.cpp in Sources */,
 				"6417CDBD-3056-4473-8849-B05463667198" /* ClusterMod.cpp in Sources */,
+				AA9729012EAF80180013293A /* VaryingValueMod.cpp in Sources */,
 				"31026F1D-8195-4F4E-B67F-58F1DBA5C2D6" /* FluidMod.cpp in Sources */,
 				"088E672A-EACE-47EA-99B6-AC77E7A70384" /* PathMod.cpp in Sources */,
 				"811A5245-AC51-4A8C-9211-F8C6206F6007" /* PixelSnapshotMod.cpp in Sources */,

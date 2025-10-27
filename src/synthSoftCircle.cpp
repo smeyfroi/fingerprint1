@@ -22,7 +22,7 @@ std::shared_ptr<Synth> createSynthSoftCircle(glm::vec2 size) {
     {"MinComplexSpectralDifference", "200.0"}, // how this get set? pre-performance tuning?. Has large effect on palette etc
     {"MaxComplexSpectralDifference", "500.0"}, // how this get set? pre-performance tuning?. Has large effect on palette etc
     {"MinSpectralCrest", "20.0"}, // how this get set? pre-performance tuning?. Has large effect on palette etc
-    {"MaxSpectralCrest", "100.0"}, // how this get set? pre-performance tuning?. Has large effect on palette etc
+    {"MaxSpectralCrest", "200.0"}, // how this get set? pre-performance tuning?. Has large effect on palette etc
     {"MinZeroCrossingRate", "5.0"}, // how this get set? pre-performance tuning?. Has large effect on palette etc
     {"MaxZeroCrossingRate", "15.0"}, // how this get set? pre-performance tuning?. Has large effect on palette etc
   }, MIC_DEVICE_NAME, RECORD_AUDIO, RECORDING_PATH, ROOT_SOURCE_MATERIAL_PATH));
@@ -71,41 +71,39 @@ std::shared_ptr<Synth> createSynthSoftCircle(glm::vec2 size) {
     {"ImpulseStrength", "0.03"}, // as above
   });
   
+  auto radius1ModPtr = synthPtr->addMod<VaryingValueMod>("Radius 1", {
+    {"Mean", "0.05"},
+    {"Variance", "0.5"},
+    {"Min", "0.01"},
+    {"Max", "0.07"},
+  });
+
   auto clusterPointsModPtr = synthPtr->addMod<SoftCircleMod>("Cluster Points", {
-    {"Radius Mean", "0.01"}, // could be variable
-    {"Radius Variance", "1.0"}, // could be variable
-    {"Radius Min", "0.0"}, // not variable
-    {"Radius Max", "0.05"}, // not variable
     {"ColorMultiplier", "0.5"}, // could be variable
-    {"AlphaMultiplier", "0.3"}, // could be variable
+    {"AlphaMultiplier", "0.2"}, // could be variable
     {"Softness", "0.8"}, // could be variable
   });
   
   auto pitchRmsPointsModPtr = synthPtr->addMod<SoftCircleMod>("Pitch RMS Points", {
-    {"Radius Mean", "0.005"},
-    {"Radius Variance", "1.0"},
-    {"Radius Min", "0.0"},
-    {"Radius Max", "0.05"},
     {"ColorMultiplier", "0.4"},
-    {"AlphaMultiplier", "0.6"},
+    {"AlphaMultiplier", "0.5"},
     {"Softness", "0.6"},
   });
   
+  auto radius2ModPtr = synthPtr->addMod<VaryingValueMod>("Radius 2", {
+    {"Mean", "0.01"},
+    {"Variance", "0.4"},
+    {"Min", "0.0"},
+    {"Max", "0.03"},
+  });
+
   auto polarPitchRmsPointsModPtr = synthPtr->addMod<SoftCircleMod>("Polar Pitch RMS Points", {
-    {"Radius Mean", "0.004"},
-    {"Radius Variance", "0.5"},
-    {"Radius Min", "0.0"},
-    {"Radius Max", "0.05"},
     {"Softness", "0.5"},
-    {"AlphaMultiplier", "0.9"},
+    {"AlphaMultiplier", "0.3"},
     {"ColorMultiplier", "0.4"},
   });
   
   auto polarSpectralPointsModPtr = synthPtr->addMod<SoftCircleMod>("Polar Spectral Points", {
-    {"Radius Mean", "0.01"},
-    {"Radius Variance", "0.5"},
-    {"Radius Min", "0.0"},
-    {"Radius Max", "0.02"},
     {"Softness", "1.0"},
     {"AlphaMultiplier", "0.2"},
     {"ColorMultiplier", "1.0"},
@@ -128,6 +126,12 @@ std::shared_ptr<Synth> createSynthSoftCircle(glm::vec2 size) {
       { polarFluidRadialImpulseModPtr, FluidRadialImpulseMod::SINK_POINTS },
       { polarPitchRmsPointsModPtr, SoftCircleMod::SINK_POINTS },
     }},
+    { AudioDataSourceMod::SOURCE_RMS_SCALAR, {
+      { radius1ModPtr, VaryingValueMod::SINK_MEAN },
+    }},
+    { AudioDataSourceMod::SOURCE_SPECTRAL_CREST_SCALAR, {
+      { radius2ModPtr, VaryingValueMod::SINK_MEAN },
+    }},
     { AudioDataSourceMod::SOURCE_ONSET1, {
 //      { clusterModPtr, ClusterMod::SINK_CHANGE_CLUSTER_NUM },
 //      { smearModPtr, SmearMod::SINK_CHANGE_LAYER },
@@ -140,6 +144,19 @@ std::shared_ptr<Synth> createSynthSoftCircle(glm::vec2 size) {
 //    }},
 //    { AudioDataSourceMod::SOURCE_PITCH_CHANGE, {
 //    }},
+  });
+  connectSourceToSinks(radius1ModPtr, {
+    { VaryingValueMod::SOURCE_FLOAT, {
+      { clusterPointsModPtr, SoftCircleMod::SINK_POINT_RADIUS },
+      { polarPitchRmsPointsModPtr, SoftCircleMod::SINK_POINT_RADIUS },
+      { fluidRadialImpulseModPtr, FluidRadialImpulseMod::SINK_IMPULSE_RADIUS },
+    }}
+  });
+  connectSourceToSinks(radius2ModPtr, {
+    { VaryingValueMod::SOURCE_FLOAT, {
+      { polarPitchRmsPointsModPtr, SoftCircleMod::SINK_POINT_RADIUS },
+      { polarSpectralPointsModPtr, SoftCircleMod::SINK_POINT_RADIUS },
+    }}
   });
   connectSourceToSinks(audioPaletteModPtr, {
     { SomPaletteMod::SOURCE_FIELD, {

@@ -170,9 +170,9 @@ std::shared_ptr<Synth> createSynth2(glm::vec2 size) {
     { AudioDataSourceMod::SOURCE_SPECTRAL_3D_POINTS, {
       { audioPaletteModPtr, SomPaletteMod::SINK_VEC3 }}
     },
-    { AudioDataSourceMod::SOURCE_SPECTRAL_CREST_SCALAR, {
-      { drawPointsModPtr, SoftCircleMod::SINK_POINT_RADIUS_VARIANCE }}
-    },
+//    { AudioDataSourceMod::SOURCE_SPECTRAL_CREST_SCALAR, {
+//      { drawPointsModPtr, SoftCircleMod::SINK_POINT_RADIUS_VARIANCE }}
+//    },
     { AudioDataSourceMod::SOURCE_PITCH_SCALAR, {
       { drawPointsModPtr, SoftCircleMod::SINK_POINT_COLOR_MULTIPLIER }}
     },
@@ -231,7 +231,7 @@ std::shared_ptr<Synth> createSynth2(glm::vec2 size) {
   });
   connectSourceToSinks(fluidPointRadiusModPtr, {
     { RandomFloatSourceMod::SOURCE_FLOAT, {
-      { drawClusterPointsModPtr, SoftCircleMod::SINK_POINT_RADIUS_MEAN }}
+      { drawClusterPointsModPtr, SoftCircleMod::SINK_POINT_RADIUS }}
     }
   });
   connectSourceToSinks(videoFlowModPtr, {
