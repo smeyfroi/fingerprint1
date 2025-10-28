@@ -65,6 +65,21 @@ std::shared_ptr<Synth> createSynthSoftCircle(glm::vec2 size) {
   });
   // <<< LAYER PROCESSES
   
+  // >>> POINT SIZE PROCESSES
+  auto smallRmsScalarModPtr = synthPtr->addMod<MultiplyAddMod>("Small RMS Scalar", {
+    {"Mul", "0.002"}, // could be variable
+    {"Add", "0.005"}, // could be variable
+  });
+  auto midRmsScalarModPtr = synthPtr->addMod<MultiplyAddMod>("Mid RMS Scalar", {
+    {"Mul", "0.005"}, // could be variable
+    {"Add", "0.01"}, // could be variable
+  });
+  auto largeRmsScalarModPtr = synthPtr->addMod<MultiplyAddMod>("Large RMS Scalar", {
+    {"Mul", "0.01"}, // could be variable
+    {"Add", "0.02"}, // could be variable
+  });
+  // <<< POINT SIZE PROCESSES
+  
   // >>> POINTS
   auto clusterPointsModPtr = synthPtr->addMod<SoftCircleMod>("Cluster Points", {
     {"Color Multiplier", "0.5"}, // could be variable
@@ -122,6 +137,20 @@ std::shared_ptr<Synth> createSynthSoftCircle(glm::vec2 size) {
   });
   // <<< LAYER PROCESSES
   
+  // >>> POINT SIZE PROCESSES
+  connectSourceToSinks(audioDataSourceModPtr, {
+    { AudioDataSourceMod::SOURCE_RMS_SCALAR, {
+      { smallRmsScalarModPtr, MultiplyAddMod::SINK_FLOAT },
+    }},
+    { AudioDataSourceMod::SOURCE_RMS_SCALAR, {
+      { midRmsScalarModPtr, MultiplyAddMod::SINK_FLOAT },
+    }},
+    { AudioDataSourceMod::SOURCE_RMS_SCALAR, {
+      { largeRmsScalarModPtr, MultiplyAddMod::SINK_FLOAT },
+    }},
+  });
+  // <<< POINT SIZE PROCESSES
+  
   // >>> POINTS
   connectSourceToSinks(audioDataSourceModPtr, {
     { AudioDataSourceMod::SOURCE_POLAR_SPECTRAL_2D_POINTS, {
@@ -136,17 +165,23 @@ std::shared_ptr<Synth> createSynthSoftCircle(glm::vec2 size) {
       { clusterPointsModPtr, SoftCircleMod::SINK_POINTS },
     }}
   });
-  connectSourceToSinks(audioDataSourceModPtr, {
-    { AudioDataSourceMod::SOURCE_SPECTRAL_CREST_SCALAR, {
-      { polarSpectralPointsModPtr, SoftCircleMod::SINK_POINT_RADIUS }, // TODO: MulAdd
-    }},
-    { AudioDataSourceMod::SOURCE_ZERO_CROSSING_RATE_SCALAR, {
-      { pitchRmsPointsModPtr, SoftCircleMod::SINK_POINT_RADIUS }, // TODO: MulAdd
-    }},
-    { AudioDataSourceMod::SOURCE_RMS_SCALAR, {
-      { clusterPointsModPtr, SoftCircleMod::SINK_POINT_RADIUS }, // TODO: MulAdd
+  
+  connectSourceToSinks(smallRmsScalarModPtr, {
+    { MultiplyAddMod::SOURCE_FLOAT, {
+      { polarSpectralPointsModPtr, SoftCircleMod::SINK_POINT_RADIUS },
     }},
   });
+  connectSourceToSinks(midRmsScalarModPtr, {
+    { MultiplyAddMod::SOURCE_FLOAT, {
+      { pitchRmsPointsModPtr, SoftCircleMod::SINK_POINT_RADIUS },
+    }},
+  });
+  connectSourceToSinks(largeRmsScalarModPtr, {
+    { MultiplyAddMod::SOURCE_FLOAT, {
+      { clusterPointsModPtr, SoftCircleMod::SINK_POINT_RADIUS },
+    }},
+  });
+  
   connectSourceToSinks(audioPaletteModPtr, {
     { SomPaletteMod::SOURCE_DARKEST_VEC4, {
       { polarSpectralPointsModPtr, SoftCircleMod::SINK_POINT_COLOR }
