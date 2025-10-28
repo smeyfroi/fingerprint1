@@ -27,6 +27,9 @@ void ofApp::setup(){
   lc.listDevices();
   //lc.setup(1);
   if (lc.setup()) { // setup with automatic id finding
+    
+    // Global agency knob
+    lc.knob(0, synthPtr->findParameterByNamePrefix("Global Agency")->get().cast<float>());
 
     // Bind faders to layer alpha parameters
     auto layersParameterGroupOpt = synthPtr->findParameterByNamePrefix("Layers");
