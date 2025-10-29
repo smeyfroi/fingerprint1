@@ -12,7 +12,9 @@
 using namespace ofxMarkSynth;
 
 std::shared_ptr<Synth> createSynthSoftCircle(glm::vec2 size) {
-  auto synthPtr = std::make_shared<Synth>("SynthSoftCircle", ModConfig {}, START_PAUSED, size);
+  auto synthPtr = std::make_shared<Synth>("SynthSoftCircle", ModConfig {
+    {"Background Color", "0.0, 0.05, 0.1, 1.0"},
+  }, START_PAUSED, size);
 
   // >>> AUDIO, CLUSTERS AND PALETTE
   std::shared_ptr<AudioDataSourceMod> audioDataSourceModPtr = std::static_pointer_cast<AudioDataSourceMod>(synthPtr->addMod<AudioDataSourceMod>("Audio Source", {
@@ -40,7 +42,7 @@ std::shared_ptr<Synth> createSynthSoftCircle(glm::vec2 size) {
   
   // >>> LAYER PROCESSES
   auto fluidModPtr = synthPtr->addMod<FluidMod>("Fluid", {
-    {"dt", "0.008"}, // could be a manual variable but changes need to be small for stability
+    {"dt", "0.002"}, // could be a manual variable but changes need to be small for stability
     {"value:dissipation", "0.999"}, // could be a manual variable but changes need to be small for stability
     {"velocity:dissipation", "0.998"}, // could be a manual variable but changes need to be small for stability
     {"vorticity", "50.0"}, // not an obvious visible effect so perhaps set per performance
@@ -62,6 +64,10 @@ std::shared_ptr<Synth> createSynthSoftCircle(glm::vec2 size) {
     {"Field1Bias", "0, 0"}, // not variable: depends on field. Do we have any 0-1 fields that would need this?
     {"Field2Multiplier", "0.01"}, // speed up smear effect; could be variable with limits
     {"Field2Bias", "0, 0"}, // not variable: depends on field. Do we have any 0-1 fields that would need this?
+  });
+  
+  auto fadeModPtr = synthPtr->addMod<FadeMod>("Fade", {
+    {"Alpha", "0.01"}, // could be variable
   });
   // <<< LAYER PROCESSES
   
@@ -202,17 +208,17 @@ std::shared_ptr<Synth> createSynthSoftCircle(glm::vec2 size) {
   // Make drawing layers
   auto fluidDrawingLayerPtr = synthPtr->addDrawingLayer("1fluid",
                                             synthPtr->getSize() / 8.0, GL_RGBA16F, GL_REPEAT,
-                                            0.0f, OF_BLENDMODE_ADD, true, 0);
+                                            false, OF_BLENDMODE_ADD, true, 0);
   auto fluidVelocitiesDrawingLayerPtr = synthPtr->addDrawingLayer("fluidVelocities",
                                                       synthPtr->getSize() / 8.0, GL_RGB16F, GL_REPEAT,
-                                                      0.0f, OF_BLENDMODE_DISABLED, false, 0, false); // not drawn
+                                                      false, OF_BLENDMODE_DISABLED, false, 0, false); // not drawn
   auto smearedDrawingLayerPtr = synthPtr->addDrawingLayer("2smear",
                                                 synthPtr->getSize(), GL_RGBA16F, GL_REPEAT,
-                                                0.0f, OF_BLENDMODE_ADD, true, 0);
+                                                false, OF_BLENDMODE_ADD, true, 0);
   // FIXME: are all drawing layers GL_REPEAT and never GL_CLAMP_TO_EDGE?
   auto fadeDrawingLayerPtr = synthPtr->addDrawingLayer("3fade",
                                             synthPtr->getSize(), GL_RGBA16F, GL_REPEAT,
-                                            0.0005f, OF_BLENDMODE_ADD, true, 0);
+                                            false, OF_BLENDMODE_ADD, true, 0);
   
   // Assign drawing layers to the Mods
   assignDrawingLayerPtrToMods(fluidDrawingLayerPtr, {
@@ -228,6 +234,7 @@ std::shared_ptr<Synth> createSynthSoftCircle(glm::vec2 size) {
     { pitchRmsPointsModPtr },
   });
   assignDrawingLayerPtrToMods(fadeDrawingLayerPtr, {
+    { fadeModPtr },
     { polarSpectralPointsModPtr },
   });
 
