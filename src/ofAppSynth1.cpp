@@ -202,7 +202,7 @@ std::shared_ptr<Synth> createSynth1(glm::vec2 size) {
       { audioPaletteModPtr, SomPaletteMod::SINK_VEC3 }
     }},
     { AudioDataSourceMod::SOURCE_PITCH_SCALAR, {
-      { polarPitchRmsPointsModPtr, SoftCircleMod::SINK_POINT_COLOR_MULTIPLIER }
+      { polarPitchRmsPointsModPtr, SoftCircleMod::SINK_COLOR_MULTIPLIER }
     }},
     { AudioDataSourceMod::SOURCE_POLAR_PITCH_RMS_POINTS, {
       { clusterModPtr, ClusterMod::SINK_VEC2 },
@@ -233,18 +233,18 @@ std::shared_ptr<Synth> createSynth1(glm::vec2 size) {
       { particleFieldModPtr, ParticleFieldMod::SINK_FIELD_1_FBO },
       { smearModPtr, SmearMod::SINK_FIELD_1_FBO }
     }},
-    { SomPaletteMod::SOURCE_RANDOM_VEC4, {
-      { clusterPointsModPtr, SoftCircleMod::SINK_POINT_COLOR },
+    { SomPaletteMod::SOURCE_RANDOM, {
+      { clusterPointsModPtr, SoftCircleMod::SINK_COLOR },
       { particleFieldModPtr, ParticleFieldMod::SINK_POINT_COLOR }
     }},
-    { SomPaletteMod::SOURCE_RANDOM_DARK_VEC4, {
-      { pitchRmsPointsModPtr, SoftCircleMod::SINK_POINT_COLOR }
+    { SomPaletteMod::SOURCE_RANDOM_DARK, {
+      { pitchRmsPointsModPtr, SoftCircleMod::SINK_COLOR }
     }},
-    { SomPaletteMod::SOURCE_DARKEST_VEC4, {
+    { SomPaletteMod::SOURCE_DARKEST, {
       { synthPtr, Synth::SINK_BACKGROUND_COLOR }
     }},
-    { SomPaletteMod::SOURCE_RANDOM_LIGHT_VEC4, {
-      { polarPitchRmsPointsModPtr, SoftCircleMod::SINK_POINT_COLOR },
+    { SomPaletteMod::SOURCE_RANDOM_LIGHT, {
+      { polarPitchRmsPointsModPtr, SoftCircleMod::SINK_COLOR },
       { collageModPtr, CollageMod::SINK_COLOR },
       { sandLineModPtr, SandLineMod::SINK_POINT_COLOR }
     }}
