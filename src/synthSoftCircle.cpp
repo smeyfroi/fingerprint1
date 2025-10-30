@@ -115,19 +115,21 @@ std::shared_ptr<Synth> createSynthSoftCircle(glm::vec2 size) {
   )");
   
   synthPtr->addConnections(R"(
-    # LAYER PROCESSES
-    Clusters.clusterCentreVec2 -> ClusterImpulses.points
-    AudioSource.pitchRmsPoints -> ClusterImpulses.points
-    AudioSource.rmsScalar -> ClusterImpulses.impulseRadius
-    AudioPalette.field -> Smear.field1Fbo
-  )");
-  
-  synthPtr->addConnections(R"(
     # POINT SIZE PROCESSES
     AudioSource.rmsScalar -> SmallRmsScalar.float
     AudioSource.rmsScalar -> MidRmsScalar.float
     AudioSource.rmsScalar -> LargeRmsScalar.float
-
+  )");
+  
+  synthPtr->addConnections(R"(
+    # LAYER PROCESSES
+    Clusters.clusterCentreVec2 -> ClusterImpulses.points
+    AudioSource.pitchRmsPoints -> ClusterImpulses.points
+    LargeRmsScalar.float -> ClusterImpulses.impulseRadius
+    AudioPalette.field -> Smear.field1Fbo
+  )");
+  
+  synthPtr->addConnections(R"(
     # POINTS
     AudioSource.polarSpectral2dPoints -> PolarSpectralPoints.points
     AudioSource.pitchRmsPoints -> PitchRmsPoints.points
@@ -143,10 +145,6 @@ std::shared_ptr<Synth> createSynthSoftCircle(glm::vec2 size) {
   )");
   // <<< CONNECTIONS
 
-  // ***************************************************************************
-  // TODO: need params for the layer fades
-  // ***************************************************************************
-  
   // Make drawing layers
   auto fluidDrawingLayerPtr = synthPtr->addDrawingLayer("1fluid",
                                             synthPtr->getSize() / 8.0, GL_RGBA16F, GL_REPEAT,
