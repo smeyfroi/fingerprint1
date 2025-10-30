@@ -29,10 +29,10 @@ void ofApp::setup(){
   if (lc.setup()) { // setup with automatic id finding
     
     // Global agency knob
-    lc.knob(0, synthPtr->findParameterByNamePrefix("Global Agency")->get().cast<float>());
+    lc.knob(0, synthPtr->findParameterByNamePrefix("Synth Agency")->get().cast<float>());
 
-    // Bind faders to layer alpha parameters
-    auto layersParameterGroupOpt = synthPtr->findParameterByNamePrefix("Layers");
+    // Bind intent controls
+    auto layersParameterGroupOpt = synthPtr->findParameterByNamePrefix("Intent");
     ofParameterGroup& layerParameters = layersParameterGroupOpt->get().castGroup();
     for (size_t i = 0; i < layerParameters.size(); ++i) {
       ofParameter<float>& layerParameter = layerParameters.getFloat(i);
