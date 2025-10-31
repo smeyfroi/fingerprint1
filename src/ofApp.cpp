@@ -31,11 +31,11 @@ void ofApp::setup(){
     // Global agency knob
     lc.knob(0, synthPtr->findParameterByNamePrefix("Synth Agency")->get().cast<float>());
 
-    // Bind intent controls
-    auto layersParameterGroupOpt = synthPtr->findParameterByNamePrefix("Intent");
-    ofParameterGroup& layerParameters = layersParameterGroupOpt->get().castGroup();
-    for (size_t i = 0; i < layerParameters.size(); ++i) {
-      ofParameter<float>& layerParameter = layerParameters.getFloat(i);
+    // Bind intent strengths to faders
+    auto intentParameterGroupOpt = synthPtr->findParameterByNamePrefix("Intent");
+    ofParameterGroup& intentStrengthParameters = intentParameterGroupOpt->get().castGroup();
+    for (size_t i = 0; i < intentStrengthParameters.size(); ++i) {
+      ofParameter<float>& layerParameter = intentStrengthParameters.getFloat(i);
       lc.fader(i, layerParameter);
     };
 

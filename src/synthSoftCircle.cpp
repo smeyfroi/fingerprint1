@@ -31,24 +31,24 @@ std::shared_ptr<Synth> createSynthSoftCircle(glm::vec2 size) {
   }, MIC_DEVICE_NAME, RECORD_AUDIO, RECORDING_PATH, ROOT_SOURCE_MATERIAL_PATH));
   
   auto audioPaletteModPtr = synthPtr->addMod<SomPaletteMod>("AudioPalette", {
-    {"Iterations", "2000"}, // not variable: set per performance? Lower settles quickly, which is useful for simple music
+    {"Iterations", "1000"}, // not variable: set per performance? Lower settles quickly, which is useful for simple music
   });
   
   auto clusterModPtr = synthPtr->addMod<ClusterMod>("Clusters", {
-    {"maxSourcePoints", "600"}, // not variable: set per performance?
-    {"clusters", "7"}, // could be a manual variable (or a cumulative event trigger)
+    {"Max Source Points", "600"}, // not variable: set per performance?
+    {"Clusters", "7"}, // could be a manual variable (or a cumulative event trigger)
   });
   // <<< AUDIO, CLUSTERS AND PALETTE
   
   // >>> LAYER PROCESSES
   auto fluidModPtr = synthPtr->addMod<FluidMod>("Fluid", {
     {"dt", "0.002"}, // could be a manual variable but changes need to be small for stability
-    {"value:dissipation", "0.999"}, // could be a manual variable but changes need to be small for stability
-    {"velocity:dissipation", "0.998"}, // could be a manual variable but changes need to be small for stability
-    {"vorticity", "50.0"}, // not an obvious visible effect so perhaps set per performance
-    {"value:iterations", "0.0"}, // could be variable to 1.0 or 2.0, which smooths things out noticeably
-    {"velocity:iterations", "0.0"}, // could tie it to above to smooth things out?
-    {"pressure:iterations", "25.0"}, // not variable
+    {"Value Dissipation", "0.999"}, // could be a manual variable but changes need to be small for stability
+    {"Velocity Dissipation", "0.998"}, // could be a manual variable but changes need to be small for stability
+    {"Vorticity", "50.0"}, // not an obvious visible effect so perhaps set per performance
+    {"Value Iterations", "0.0"}, // could be variable to 1.0 or 2.0, which smooths things out noticeably
+    {"Velocity Iterations", "0.0"}, // could tie it to above to smooth things out?
+    {"Pressure Iterations", "25.0"}, // not variable
   });
 
   auto fluidRadialImpulseModPtr = synthPtr->addMod<FluidRadialImpulseMod>("ClusterImpulses", {
@@ -147,17 +147,17 @@ std::shared_ptr<Synth> createSynthSoftCircle(glm::vec2 size) {
 
   // Make drawing layers
   auto fluidDrawingLayerPtr = synthPtr->addDrawingLayer("1fluid",
-                                            synthPtr->getSize() / 8.0, GL_RGBA16F, GL_REPEAT,
+                                            synthPtr->getSize() / 8.0, GL_RGBA32F, GL_REPEAT,
                                             false, OF_BLENDMODE_ADD, true, 0);
   auto fluidVelocitiesDrawingLayerPtr = synthPtr->addDrawingLayer("fluidVelocities",
-                                                      synthPtr->getSize() / 8.0, GL_RGB16F, GL_REPEAT,
+                                                      synthPtr->getSize() / 8.0, GL_RGB32F, GL_REPEAT,
                                                       false, OF_BLENDMODE_DISABLED, false, 0, false); // not drawn
   auto smearedDrawingLayerPtr = synthPtr->addDrawingLayer("2smear",
-                                                synthPtr->getSize(), GL_RGBA16F, GL_REPEAT,
+                                                synthPtr->getSize(), GL_RGBA32F, GL_REPEAT,
                                                 false, OF_BLENDMODE_ADD, true, 0);
   // FIXME: are all drawing layers GL_REPEAT and never GL_CLAMP_TO_EDGE?
   auto fadeDrawingLayerPtr = synthPtr->addDrawingLayer("3fade",
-                                            synthPtr->getSize(), GL_RGBA16F, GL_REPEAT,
+                                            synthPtr->getSize(), GL_RGBA32F, GL_REPEAT,
                                             false, OF_BLENDMODE_ADD, true, 0);
   
   // Assign drawing layers to the Mods
