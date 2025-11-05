@@ -22,6 +22,7 @@ void ofApp::setup(){
   synthPtr = createSynthSoftCircle(size);
 //  synthPtr = createSynth1(size);
 //  synthPtr = createSynth2(size);
+  synthPtr->configureGui(guiWindowPtr);
   
   // >>> TODO: refactor the MIDI controller setup into a separate class when we know more about it
   lc.listDevices();
@@ -68,12 +69,6 @@ void ofApp::draw(){
 }
 
 void ofApp::drawGui(ofEventArgs& args){
-  static glm::vec2 guiWindowSize = {0.0, 0.0};
-  auto currentWindowSize = ofGetCurrentWindow()->getWindowSize();
-  if (guiWindowSize != currentWindowSize) {
-    guiWindowSize = currentWindowSize;
-    synthPtr->setGuiSize(guiWindowSize);
-  }
   synthPtr->drawGui();
 }
 

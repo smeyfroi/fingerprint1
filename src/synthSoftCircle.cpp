@@ -181,6 +181,5 @@ std::shared_ptr<Synth> createSynthSoftCircle(glm::vec2 size) {
   // TODO: set up as DrawingLayers?
   smearModPtr->receive(SmearMod::SINK_FIELD_2_FBO, fluidVelocitiesDrawingLayerPtr->fboPtr->getSource());
   
-  synthPtr->configureGui();
   return synthPtr;
 }

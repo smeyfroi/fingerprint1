@@ -311,6 +311,6 @@ std::shared_ptr<Synth> createSynth2(glm::vec2 size) {
   smearModPtr->receive(SmearMod::SINK_FIELD_2_FBO, fluidVelocitiesDrawingLayerPtr->fboPtr->getSource());
   particleFieldModPtr->receive(ParticleFieldMod::SINK_FIELD_2_FBO, fluidVelocitiesDrawingLayerPtr->fboPtr->getSource());
 
-  synthPtr->configureGui();
+//  synthPtr->configureGui();
   return synthPtr;
 }
