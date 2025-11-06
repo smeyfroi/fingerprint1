@@ -13,7 +13,7 @@ using namespace ofxMarkSynth;
 
 std::shared_ptr<Synth> createSynthSoftCircle(glm::vec2 size) {
   auto synthPtr = std::make_shared<Synth>("SynthSoftCircle", ModConfig {
-    {"Background Color", "0.0, 0.0, 0.0, 1.0"},
+    {"Back Color", "0.0, 0.0, 0.0, 1.0"},
   }, START_PAUSED, size);
 
   // >>> AUDIO, CLUSTERS AND PALETTE
