@@ -33,10 +33,9 @@ void ofApp::setup(){
     lc.knob(0, synthPtr->findParameterByNamePrefix("Synth Agency")->get().cast<float>());
 
     // Bind intent strengths to faders
-    auto intentParameterGroupOpt = synthPtr->findParameterByNamePrefix("Intent");
-    ofParameterGroup& intentStrengthParameters = intentParameterGroupOpt->get().castGroup();
-    for (size_t i = 0; i < intentStrengthParameters.size(); ++i) {
-      ofParameter<float>& layerParameter = intentStrengthParameters.getFloat(i);
+    ofParameterGroup& intentParameters = synthPtr->getIntentParameterGroup();
+    for (size_t i = 0; i < intentParameters.size(); ++i) {
+      ofParameter<float>& layerParameter = intentParameters.getFloat(i);
       lc.fader(i, layerParameter);
     };
 
