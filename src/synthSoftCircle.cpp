@@ -30,9 +30,10 @@ std::shared_ptr<Synth> createSynthSoftCircle(glm::vec2 size) {
     {"MaxZeroCrossingRate", "15.0"}, // how this get set? pre-performance tuning?. Has large effect on palette etc
   }, MIC_DEVICE_NAME, RECORD_AUDIO, RECORDING_PATH, ROOT_SOURCE_MATERIAL_PATH));
   
-  auto audioPaletteModPtr = synthPtr->addMod<SomPaletteMod>("AudioPalette", {
-    {"Iterations", "1000"}, // not variable: set per performance? Lower settles quickly, which is useful for simple music
-  });
+  auto audioPaletteModPtr = std::static_pointer_cast<SomPaletteMod>(synthPtr->addMod<SomPaletteMod>("AudioPalette", {
+    {"Iterations", "2000"}, // not variable: set per performance?
+    // learning rate should also be exposed similarly
+  }));
   
   auto clusterModPtr = synthPtr->addMod<ClusterMod>("Clusters", {
     {"Max Source Points", "600"}, // not variable: set per performance?
@@ -180,6 +181,10 @@ std::shared_ptr<Synth> createSynthSoftCircle(glm::vec2 size) {
 
   // TODO: set up as DrawingLayers?
   smearModPtr->receive(SmearMod::SINK_FIELD_2_FBO, fluidVelocitiesDrawingLayerPtr->fboPtr->getSource());
+  
+  // Show internal textures on the GUI
+  synthPtr->addLiveTexturePtrFn("Current Palette", [audioPaletteModPtr]() { return audioPaletteModPtr->getActivePaletteTexturePtr(); });
+  synthPtr->addLiveTexturePtrFn("Next Palette", [audioPaletteModPtr]() { return audioPaletteModPtr->getNextPaletteTexturePtr(); });
   
   return synthPtr;
 }
