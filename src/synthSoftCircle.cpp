@@ -53,8 +53,8 @@ std::shared_ptr<Synth> createSynthSoftCircle(glm::vec2 size) {
   });
 
   auto fluidRadialImpulseModPtr = synthPtr->addMod<FluidRadialImpulseMod>("ClusterImpulses", {
-    {"ImpulseRadius", "0.15"}, // could be variable
-    {"ImpulseStrength", "0.015"}, // could be variable
+    {"Impulse Radius", "0.15"}, // could be variable
+    {"Impulse Strength", "0.015"}, // could be variable
   });
   
   auto smearModPtr = synthPtr->addMod<SmearMod>("Smear", {
@@ -112,7 +112,7 @@ std::shared_ptr<Synth> createSynthSoftCircle(glm::vec2 size) {
     # AUDIO, CLUSTERS AND PALETTE
     AudioSource.spectral3dPoints -> AudioPalette.vec3
     AudioSource.pitchRmsPoints -> Clusters.vec2
-    AudioPalette.darkest -> .backgroundColor
+    AudioPalette.darkest -> .Back Color
   )");
   
   synthPtr->addConnections(R"(
@@ -125,8 +125,7 @@ std::shared_ptr<Synth> createSynthSoftCircle(glm::vec2 size) {
   synthPtr->addConnections(R"(
     # LAYER PROCESSES
     Clusters.clusterCentreVec2 -> ClusterImpulses.points
-    AudioSource.pitchRmsPoints -> ClusterImpulses.points
-    LargeRmsScalar.float -> ClusterImpulses.impulseRadius
+    LargeRmsScalar.float -> ClusterImpulses.Impulse Radius
     AudioPalette.field -> Smear.field1Fbo
   )");
   
@@ -136,13 +135,13 @@ std::shared_ptr<Synth> createSynthSoftCircle(glm::vec2 size) {
     AudioSource.pitchRmsPoints -> PitchRmsPoints.points
     Clusters.clusterCentreVec2 -> ClusterPoints.points
     
-    SmallRmsScalar.float -> PolarSpectralPoints.radius
-    MidRmsScalar.float -> PitchRmsPoints.radius
-    LargeRmsScalar.float -> ClusterPoints.radius
+    SmallRmsScalar.float -> PolarSpectralPoints.Radius
+    MidRmsScalar.float -> PitchRmsPoints.Radius
+    LargeRmsScalar.float -> ClusterPoints.Radius
 
-    AudioPalette.darkest -> PolarSpectralPoints.color
-    AudioPalette.randomDark -> PitchRmsPoints.color
-    AudioPalette.randomLight -> ClusterPoints.color
+    AudioPalette.darkest -> PolarSpectralPoints.Color
+    AudioPalette.randomDark -> PitchRmsPoints.Color
+    AudioPalette.randomLight -> ClusterPoints.Color
   )");
   // <<< CONNECTIONS
 

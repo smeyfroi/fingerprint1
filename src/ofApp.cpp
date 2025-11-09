@@ -15,7 +15,7 @@ void ofApp::setup(){
   glEnable(GL_PROGRAM_POINT_SIZE);
 
   TIME_SAMPLE_SET_FRAMERATE(FRAME_RATE);
-  TIME_SAMPLE_SET_DRAW_LOCATION(TIME_MEASUREMENTS_BOTTOM_RIGHT);
+  TIME_SAMPLE_SET_DRAW_LOCATION(TIME_MEASUREMENTS_BOTTOM_LEFT);
   TIME_SAMPLE_DISABLE(); // ************************************************************************
 
   glm::vec2 size = { 7200, 7200 };
