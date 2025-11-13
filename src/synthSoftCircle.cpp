@@ -8,16 +8,25 @@
 // Test Synth to explore SoftCircleMod, SomPaletteMod, SmearMod and FluidMod
 
 #include "ofApp.h"
+#include "ModFactory.hpp"
 
 using namespace ofxMarkSynth;
 
 std::shared_ptr<Synth> createSynthSoftCircle(glm::vec2 size) {
+  
+  ResourceManager resources;
+  resources.add("rootSourceMaterialPath", ROOT_SOURCE_MATERIAL_PATH);
+  resources.add("sourceMaterialPath", SOURCE_MATERIAL_PATH);
+  resources.add("micDeviceName", MIC_DEVICE_NAME);
+  resources.add("recordAudio", RECORD_AUDIO);
+  resources.add("recordingPath", RECORDING_PATH);  
+  
   auto synthPtr = std::make_shared<Synth>("SynthSoftCircle", ModConfig {
     {"Back Color", "0.0, 0.0, 0.0, 1.0"},
   }, START_PAUSED, size);
 
   // >>> AUDIO, CLUSTERS AND PALETTE
-  std::shared_ptr<AudioDataSourceMod> audioDataSourceModPtr = std::static_pointer_cast<AudioDataSourceMod>(synthPtr->addMod<AudioDataSourceMod>("AudioSource", {
+  std::shared_ptr<AudioDataSourceMod> audioDataSourceModPtr = std::static_pointer_cast<AudioDataSourceMod>(ModFactory::create("AudioDataSource", &(*synthPtr), "AudioSource", {
     {"MinPitch", "50.0"}, // Tuning: manual variable. Has large effect on point positions etc
     {"MaxPitch", "800.0"},//"1500.0"}, // Tuning: manual variable. Has large effect on point positions etc
     {"MinRms", "0.0005"}, // Tuning: manual variable. Has large effect on point positions etc
@@ -28,7 +37,7 @@ std::shared_ptr<Synth> createSynthSoftCircle(glm::vec2 size) {
     {"MaxSpectralCrest", "200.0"}, // how this get set? pre-performance tuning?. Has large effect on palette etc
     {"MinZeroCrossingRate", "5.0"}, // how this get set? pre-performance tuning?. Has large effect on palette etc
     {"MaxZeroCrossingRate", "15.0"}, // how this get set? pre-performance tuning?. Has large effect on palette etc
-  }, MIC_DEVICE_NAME, RECORD_AUDIO, RECORDING_PATH, ROOT_SOURCE_MATERIAL_PATH));
+  }, resources));
   
   auto audioPaletteModPtr = std::static_pointer_cast<SomPaletteMod>(synthPtr->addMod<SomPaletteMod>("AudioPalette", {
     {"Iterations", "2000"}, // not variable: set per performance?
@@ -178,7 +187,7 @@ std::shared_ptr<Synth> createSynthSoftCircle(glm::vec2 size) {
     { polarSpectralPointsModPtr },
   });
 
-  // TODO: set up as DrawingLayers?
+  // TODO: set up as DrawingLayers? No because it isn't. Still needs to be tidied somehow.
   smearModPtr->receive(SmearMod::SINK_FIELD_2_FBO, fluidVelocitiesDrawingLayerPtr->fboPtr->getSource());
   
   // Show internal textures on the GUI

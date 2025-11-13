@@ -19,6 +19,7 @@ void ofApp::setup(){
   TIME_SAMPLE_DISABLE(); // ************************************************************************
 
   glm::vec2 size = { 7200, 7200 };
+  modFactory.initializeBuiltinTypes();
   synthPtr = createSynthSoftCircle(size);
 //  synthPtr = createSynth1(size);
 //  synthPtr = createSynth2(size);

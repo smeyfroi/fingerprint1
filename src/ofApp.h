@@ -8,6 +8,15 @@
 // ***********************************************
 // ***********************************************
 const std::filesystem::path ROOT_SOURCE_MATERIAL_PATH { "/Users/steve/Documents/music-source-material" };
+const std::filesystem::path SOURCE_MATERIAL_PATH { "belfast/20250208-violin-separate-scale-vibrato-harmonics.wav" };
+//const std::filesystem::path SOURCE_MATERIAL_PATH { "belfast/20250208-violin-separate-scale-vibrato-harmonics.wav" };
+//const std::filesystem::path SOURCE_MATERIAL_PATH { "percussion/Alex Petcu Bell Plates.wav" };
+//const std::filesystem::path SOURCE_MATERIAL_PATH { "percussion/Alex Petcu Sound Bath.wav" };
+//const std::filesystem::path SOURCE_MATERIAL_PATH { "belfast/20250208-trombone-melody.wav" };
+//const std::filesystem::path SOURCE_MATERIAL_PATH { "cork/audio-2025-06-16-11-16-14-782.wav" };
+//const std::filesystem::path SOURCE_MATERIAL_PATH { "cork/audio-2025-06-16-11-25-03-931.wav" };
+//const std::filesystem::path SOURCE_MATERIAL_PATH { "misc/nightsong.wav" };
+//const std::filesystem::path SOURCE_MATERIAL_PATH { "misc/treganna.wav" };
 constexpr int VIDEO_DEVICE_ID = 0;
 constexpr bool RECORD_VIDEO = false;
 constexpr bool RECORD_AUDIO = false;
@@ -54,6 +63,8 @@ public:
   void gotMessage(ofMessage msg) override;
   
 private:
+  ofxMarkSynth::ModFactory modFactory;
+
   std::shared_ptr<ofAppBaseWindow> guiWindowPtr;
   std::shared_ptr<ofxMarkSynth::Synth> synthPtr;
   
