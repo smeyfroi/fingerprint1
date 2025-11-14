@@ -27,7 +27,7 @@ std::shared_ptr<Synth> createSynthSoftCircle(glm::vec2 size) {
   }, START_PAUSED, size);
 
   // >>> AUDIO, CLUSTERS AND PALETTE
-  std::shared_ptr<AudioDataSourceMod> audioDataSourceModPtr = std::static_pointer_cast<AudioDataSourceMod>(ModFactory::create("AudioDataSource", &(*synthPtr), "AudioSource", {
+  std::shared_ptr<AudioDataSourceMod> audioDataSourceModPtr = std::static_pointer_cast<AudioDataSourceMod>(ModFactory::create("AudioDataSource", synthPtr, "AudioSource", {
     {"MinPitch", "50.0"}, // Tuning: manual variable. Has large effect on point positions etc
     {"MaxPitch", "800.0"},//"1500.0"}, // Tuning: manual variable. Has large effect on point positions etc
     {"MinRms", "0.0005"}, // Tuning: manual variable. Has large effect on point positions etc
