@@ -15,8 +15,9 @@ using namespace ofxMarkSynth;
 std::shared_ptr<Synth> createSynthSoftCircle(glm::vec2 size) {
   
   ResourceManager resources;
-  resources.add("rootSourceMaterialPath", ROOT_SOURCE_MATERIAL_PATH);
-  resources.add("sourceMaterialPath", SOURCE_MATERIAL_PATH);
+  resources.add("sourceVideoPath", SOURCE_VIDEO_PATH);
+  resources.add("sourceVideoMute", SOURCE_VIDEO_MUTE);
+  resources.add("sourceAudioPath", SOURCE_AUDIO_PATH);
   resources.add("micDeviceName", MIC_DEVICE_NAME);
   resources.add("recordAudio", RECORD_AUDIO);
   resources.add("recordingPath", RECORDING_PATH);  

@@ -8,7 +8,9 @@
 // ***********************************************
 // ***********************************************
 const std::filesystem::path ROOT_SOURCE_MATERIAL_PATH { "/Users/steve/Documents/music-source-material" };
-const std::filesystem::path SOURCE_MATERIAL_PATH { "belfast/20250208-violin-separate-scale-vibrato-harmonics.wav" };
+const std::filesystem::path SOURCE_VIDEO_PATH { ROOT_SOURCE_MATERIAL_PATH/"belfast/trombone-trimmed.mov" };
+const bool SOURCE_VIDEO_MUTE = false;
+const std::filesystem::path SOURCE_AUDIO_PATH { ROOT_SOURCE_MATERIAL_PATH/"belfast/20250208-violin-separate-scale-vibrato-harmonics.wav" };
 //const std::filesystem::path SOURCE_MATERIAL_PATH { "belfast/20250208-violin-separate-scale-vibrato-harmonics.wav" };
 //const std::filesystem::path SOURCE_MATERIAL_PATH { "percussion/Alex Petcu Bell Plates.wav" };
 //const std::filesystem::path SOURCE_MATERIAL_PATH { "percussion/Alex Petcu Sound Bath.wav" };
