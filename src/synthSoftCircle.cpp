@@ -27,7 +27,7 @@ std::shared_ptr<Synth> createSynthSoftCircle(glm::vec2 size) {
   }, START_PAUSED, size);
 
   // >>> AUDIO, CLUSTERS AND PALETTE
-  std::shared_ptr<AudioDataSourceMod> audioDataSourceModPtr = std::static_pointer_cast<AudioDataSourceMod>(ModFactory::create("AudioDataSource", synthPtr, "AudioSource", {
+  auto audioDataSourceModPtr = ModFactory::create("AudioDataSource", synthPtr, "AudioSource", {
     {"MinPitch", "50.0"}, // Tuning: manual variable. Has large effect on point positions etc
     {"MaxPitch", "800.0"},//"1500.0"}, // Tuning: manual variable. Has large effect on point positions etc
     {"MinRms", "0.0005"}, // Tuning: manual variable. Has large effect on point positions etc
@@ -38,7 +38,7 @@ std::shared_ptr<Synth> createSynthSoftCircle(glm::vec2 size) {
     {"MaxSpectralCrest", "200.0"}, // how this get set? pre-performance tuning?. Has large effect on palette etc
     {"MinZeroCrossingRate", "5.0"}, // how this get set? pre-performance tuning?. Has large effect on palette etc
     {"MaxZeroCrossingRate", "15.0"}, // how this get set? pre-performance tuning?. Has large effect on palette etc
-  }, resources));
+  }, resources);
   
   auto audioPaletteModPtr = std::static_pointer_cast<SomPaletteMod>(synthPtr->addMod<SomPaletteMod>("AudioPalette", {
     {"Iterations", "2000"}, // not variable: set per performance?
@@ -136,7 +136,7 @@ std::shared_ptr<Synth> createSynthSoftCircle(glm::vec2 size) {
     # LAYER PROCESSES
     Clusters.clusterCentreVec2 -> ClusterImpulses.points
     LargeRmsScalar.float -> ClusterImpulses.Impulse Radius
-    AudioPalette.field -> Smear.field1Fbo
+    AudioPalette.field -> Smear.field1Tex
   )");
   
   synthPtr->addConnections(R"(
@@ -160,7 +160,7 @@ std::shared_ptr<Synth> createSynthSoftCircle(glm::vec2 size) {
                                             synthPtr->getSize() / 8.0, GL_RGBA32F, GL_REPEAT,
                                             false, OF_BLENDMODE_ADD, true, 0);
   auto fluidVelocitiesDrawingLayerPtr = synthPtr->addDrawingLayer("fluidVelocities",
-                                                      synthPtr->getSize() / 8.0, GL_RGB32F, GL_REPEAT,
+                                                      synthPtr->getSize() / 8.0, GL_RG32F, GL_REPEAT,
                                                       false, OF_BLENDMODE_DISABLED, false, 0, false); // not drawn
   auto smearedDrawingLayerPtr = synthPtr->addDrawingLayer("2smear",
                                                 synthPtr->getSize(), GL_RGBA32F, GL_REPEAT,
@@ -188,8 +188,8 @@ std::shared_ptr<Synth> createSynthSoftCircle(glm::vec2 size) {
     { polarSpectralPointsModPtr },
   });
 
-  // TODO: set up as DrawingLayers? No because it isn't. Still needs to be tidied somehow.
-  smearModPtr->receive(SmearMod::SINK_FIELD_2_FBO, fluidVelocitiesDrawingLayerPtr->fboPtr->getSource());
+  // TODO: the Fluid Velocities texture is what we're after. Should Smear bind to the FBO as a DrawingLayer? It doesn't seem correct, but then getting to the Texture to send it to the Sink here is awkward
+  smearModPtr->receive(SmearMod::SINK_FIELD_2_TEX, fluidVelocitiesDrawingLayerPtr->fboPtr->getSource().getTexture());
   
   // Show internal textures on the GUI
   synthPtr->addLiveTexturePtrFn("Current Palette", [audioPaletteModPtr]() { return audioPaletteModPtr->getActivePaletteTexturePtr(); });

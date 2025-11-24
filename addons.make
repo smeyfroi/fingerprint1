@@ -17,8 +17,8 @@ ofxIntrospector
 ofxMidi
 ofxLaunchControllers
 ofxMotionFromVideo
-ofxSpatialHash
 ofxParticleSet
+ofxParticleField
 ofxPlottable
 ofxPointClusters
 ofxSelfOrganizingMap
@@ -26,4 +26,3 @@ ofxSomPalette
 ofxTimeMeasurements
 ofxTinyEXR
 ofxMarkSynth
-ofxParticleField

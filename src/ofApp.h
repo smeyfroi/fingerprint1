@@ -28,7 +28,7 @@ const std::string MIC_DEVICE_NAME = "Apple Inc.: MacBook Pro Microphone";
 constexpr float FRAME_RATE = 30.0;
 const bool START_PAUSED = false; // false for dev
 const std::string MAX_RMS = "0.02"; // "0.02"; // "0.11" more likely for live
-const std::filesystem::path RECORDING_PATH { "/Users/steve/Documents/recordings" };
+const std::filesystem::path RECORDING_PATH { "/Users/steve/Documents/MarkSynth/audio-recordings" };
 //const std::filesystem::path IMGUI_CONFIG_PATH { "/Users/steve/Documents/MarkSynth/imgui.ini" }; // *** would need to do something about this if the app is going to be packaged
 //constexpr int SOUND_OUT_DEVICE_ID = 1;
 // ***********************************************
